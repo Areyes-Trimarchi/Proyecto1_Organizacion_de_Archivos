@@ -25,13 +25,11 @@ int main(int argc, char* argv[]){
 		int coma=0;
 		char info[40];
 		int contador=0;
-		cout<<"TEXTO "<<texto<<endl;
 		for(int i=0;i<texto.size();i++){
 			if(texto[i]==','){
 				coma++;
 				switch(coma){
 					case 1:{
-						cout<<"NAME : "<<info<<endl;
 						info[contador+1]='\0';
 						combine(ciudad.name,info);
 						contador=-1;
@@ -44,11 +42,9 @@ int main(int argc, char* argv[]){
 			}	
 			contador++;
 		}
-		cout<<"info final "<<info<<endl;
 		info[contador+1]='\0';
 		ciudad.idCiudad=chartoidCiudad(info);
 		file.write(reinterpret_cast<char*>(&ciudad), sizeof(ciudad));
-		cout<<"Ciudad "<<ciudad.name<<","<<ciudad.idCiudad<<endl;
 	}
 	file.close();
 	ciudad_file.close();
@@ -73,6 +69,5 @@ int chartoidCiudad(char info[40]){
 	stringstream integ;
 	integ<<info;
 	integ>>resp;
-	cout<<"RESP ciudad "<<resp<<endl;
 	return resp;
 }
