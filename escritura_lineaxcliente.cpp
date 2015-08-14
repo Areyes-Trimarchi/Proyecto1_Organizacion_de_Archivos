@@ -46,7 +46,7 @@ int main(int argc, char* argv[]){
 		info[contador+1]='\0';
 
 		combineidCliente(linea.idCliente,info);
-		file.write(reinterpret_cast<char*>(&cliente), sizeof(cliente));
+		file.write(reinterpret_cast<char*>(&linea), sizeof(linea));
 		reset(info);
 	}
 	file.close();
