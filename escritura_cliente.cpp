@@ -2,6 +2,7 @@
 #include <fstream>
 #include <cstring>
 #include <cstdlib>
+#include <sstream>
 
 using namespace std;
 
@@ -9,12 +10,12 @@ struct Cliente{
 	char name[40];
 	char genero;
 	int idCiudad;
-	int idCliente;
+	char idCliente[14];
 };
 
 void reset(char info[40]);
 void combine(char array[40],char info[40]);
-int chartoidCliente(char info[40]);
+void combineidCliente(char id[14],char info[40]);
 int chartoidCiudad(char info[40]);
 
 int main(int argc, char* argv[]){
@@ -44,9 +45,9 @@ int main(int argc, char* argv[]){
 						info[0]='0';
 						break;
 					}case 3:{
-						cout<<"Id cliente : chartoidCliente(info) "<<chartoidCliente(info)<<endl;
+						cout<<"Id cliente : chartoidCliente(info) "<<info<<endl;
 						info[contador+1]='\0';
-						cliente.idCliente=chartoidCliente(info);
+						combineidCliente(cliente.idCliente,info);
 						contador=-1;
 						reset(info);
 						break;
@@ -71,7 +72,7 @@ int main(int argc, char* argv[]){
 		cliente.idCiudad=chartoidCiudad(info);
 		cout<<"Cliente "<<cliente.name<<","<<cliente.idCliente<<","<<cliente.genero<<","<<cliente.idCiudad<<endl;
 	}
-	clientes.close();	
+	clientes.close();
 	return 0;
 }
 void reset(char info[40]){
@@ -86,15 +87,17 @@ void combine(char name[40],char info[40]){
 		name[i]=info[i];
 	}
 }
-int chartoidCliente(char info[40]){
-	int resp;
-	resp=atoi(info);
-	cout<<"RESP CLIENTE "<<resp<<endl;
-	return resp;
+void combineidCliente(char id[14],char info[40]){
+	for (int i = 0; i < 14; ++i)
+	{
+		id[i]=info[i];
+	}
 }
 int chartoidCiudad(char info[40]){
 	int resp;
-	resp=atoi(info);
+	stringstream integ;
+	integ<<info;
+	integ>>resp;
 	cout<<"RESP ciudad "<<resp<<endl;
 	return resp;
 }
