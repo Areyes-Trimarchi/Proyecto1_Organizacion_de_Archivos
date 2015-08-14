@@ -21,6 +21,7 @@ int chartoidCiudad(char info[40]);
 int main(int argc, char* argv[]){
 	string texto;
 	ifstream clientes("clientes.txt");
+	ofstream file("clientes.bin", ofstream::binary);
 	while (!clientes.eof()){
 		getline(clientes,texto);
 		Cliente cliente;
@@ -70,8 +71,10 @@ int main(int argc, char* argv[]){
 		cout<<"info final "<<info<<endl;
 		info[contador+1]='\0';
 		cliente.idCiudad=chartoidCiudad(info);
+		file.write(reinterpret_cast<char*>(&cliente), sizeof(cliente));
 		cout<<"Cliente "<<cliente.name<<","<<cliente.idCliente<<","<<cliente.genero<<","<<cliente.idCiudad<<endl;
 	}
+	file.close();
 	clientes.close();
 	return 0;
 }
