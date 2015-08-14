@@ -1,31 +1,30 @@
-1,Tegucigalpa
-2,San Pedro Sula
-3,Choloma
-4,La Ceiba
-5,El Progreso
-6,Choluteca
-7,Comayagua
-8,Puerto Cortes
-9,La Lima
-10,Danli­
-11,Siguatepeque
-12,atacamas
-13,Juticalpa
-14,Tocoa
-15,Villanueva
-16,Tela
-17,Olanchito
-18,Santa Rosa de Copan
-19,San Lorenzo
-20,Cofradia
-21,El Parai­so
-22,La Paz
-23,Yoro
-24,La Entrada
-25,Potrerillos
-26,Santa Barbara
-27,Talanga
-28,Nacaome
-29,Santa Rita
-30,Guaimaca
-
+Tegucigalpa,1
+San Pedro Sula,2
+Choloma,3
+La Ceiba,4
+El Progreso,5
+Choluteca,6
+Comayagua,7
+Puerto Cortes,8
+La Lima,9
+Danli­,10
+Siguatepeque,11
+atacamas,12
+Juticalpa,13
+Tocoa,14
+Villanueva,15
+Tela,16
+Olanchito,17
+Santa Rosa de Copan,18
+San Lorenzo,19
+Cofradia,20
+El Parai­so,21
+La Paz,22
+Yoro,23
+La Entrada,24
+Potrerillos,25
+Santa Barbara,26
+Talanga,27
+Nacaome,28
+Santa Rita,29
+Guaimaca,30
