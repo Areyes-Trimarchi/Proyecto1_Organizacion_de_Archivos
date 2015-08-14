@@ -12,6 +12,7 @@ struct Ciudad{
 };
 
 void reset(char info[40]);
+void combine(char name[40],char info[40]);
 int chartoidCiudad(char info[40]);
 
 int main(int argc, char* argv[]){
@@ -47,7 +48,7 @@ int main(int argc, char* argv[]){
 		info[contador+1]='\0';
 		ciudad.idCiudad=chartoidCiudad(info);
 		file.write(reinterpret_cast<char*>(&ciudad), sizeof(ciudad));
-		cout<<"Ciudad "<<cliente.name<<","<<ciudad.idCiudad<<endl;
+		cout<<"Ciudad "<<ciudad.name<<","<<ciudad.idCiudad<<endl;
 	}
 	file.close();
 	ciudad_file.close();
@@ -57,6 +58,13 @@ void reset(char info[40]){
 	for (int i = 0; i < 40; ++i)
 	{
 		info[i]='\0';
+	}
+}
+
+void combine(char name[40],char info[40]){
+	for (int i = 0; i < 40; ++i)
+	{
+		name[i]=info[i];
 	}
 }
 

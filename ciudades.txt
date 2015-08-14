@@ -1,0 +1,30 @@
+Tegucigalpa,1
+San Pedro Sula,2
+Choloma,3
+La Ceiba,4
+El Progreso,5
+Choluteca,6
+Comayagua,7
+Puerto Cortes,8
+La Lima,9
+Danli­,10
+Siguatepeque,11
+atacamas,12
+Juticalpa,13
+Tocoa,14
+Villanueva,15
+Tela,16
+Olanchito,17
+Santa Rosa de Copan,18
+San Lorenzo,19
+Cofradia,20
+El Parai­so,21
+La Paz,22
+Yoro,23
+La Entrada,24
+Potrerillos,25
+Santa Barbara,26
+Talanga,27
+Nacaome,28
+Santa Rita,29
+Guaimaca,30
