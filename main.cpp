@@ -2,12 +2,14 @@
 
 using namespace std;
 
+//Declaracion de metodos
 int menu();
 int menu_cliente();
 int menu_ciudad();
 int menu_lineaxcliente();
+//Fin Declaracion de metodos
 
-int main(int argc, char* argv[]){
+int main(int argc, char* argv[]){//inicio main
 	cout<<"Bienvenido"<<endl;
 	char resp='s';
 	while(resp=='s'||resp=='S'){//while para iniciar el programa
@@ -102,8 +104,9 @@ int main(int argc, char* argv[]){
 		cin>>resp;
 	}//fin while para iniciar el programa
 	return 0;
-}
+}//fin main
 
+//METODOS
 int menu(){
 	int opcion;
 	cout<<"Menu Principal"<<endl;
@@ -135,3 +138,4 @@ int menu_lineaxcliente(){
 	cin>>opcion;
 	return opcion;
 }
+//FIN METODOS
