@@ -43,11 +43,57 @@ int main(int argc, char* argv[]){
 
 			case 2:{//case 2 Archivo de ciudades
 				cout<<"Archivo de Ciudades"<<endl;
+				switch(menu_ciudad()){//switch de archvio de ciudades (menu_ciudad)
+					
+					case 1:{//case 1 Agregar (Archivo de Ciudades) 
+						break;
+					}//fin case 1 Agregar (Archivo de Ciudades)  
+
+					case 2:{//case 2 Modificar (Archivo de Ciudades)  
+						break;
+					}//fin case 2 Modificar (Archivo de Ciudades) 
+
+					case 3:{//case 3 Borrar (Archivo de Ciudades) 
+						break;
+					}//fin case 3 Borrar (Archivo de Ciudades) 
+
+					case 4:{//case 4 Listar (Archivo de Ciudades) 
+						break;
+					}//fin case 4 Listar (Archivo de Ciudades) 
+
+					case 5:{//case 5 Buscar (Archivo de Ciudades) 
+						break;
+					}//fin case 5 Buscar (Archivo de Ciudades) 
+
+				}//fin switch de archvio de ciudades (menu_ciudad)
 				break;
 			}//fin case 2 Archivo de ciudades
 
 			case 3:{//case 3 Archivo de Lineas por Cliente
 				cout<<"Archivo de Lineas por Cliente"<<endl;
+				switch(menu_lineaxcliente()){//switch de archvio de lineas por cliente (menu_lineasxcliente)
+					
+					case 1:{//case 1 Agregar (Archivo de Lineas por Cliente) 
+						break;
+					}//fin case 1 Agregar (Archivo de Lineas por Cliente)  
+
+					case 2:{//case 2 Modificar (Archivo de Lineas por Cliente)  
+						break;
+					}//fin case 2 Modificar (Archivo de Lineas por Cliente) 
+
+					case 3:{//case 3 Borrar (Archivo de Lineas por Cliente) 
+						break;
+					}//fin case 3 Borrar (Archivo de Lineas por Cliente) 
+
+					case 4:{//case 4 Listar (Archivo de Lineas por Cliente) 
+						break;
+					}//fin case 4 Listar (Archivo de Lineas por Cliente) 
+
+					case 5:{//case 5 Buscar (Archivo de Lineas por Cliente) 
+						break;
+					}//fin case 5 Buscar (Archivo de Lineas por Cliente) 
+
+				}//fin switch de archvio de lineas por cliente (menu_lineasxcliente)
 				break;
 			}//fin case 3 Archivo de Lineas por Cliente
 
