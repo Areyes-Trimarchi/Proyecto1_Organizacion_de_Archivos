@@ -1,5 +1,22 @@
 #include <iostream>
+#include <stdlib.h>
+#include <fstream>
+
 using namespace std;
+
+struct Ciudad{
+	char name[40];
+	int idCiudad;
+};
+
+ostream& operator<<(ostream& output, const Ciudad& city){
+	output << city.name << "\t" << city.idCiudad << endl;
+	return output;  
+}
+istream& operator>>(istream& input, Ciudad& city){
+	 input >> city.numero >> city.inicio;
+	 return input;
+}
 
 int main(int argc, char const *argv[]){
 
@@ -13,7 +30,14 @@ int main(int argc, char const *argv[]){
 	cin >> opcionMenuPrincipal;
 	switch(opcionMenuPrincipal){
 		case 1:{
-			
+			Ciudad city;
+			ifstream file("data.bin", ifstream::binary);
+			int cont = 0 ;
+			while(file.read(reinterpret_cast<char*>(&city), sizeof(city))){
+				cout << city << endl;
+				cout << cont << endl;
+				cont++;
+			}
 		}
 		break;
 		case 2:{
@@ -41,7 +65,7 @@ int main(int argc, char const *argv[]){
 				}
 				break;
 				case 2:{
-					
+
 				}
 				break;
 			}
