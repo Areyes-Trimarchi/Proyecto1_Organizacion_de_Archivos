@@ -50,10 +50,18 @@ bool crud_clientes::Listar(){
 }
 
 bool crud_clientes::BuscarIndex(){
+	cout<<"Buscar por Indice";
+	string id_Cliente;
+	cout<<"Ingrese un numero de identidad para realizar la busqueda: ";
+	cin>>id_Cliente;
 	return true;
 }
 
 bool crud_clientes::Buscar(){
+	cout<<"Buscar sin Indice";
+	string id_Cliente;
+	cout<<"Ingrese un numero de identidad para realizar la busqueda: ";
+	cin>>id_Cliente;
 	return true;
 }
 
