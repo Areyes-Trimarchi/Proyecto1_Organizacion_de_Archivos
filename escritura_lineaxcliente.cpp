@@ -19,6 +19,13 @@ int main(int argc, char* argv[]){
 	string texto;
 	ifstream lineaxcliente("lineasxcliente.txt");
 	ofstream file("clientes.bin", ofstream::binary);
+	
+	int sizeRegistro = 0;
+	int availList =  -1;
+
+	file.write(reinterpret_cast<char*>(&sizeRegistro), sizeof(sizeRegistro));
+	file.write(reinterpret_cast<char*>(&availList), sizeof(availList));
+	cout << "Antes = " << sizeRegistro << endl;
 	while (!lineaxcliente.eof()){
 		getline(lineaxcliente,texto);
 		LineaxCliente linea;
@@ -48,7 +55,12 @@ int main(int argc, char* argv[]){
 		combineidCliente(linea.idCliente,info);
 		file.write(reinterpret_cast<char*>(&linea), sizeof(linea));
 		reset(info);
+		sizeRegistro++;
 	}
+	sizeRegistro = sizeRegistro - 1;
+	file.seekp(0);
+	cout << "Final = " << sizeRegistro << endl;
+	file.write(reinterpret_cast<char*>(&sizeRegistro), sizeof(sizeRegistro));
 	file.close();
 	lineaxcliente.close();
 	return 0;

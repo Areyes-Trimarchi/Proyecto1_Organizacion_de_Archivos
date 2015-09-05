@@ -22,6 +22,13 @@ int main(int argc, char* argv[]){
 	string texto;
 	ifstream clientes("clientes.txt");
 	ofstream file("clientes.bin", ofstream::binary);
+
+	int sizeRegistro = 0;
+	int availList =  -1;
+
+	file.write(reinterpret_cast<char*>(&sizeRegistro), sizeof(sizeRegistro));
+	file.write(reinterpret_cast<char*>(&availList), sizeof(availList));
+	cout << "Antes = " << sizeRegistro << endl;
 	while (!clientes.eof()){
 		getline(clientes,texto);
 		Cliente cliente;
@@ -66,7 +73,12 @@ int main(int argc, char* argv[]){
 		info[contador+1]='\0';
 		cliente.idCiudad=chartoidCiudad(info);
 		file.write(reinterpret_cast<char*>(&cliente), sizeof(cliente));
+		sizeRegistro++;
 	}
+	sizeRegistro = sizeRegistro - 1;
+	file.seekp(0);
+	cout << "Final = " << sizeRegistro << endl;
+	file.write(reinterpret_cast<char*>(&sizeRegistro), sizeof(sizeRegistro));
 	file.close();
 	clientes.close();
 	return 0;
