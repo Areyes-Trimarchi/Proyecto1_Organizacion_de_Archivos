@@ -26,16 +26,7 @@ Index::~Index(){
 }
 
 bool Index::add(){
-	/*if (size == capacity) 
-        return false;
-    if (pos < 0 || pos > size)
-        return false; // Fracaso en esta Operación
-    if (pos != size) // Se evalua si no se esta metiendo al final
-        for (int i = size; i > pos; i--) // Se recorre el arreglo de atras havia adelante
-            this->data[i] = this->data[i-1]; // Se mueven los elementos para poder insertar
-    this->data[pos] = data; // Se agregar el nuevo elemento
-    size++;
-    return true;*/
+	
 }
 
 bool Index::remove(){
@@ -198,7 +189,6 @@ void Index::orderIndexCiudad(vector<Indice>& indexC, Ciudad city, int RRN){
 void Index::orderIndexCliente(vector<IndiceClien>& indexC, Cliente client, int RRN){
 	int tamano = indexC.size();
 	IndiceClien indice;
-	//indice.id_clie_index = client.idCliente;
 	strcpy(indice.id_clie_index, client.idCliente);
 	indice.RRN_index = RRN;
 
@@ -238,7 +228,6 @@ void Index::orderIndexCliente(vector<IndiceClien>& indexC, Cliente client, int R
 void Index::orderIndexLineaxCliente(vector<IndiceClien>& indexC, LineaxCliente line, int RRN){
 	int tamano = indexC.size();
 	IndiceClien indice;
-	//indice.id_clie_index = line.idCliente;
 	strcpy(indice.id_clie_index, line.idCliente);
 	indice.RRN_index = RRN;
 
