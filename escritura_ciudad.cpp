@@ -11,6 +11,11 @@ struct Ciudad{
 	int idCiudad;
 };
 
+ostream& operator<<(ostream& output, const Ciudad& city){
+	output << "nombre = " << city.name << "\t" << "idCiudad = " << city.idCiudad << endl;
+	return output;  
+}
+
 void reset(char info[40]);
 void combine(char name[40],char info[40]);
 int chartoidCiudad(char info[40]);
@@ -19,12 +24,20 @@ int main(int argc, char* argv[]){
 	string texto;
 	ifstream ciudad_file("ciudades.txt");
 	ofstream file("ciudades.bin", ofstream::binary);
+
+	int sizeRegistro = 0;
+	int availList =  -1;
+
+	file.write(reinterpret_cast<char*>(&sizeRegistro), sizeof(sizeRegistro));
+	file.write(reinterpret_cast<char*>(&availList), sizeof(availList));
+	cout << "Antes = " << sizeRegistro << endl;
 	while (!ciudad_file.eof()){
 		getline(ciudad_file,texto);
 		Ciudad ciudad;
 		int coma=0;
 		char info[40];
 		int contador=0;
+
 		for(int i=0;i<texto.size();i++){
 			if(texto[i]==','){
 				coma++;
@@ -45,7 +58,12 @@ int main(int argc, char* argv[]){
 		info[contador+1]='\0';
 		ciudad.idCiudad=chartoidCiudad(info);
 		file.write(reinterpret_cast<char*>(&ciudad), sizeof(ciudad));
+		sizeRegistro++;
 	}
+	sizeRegistro = sizeRegistro - 1;
+	file.seekp(0);
+	cout << "Final = " << sizeRegistro << endl;
+	file.write(reinterpret_cast<char*>(&sizeRegistro), sizeof(sizeRegistro));
 	file.close();
 	ciudad_file.close();
 	return 0;
