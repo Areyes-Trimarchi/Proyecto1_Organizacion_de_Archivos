@@ -22,6 +22,11 @@ struct Cliente{
 	char idCliente[14];
 };
 
+struct Header{
+	int availList;
+	int sizeRegistro;
+};
+
 struct Indice{
 	int id_ciu_index;
 	int RRN_index;
@@ -35,12 +40,11 @@ struct IndiceClien{
 class Index{
 
 private:
-	int capacity;
 	unsigned int size;
 	int sizeRegistros;
 	int availList;
 public:
-	Index(int, string);
+	Index(string);
 	~Index();
 	bool add();
 	bool remove();
