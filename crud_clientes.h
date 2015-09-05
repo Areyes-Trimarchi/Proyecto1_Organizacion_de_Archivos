@@ -16,6 +16,15 @@ struct Cliente{
 class crud_clientes{
 
 public:
+	crud_clientes();
+	~crud_clientes();
+	bool Agregar();
+	bool Borrar();
+	bool Modificar();
+	bool Listar();
+	bool BuscarIndex();
+	bool Buscar();
+	bool Reindexar();
 };
 
 #endif
