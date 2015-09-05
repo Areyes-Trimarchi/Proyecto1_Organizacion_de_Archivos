@@ -12,6 +12,10 @@ struct Cliente{
 	int idCiudad;
 	char idCliente[14];
 };
+struct Header{
+	int availList;
+	int sizeRegistro;
+};
 
 void reset(char info[40]);
 void combine(char array[40],char info[40]);
@@ -22,13 +26,13 @@ int main(int argc, char* argv[]){
 	string texto;
 	ifstream clientes("clientes.txt");
 	ofstream file("clientes.bin", ofstream::binary);
+	Header head;
+	head.availList=-1;
+	head.sizeRegistro=0;
+	int sizeregist=0;
 
-	int sizeRegistro = 0;
-	int availList =  -1;
-
-	file.write(reinterpret_cast<char*>(&sizeRegistro), sizeof(sizeRegistro));
-	file.write(reinterpret_cast<char*>(&availList), sizeof(availList));
-	cout << "Antes = " << sizeRegistro << endl;
+	file.write(reinterpret_cast<char*>(&head), sizeof(Header));
+	cout << "Antes = " << sizeregist << endl;
 	while (!clientes.eof()){
 		getline(clientes,texto);
 		Cliente cliente;
@@ -72,13 +76,14 @@ int main(int argc, char* argv[]){
 		}
 		info[contador+1]='\0';
 		cliente.idCiudad=chartoidCiudad(info);
-		file.write(reinterpret_cast<char*>(&cliente), sizeof(cliente));
-		sizeRegistro++;
+		file.write(reinterpret_cast<char*>(&cliente), sizeof(Cliente));
+		sizeregist++;
 	}
-	sizeRegistro = sizeRegistro - 1;
+	sizeregist = sizeregist - 1;
 	file.seekp(0);
-	cout << "Final = " << sizeRegistro << endl;
-	file.write(reinterpret_cast<char*>(&sizeRegistro), sizeof(sizeRegistro));
+	cout << "Final = " << sizeregist << endl;
+	head.sizeRegistro=sizeregist;
+	file.write(reinterpret_cast<char*>(&head), sizeof(Header));
 	file.close();
 	clientes.close();
 	return 0;
