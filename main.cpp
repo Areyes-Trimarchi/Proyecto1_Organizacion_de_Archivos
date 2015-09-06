@@ -1,4 +1,10 @@
 #include <iostream>
+#include "index.h"
+#include "crud_clientes.h"
+#include <cstring>
+#include <cstdlib>
+#include <fstream>
+#include <vector>
 
 using namespace std;
 
@@ -17,6 +23,7 @@ int main(int argc, char* argv[]){//inicio main
 
 			case 1:{//case 1 Archivo de Clientes
 				cout<<"Archivo de Clientes"<<endl;
+				Crud_Clientes crud_clientes;
 				switch(menu_cliente()){//switch de archvio de clientes (menu_cliente)
 					
 					case 1:{//case 1 Agregar (Archivo de Clientes) 
@@ -32,10 +39,33 @@ int main(int argc, char* argv[]){//inicio main
 					}//fin case 3 Borrar (Archivo de Clientes)
 
 					case 4:{//case 4 Listar (Archivo de Clientes)
+						if(!crud_clientes.Listar()){
+							cerr<<"Ocurrio un error"<<endl;
+						}
 						break;
 					}//fin case 4 Listar (Archivo de Clientes)
 
 					case 5:{//case 5 Buscar (Archivo de Clientes)
+						int option;
+						cout<<"Como desea Buscar\n1. Con Indice\n2. Sin Indice\nElija una opcion: ";
+						cin>>option;
+						switch(option){//switch de opcion para buscar clientes
+
+							case 1:{//case 1 para buscar clientes con indice
+								if(!crud_clientes.BuscarIndex()){
+									cerr<<"Ocurrio un error"<<endl;
+								}
+								break;
+							}//FIN case 1 para buscar clientes con indice
+
+							case 2:{//case 2 para buscar clientes SIN indice
+								if(!crud_clientes.Buscar()){
+									cerr<<"Ocurrio un error"<<endl;
+								}
+								break;
+							}//FIN case 2 para buscar clientes SIN indice
+
+						}//FIN switch de opcion para buscar clientes
 						break;
 					}//fin case 5 Buscar (Archivo de Clientes)
 
