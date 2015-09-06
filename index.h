@@ -43,11 +43,14 @@ private:
 	unsigned int size;
 	int sizeRegistros;
 	int availList;
+	string direccion;
+	vector<Indice> indexCiudades;
+	vector<IndiceClien> indexClientesOLineas;
 public:
 	Index(string);
 	~Index();
-	bool add();
-	bool remove();
+	bool add(Ciudad, Cliente, LineaxCliente);
+	bool remove(Ciudad, Cliente, LineaxCliente);
 	bool get();
 	void reindex();
 	void create(string);
@@ -57,4 +60,13 @@ public:
 	void orderIndexCiudad(vector<Indice>&, Ciudad, int);
 	void orderIndexCliente(vector<IndiceClien>&, Cliente, int);
 	void orderIndexLineaxCliente(vector<IndiceClien>&, LineaxCliente, int);
+	void addCiudades(Ciudad);
+	void addClientes(Cliente);
+	void addLineaxCliente(LineaxCliente);
+	void eliminarCiudades(Ciudad);
+	void eliminarClientes(Cliente);
+	void eliminarLineaxCliente(LineaxCliente);
+	int busquedaCiudad(Ciudad);
+	int busquedaClientes(Cliente);
+	int busquedaLineas(LineaxCliente);
 };

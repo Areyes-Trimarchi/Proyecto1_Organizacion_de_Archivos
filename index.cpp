@@ -5,17 +5,18 @@
 #include <iostream>
 #include <vector>
 #include <cstring>
+#include <stdio.h>
 
 using namespace std;
 
 Index::Index(string nombre){
-	cout << "Holassss" << endl;
+	this->direccion = nombre;
 	ifstream file;
-	file.open(nombre);
+	file.open(direccion);
 	
 	if(file.fail()){
 		cout << "Hola2" << endl;
-		create(nombre);
+		create(direccion);
 	}
 }
 
@@ -23,23 +24,22 @@ Index::~Index(){
 
 }
 
-bool Index::add(){
-	
+bool Index::add(Ciudad city, Cliente client, LineaxCliente linea){
+	if(this->direccion ==  "ciudades.bin")
+		addCiudades(city);
+	else if(this->direccion ==  "clientes.bin")
+		addClientes(client);
+	else
+		addLineaxCliente(linea);
 }
 
-bool Index::remove(){
-	/*
-    if (pos < 0 || pos >= size)
-        return NULL; // Indicar fracaso en la operación
-    Object* retVal = data[pos];
-    data[pos] = NULL;
-    if (pos != size-1){ // Evalua si no se esta borrando el ultimo elemento
-        for (int i = pos; i < size-1; i++)
-            data[i] = data[i+1];
-        data[size-1] = NULL;
-    }
-    size--; 
-    return retVal;*/
+bool Index::remove(Ciudad city, Cliente client, LineaxCliente linea){
+	if(this->direccion ==  "ciudades.bin")
+		eliminarCiudades(city);
+	else if(this->direccion ==  "clientes.bin")
+		eliminarClientes(client);
+	else
+		eliminarLineaxCliente(linea);
 }
 
 bool Index::get(){
@@ -51,13 +51,12 @@ void Index::reindex(){
 }
 
 void Index::create(string nombre){
-	if(nombre ==  "ciudades.bin"){
+	if(nombre ==  "ciudades.bin")
 		createCiudades(nombre);
-	} else if(nombre ==  "clientes.bin"){
+	else if(nombre ==  "clientes.bin")
 		createClientes(nombre);
-	} else{
-		//createLineas(nombre);
-	}
+	else
+		createLineas(nombre);
 }
 
 void Index::createCiudades(string nombre){
@@ -103,7 +102,7 @@ void Index::createClientes(string nombre){
 
 		int RRN;
 		vector<IndiceClien>index;
-		file.seekg(8):
+		file.seekg(8);
 		for (int i = 0; i < sizeRegistros; ++i){
 			Cliente client;
 			file.read(reinterpret_cast<char*>(&client), sizeof(Cliente));
@@ -184,6 +183,7 @@ void Index::orderIndexCiudad(vector<Indice>& indexC, Ciudad city, int RRN){
 		   	}
 	    }
 	}
+	indexCiudades = indexC;
 }
 
 void Index::orderIndexCliente(vector<IndiceClien>& indexC, Cliente client, int RRN){
@@ -223,6 +223,7 @@ void Index::orderIndexCliente(vector<IndiceClien>& indexC, Cliente client, int R
 		   	}
 	    }
 	}
+	indexClientesOLineas = indexC;
 }
 
 void Index::orderIndexLineaxCliente(vector<IndiceClien>& indexC, LineaxCliente line, int RRN){
@@ -262,4 +263,95 @@ void Index::orderIndexLineaxCliente(vector<IndiceClien>& indexC, LineaxCliente l
 		   	}
 	    }
 	}
+	indexClientesOLineas = indexC;
+}
+
+void Index::addCiudades(Ciudad city){
+	orderIndexCiudad(indexCiudades, city, indexCiudades.size());
+}
+
+void Index::addClientes(Cliente client){
+	orderIndexCliente(indexClientesOLineas, client, indexCiudades.size());
+}
+
+void Index::addLineaxCliente(LineaxCliente linea){
+	orderIndexLineaxCliente(indexClientesOLineas, linea, indexCiudades.size());
+}
+
+void Index::eliminarCiudades(Ciudad city){
+	int RRN = busquedaCiudad(city);
+	indexCiudades.at(RRN).id_ciu_index = -99;
+}
+
+void Index::eliminarClientes(Cliente client){
+	int RRN = busquedaClientes(client);
+	indexClientesOLineas.at(RRN).id_clie_index[0] = '*';
+}
+
+void Index::eliminarLineaxCliente(LineaxCliente linea){
+	int RRN = busquedaLineas(linea);
+	indexClientesOLineas.at(RRN).id_clie_index[0] = '*';
+}
+
+int Index::busquedaCiudad(Ciudad city){
+	int primerIndice = 0, ultimoIndice = indexCiudades.size() - 1, centro;
+
+	while (primerIndice <= ultimoIndice)
+    {
+    	centro = (ultimoIndice + primerIndice)/2;
+	    if (indexCiudades.at(centro).id_ciu_index == city.idCiudad){
+			return centro;
+		}
+	    else{
+	 		if (city.idCiudad < indexCiudades.at(centro).id_ciu_index){
+	   			ultimoIndice=centro-1;
+	   		}
+	 		else{
+	   			primerIndice=centro+1;
+	   		}
+	   	}
+    }
+    return -1;
+}
+
+int Index::busquedaClientes(Cliente client){
+	int primerIndice = 0, ultimoIndice = indexCiudades.size() - 1, centro;
+
+	while (primerIndice <= ultimoIndice)
+    {
+    	centro = (ultimoIndice + primerIndice)/2;
+	    if (strncmp(indexClientesOLineas.at(centro).id_clie_index, client.idCliente, 14) == 0 ){
+			return centro;
+		}
+	    else{
+	 		if (strncmp(client.idCliente, indexClientesOLineas.at(centro).id_clie_index, 14) < 0 ){
+	   			ultimoIndice=centro-1;
+	   		}
+	 		else{
+	   			primerIndice=centro+1;
+	   		}
+	   	}
+    }
+    return -1;
+}
+
+int Index::busquedaLineas(LineaxCliente linea){
+	int primerIndice = 0, ultimoIndice = indexCiudades.size() - 1, centro;
+
+	while (primerIndice <= ultimoIndice)
+    {
+    	centro = (ultimoIndice + primerIndice)/2;
+	    if (strncmp(indexClientesOLineas.at(centro).id_clie_index, linea.idCliente, 14) == 0 ){
+			return centro;
+		}
+	    else{
+	 		if (strncmp(linea.idCliente, indexClientesOLineas.at(centro).id_clie_index, 14) < 0 ){
+	   			ultimoIndice=centro-1;
+	   		}
+	 		else{
+	   			primerIndice=centro+1;
+	   		}
+	   	}
+    }
+    return -1;
 }
