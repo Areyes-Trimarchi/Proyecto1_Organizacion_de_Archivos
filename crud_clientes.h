@@ -1,35 +1,19 @@
 #ifndef CRUD_CLIENTES_H
 #define CRUD_CLIENTES_H
 
+#include "index.h"
 #include <string>
 #include <iostream>
 #include <vector>
 
 using namespace std;
 
-struct Cliente{
-	char idCliente[14];
-	char nombre_cliente[40];
-	int idCiudad;
-	char genero;
-};
-
-struct Header{
-	int availList;
-	int sizeRegistro;
-};
-
-struct IndiceClien{
-	char id_clie_index[14];
-	int RRN_index;
-};
-
-class crud_clientes{
+class Crud_Clientes{
 	vector<IndiceClien> indice_clientes;
 public:
-	crud_clientes();
-	~crud_clientes();
-	bool Index();
+	Crud_Clientes();
+	~Crud_Clientes();
+	bool Indexar();
 	bool Agregar();
 	bool Borrar();
 	bool Modificar();
@@ -38,6 +22,8 @@ public:
 	bool Buscar();
 	bool Reindexar();
 	bool VerificarIndex(char[14]);
+	int UpdateIndex(vector<IndiceClien>&, Cliente, int);
+	int ElementoBorrado(int);
 };
 
 #endif
