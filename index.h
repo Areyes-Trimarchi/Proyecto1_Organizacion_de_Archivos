@@ -61,7 +61,7 @@ public:
 	void reindex();
 	void create(string);
 	void createCiudades(string);
-	void createClientes(string);
+	void createClientes(char*);
 	void createLineas(string);
 	void orderIndexCiudad(vector<Indice>&, Ciudad, int);
 	void orderIndexCliente(vector<IndiceClien>&, Cliente, int);

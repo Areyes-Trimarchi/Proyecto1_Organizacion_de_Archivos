@@ -145,8 +145,8 @@ void Index::createClientes(string nombre){
 	ifstream file;
 	file.open(nombre);
 	if(file.fail()){
-		cerr << "Error al abrir el archivo." << endl;
 	} else{
+		cout<<"ENTRO ELSE"<<endl;
 		Header head;
 		file.seekg(0);
 		file.read(reinterpret_cast<char*>(&head), sizeof(Header));
@@ -154,19 +154,19 @@ void Index::createClientes(string nombre){
 		availList=head.availList;
 
 		int RRN;
-		vector<IndiceClien>index;
+		vector<IndiceClien> index_cliente;
 		file.seekg(8);
 		for (int i = 0; i < sizeRegistros; ++i){
 			Cliente client;
 			file.read(reinterpret_cast<char*>(&client), sizeof(Cliente));
 
 			RRN = i;
-			orderIndexCliente(index, client, RRN);
+			orderIndexCliente(index_cliente, client, RRN);
 
 		}
 		ofstream salida("indexClientes.bin", ofstream::binary);
-		for (int i = 0; i < index.size(); i++){
-			salida.write(reinterpret_cast<const char*> (&index.at(i)), sizeof(IndiceClien));
+		for (int i = 0; i < index_cliente.size(); i++){
+			salida.write(reinterpret_cast<const char*> (&index_cliente.at(i)), sizeof(IndiceClien));
 		}
 	}
 }
@@ -262,30 +262,29 @@ void Index::orderIndexCliente(vector<IndiceClien>& indexC, Cliente client, int R
 	else{
 		int primerIndice = 0, ultimoIndice = tamano - 1, centro;
 		while (primerIndice <= ultimoIndice)
-	    {
-	    	centro = (ultimoIndice + primerIndice)/2;
-		    if (indexC.at(centro).id_clie_index == client.idCliente){
+	    	{
+	    		centro = (ultimoIndice + primerIndice)/2;
+	    		if (strncmp(indexC.at(centro).id_clie_index,client.idCliente,14)==0){
 				cerr<<"Ya existe ese id"<<endl;
 			}
-		    else{
-		 		if (client.idCliente < indexC.at(centro).id_clie_index){
-		   			ultimoIndice=centro-1;
-		   			if(ultimoIndice < 0)
-		   				indexC.insert(it, indice);
-		   			else if(ultimoIndice < primerIndice)
-		   				indexC.insert(it + primerIndice, indice);
-		   		}
-		 		else{
-		   			primerIndice=centro+1;
-		   			if(primerIndice > tamano)
-		   				indexC.push_back(indice);
-		   			else if(primerIndice > ultimoIndice)
-		   				indexC.insert(it + primerIndice, indice);
-		   		}
-		   	}
+	    		else{
+ 				if (strncmp(client.idCliente,indexC.at(centro).id_clie_index,14)<0){
+   					ultimoIndice=centro-1;
+   				if(ultimoIndice < 0)
+   					indexC.insert(it, indice);
+   				else if(ultimoIndice < primerIndice)
+   					indexC.insert(it + primerIndice, indice);
+   			}
+ 			else{
+	   			primerIndice=centro+1;
+	   			if(primerIndice > tamano)
+	   				indexC.push_back(indice);
+	   			else if(primerIndice > ultimoIndice)
+	   				indexC.insert(it + primerIndice, indice);
+   			}
+	   	}
 	    }
 	}
-	indexClientesOLineas = indexC;
 }
 
 /*
