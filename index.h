@@ -49,9 +49,15 @@ private:
 public:
 	Index(string);
 	~Index();
-	bool add(Ciudad, Cliente, LineaxCliente);
-	bool remove(Ciudad, Cliente, LineaxCliente);
-	bool get();
+	bool add(Ciudad);
+	bool add(Cliente);
+	bool add(LineaxCliente);
+	bool remove(Ciudad);
+	bool remove(Cliente);
+	bool remove(LineaxCliente);
+	Indice get(Ciudad);
+	IndiceClien get(Cliente);
+	IndiceClien get(LineaxCliente);
 	void reindex();
 	void create(string);
 	void createCiudades(string);
@@ -60,12 +66,6 @@ public:
 	void orderIndexCiudad(vector<Indice>&, Ciudad, int);
 	void orderIndexCliente(vector<IndiceClien>&, Cliente, int);
 	void orderIndexLineaxCliente(vector<IndiceClien>&, LineaxCliente, int);
-	void addCiudades(Ciudad);
-	void addClientes(Cliente);
-	void addLineaxCliente(LineaxCliente);
-	void eliminarCiudades(Ciudad);
-	void eliminarClientes(Cliente);
-	void eliminarLineaxCliente(LineaxCliente);
 	int busquedaCiudad(Ciudad);
 	int busquedaClientes(Cliente);
 	int busquedaLineas(LineaxCliente);

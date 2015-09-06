@@ -9,6 +9,10 @@
 
 using namespace std;
 
+/*
+	Constructor
+	Tiene que verificar si existe indice, sino lo crea; si ya existia previamente, lo carga
+*/
 Index::Index(string nombre){
 	this->direccion = nombre;
 	ifstream file;
@@ -24,32 +28,75 @@ Index::~Index(){
 
 }
 
-bool Index::add(Ciudad city, Cliente client, LineaxCliente linea){
-	if(this->direccion ==  "ciudades.bin")
-		addCiudades(city);
-	else if(this->direccion ==  "clientes.bin")
-		addClientes(client);
-	else
-		addLineaxCliente(linea);
+/*
+	Agregar al indice
+	Verifica que tipo agrega y funciona con ek metodo apropiado por tipo
+*/
+bool Index::add(Ciudad city){
+	orderIndexCiudad(indexCiudades, city, indexCiudades.size());
 }
 
-bool Index::remove(Ciudad city, Cliente client, LineaxCliente linea){
-	if(this->direccion ==  "ciudades.bin")
-		eliminarCiudades(city);
-	else if(this->direccion ==  "clientes.bin")
-		eliminarClientes(client);
-	else
-		eliminarLineaxCliente(linea);
+bool Index::add(Cliente client){
+	orderIndexCliente(indexClientesOLineas, client, indexCiudades.size());
 }
 
-bool Index::get(){
-	//Busqueda Binaria
-
+bool Index::add(LineaxCliente linea){
+	orderIndexLineaxCliente(indexClientesOLineas, linea, indexCiudades.size());
 }
+
+/*
+	Remover del indice
+	Verifica que tipo elininara y trabaja con el metodo dependiendo del tipo
+*/
+bool Index::remove(Ciudad city){
+	int RRN = busquedaCiudad(city);
+	indexCiudades.at(RRN).id_ciu_index = -99;
+}
+
+bool Index::remove(Cliente client){
+	int RRN = busquedaClientes(client);
+	indexClientesOLineas.at(RRN).id_clie_index[0] = '*';
+}
+
+bool Index::remove(LineaxCliente linea){
+	int RRN = busquedaLineas(linea);
+	indexClientesOLineas.at(RRN).id_clie_index[0] = '*';
+}
+
+/*
+	Retornar una ciudad es tipo Indice
+*/
+Indice Index::get(Ciudad city){
+	int regresar;
+	regresar = busquedaCiudad(city);
+	return indexCiudades.at(regresar);
+}
+
+/*
+	Retornar un cliente es de tipo IndiceClien
+*/
+IndiceClien Index::get(Cliente client){
+	int regresar;
+	regresar = busquedaClientes(client);
+	return indexClientesOLineas.at(regresar);
+}
+
+/*
+	Retornar una linea x cliente es de tipo IndiceClien
+*/
+IndiceClien Index::get(LineaxCliente linea){
+	int regresar;
+	regresar = busquedaLineas(linea);
+	return indexClientesOLineas.at(regresar);
+}
+
 void Index::reindex(){
 
 }
 
+/*
+	Metodo para crear el indice por si no funciona
+*/
 void Index::create(string nombre){
 	if(nombre ==  "ciudades.bin")
 		createCiudades(nombre);
@@ -59,6 +106,9 @@ void Index::create(string nombre){
 		createLineas(nombre);
 }
 
+/*
+	Metodo para crear ciudades
+*/
 void Index::createCiudades(string nombre){
 	ifstream file;
 	file.open(nombre);
@@ -88,6 +138,9 @@ void Index::createCiudades(string nombre){
 	}
 }
 
+/*
+	Metodo para crear Clientes
+*/
 void Index::createClientes(string nombre){
 	ifstream file;
 	file.open(nombre);
@@ -118,6 +171,9 @@ void Index::createClientes(string nombre){
 	}
 }
 
+/*
+	Metodo para crear lineas
+*/
 void Index::createLineas(string nombre){
 	ifstream file;
 	file.open(nombre);
@@ -146,6 +202,9 @@ void Index::createLineas(string nombre){
 	}
 }
 
+/*
+	Ordena el vector del indice de las ciudades
+*/
 void Index::orderIndexCiudad(vector<Indice>& indexC, Ciudad city, int RRN){
 	int tamano = indexC.size();
 	Indice indice;
@@ -186,6 +245,9 @@ void Index::orderIndexCiudad(vector<Indice>& indexC, Ciudad city, int RRN){
 	indexCiudades = indexC;
 }
 
+/*
+	Ordena el vector del indice de los clientes
+*/
 void Index::orderIndexCliente(vector<IndiceClien>& indexC, Cliente client, int RRN){
 	int tamano = indexC.size();
 	IndiceClien indice;
@@ -226,6 +288,9 @@ void Index::orderIndexCliente(vector<IndiceClien>& indexC, Cliente client, int R
 	indexClientesOLineas = indexC;
 }
 
+/*
+	Ordena el vector del indice de las lineas x cliente
+*/
 void Index::orderIndexLineaxCliente(vector<IndiceClien>& indexC, LineaxCliente line, int RRN){
 	int tamano = indexC.size();
 	IndiceClien indice;
@@ -266,33 +331,9 @@ void Index::orderIndexLineaxCliente(vector<IndiceClien>& indexC, LineaxCliente l
 	indexClientesOLineas = indexC;
 }
 
-void Index::addCiudades(Ciudad city){
-	orderIndexCiudad(indexCiudades, city, indexCiudades.size());
-}
-
-void Index::addClientes(Cliente client){
-	orderIndexCliente(indexClientesOLineas, client, indexCiudades.size());
-}
-
-void Index::addLineaxCliente(LineaxCliente linea){
-	orderIndexLineaxCliente(indexClientesOLineas, linea, indexCiudades.size());
-}
-
-void Index::eliminarCiudades(Ciudad city){
-	int RRN = busquedaCiudad(city);
-	indexCiudades.at(RRN).id_ciu_index = -99;
-}
-
-void Index::eliminarClientes(Cliente client){
-	int RRN = busquedaClientes(client);
-	indexClientesOLineas.at(RRN).id_clie_index[0] = '*';
-}
-
-void Index::eliminarLineaxCliente(LineaxCliente linea){
-	int RRN = busquedaLineas(linea);
-	indexClientesOLineas.at(RRN).id_clie_index[0] = '*';
-}
-
+/*
+	Metodo para buscar una ciudad, retorna la posicion en el vector
+*/
 int Index::busquedaCiudad(Ciudad city){
 	int primerIndice = 0, ultimoIndice = indexCiudades.size() - 1, centro;
 
@@ -314,6 +355,9 @@ int Index::busquedaCiudad(Ciudad city){
     return -1;
 }
 
+/*
+	Metodo para buscar un cliente, retorna la posicion en el vector
+*/
 int Index::busquedaClientes(Cliente client){
 	int primerIndice = 0, ultimoIndice = indexCiudades.size() - 1, centro;
 
@@ -335,6 +379,9 @@ int Index::busquedaClientes(Cliente client){
     return -1;
 }
 
+/*
+	Metodo para buscar una linea x cliente, retorna la posicion en el vector
+*/
 int Index::busquedaLineas(LineaxCliente linea){
 	int primerIndice = 0, ultimoIndice = indexCiudades.size() - 1, centro;
 
