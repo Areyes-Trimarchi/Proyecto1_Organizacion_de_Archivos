@@ -34,14 +34,17 @@ Index::~Index(){
 */
 bool Index::add(Ciudad city){
 	orderIndexCiudad(indexCiudades, city, indexCiudades.size());
+	return true;
 }
 
 bool Index::add(Cliente client){
 	orderIndexCliente(indexClientesOLineas, client, indexCiudades.size());
+	return true;
 }
 
 bool Index::add(LineaxCliente linea){
 	orderIndexLineaxCliente(indexClientesOLineas, linea, indexCiudades.size());
+	return true;
 }
 
 /*
@@ -306,11 +309,11 @@ void Index::orderIndexLineaxCliente(vector<IndiceClien>& indexC, LineaxCliente l
 		while (primerIndice <= ultimoIndice)
 	    {
 	    	centro = (ultimoIndice + primerIndice)/2;
-		    if (indexC.at(centro).id_clie_index == line.idCliente){
+		    if ( strncmp(indexC.at(centro).id_clie_index, line.idCliente, 14) == 0 ){
 				indexC.insert(it + centro, indice);
 			}
 		    else{
-		 		if (line.idCliente < indexC.at(centro).id_clie_index){
+		 		if ( strncmp(line.idCliente, indexC.at(centro).id_clie_index, 14) == 0 ){
 		   			ultimoIndice=centro-1;
 		   			if(ultimoIndice < 0)
 		   				indexC.insert(it, indice);
