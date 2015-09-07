@@ -10,6 +10,7 @@ using namespace std;
 
 class Crud_Clientes{
 	vector<IndiceClien> indice_clientes;
+	vector<Cliente> clientes;
 public:
 	Crud_Clientes();
 	~Crud_Clientes();
@@ -22,8 +23,11 @@ public:
 	bool Buscar();
 	bool Reindexar();
 	bool VerificarIndex(char[14]);
-	int UpdateIndex(vector<IndiceClien>&, Cliente, int);
+	void UpdateIndex(vector<IndiceClien>&, Cliente, int);
 	int ElementoBorrado(int);
+	void ReescribirArchivo(Header,Cliente,int);
+	void CargarVectorClientes(Cliente,int);
+	void CargarVectorIndice();
 };
 
 #endif
