@@ -26,15 +26,24 @@ int main(int argc, char* argv[]){//inicio main
 				Crud_Clientes crud_clientes;
 				switch(menu_cliente()){//switch de archvio de clientes (menu_cliente)
 					
-					case 1:{//case 1 Agregar (Archivo de Clientes) 
+					case 1:{//case 1 Agregar (Archivo de Clientes)
+						if(!crud_clientes.Agregar()){
+							cerr<<"Ocurrio un error"<<endl;
+						} 
 						break;
 					}//fin case 1 Agregar (Archivo de Clientes) 
 
-					case 2:{//case 2 Modificar (Archivo de Clientes) 
+					case 2:{//case 2 Modificar (Archivo de Clientes)
+						if(!crud_clientes.Modificar()){
+							cerr<<"Ocurrio un error"<<endl;
+						}  
 						break;
 					}//fin case 2 Modificar (Archivo de Clientes)
 
 					case 3:{//case 3 Borrar (Archivo de Clientes)
+						if(!crud_clientes.Borrar()){
+							cerr<<"Ocurrio un error"<<endl;
+						}
 						break;
 					}//fin case 3 Borrar (Archivo de Clientes)
 
