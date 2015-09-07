@@ -5,12 +5,12 @@
 
 using namespace std;
 
-ostream& operator<<(ostream& output, const Ciudad& city){
-	output << city.idCiudad << "\t" << city.name << endl;
+ostream& operator<<(ostream& output, const LineaxCliente& linea){
+	output << linea.idCliente << "\t" << linea.numero << endl;
 	return output;  
 }
-istream& operator>>(istream& input, Ciudad& city){
-	 input >> city.idCiudad >> city.name;
+istream& operator>>(istream& input, LineaxCliente& linea){
+	 input >> linea.idCliente >> linea.numero;
 	 return input;
 }
 /*ostream& operator<<(ostream& output, const Indice& city){
