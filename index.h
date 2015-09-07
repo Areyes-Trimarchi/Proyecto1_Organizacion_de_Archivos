@@ -49,15 +49,18 @@ private:
 public:
 	Index(string);
 	~Index();
-	bool add(Ciudad);
-	bool add(Cliente);
-	bool add(LineaxCliente);
+	bool add(Ciudad, int);
+	bool add(Cliente, int);
+	bool add(LineaxCliente, int);
 	bool remove(Ciudad);
 	bool remove(Cliente);
 	bool remove(LineaxCliente);
 	Indice get(Ciudad);
 	IndiceClien get(Cliente);
 	IndiceClien get(LineaxCliente);
+	Indice at(int, Ciudad);
+	IndiceClien at(int, Cliente);
+	IndiceClien at(int, LineaxCliente);
 	void reindex();
 	void create(string);
 	void createCiudades(string);
@@ -69,4 +72,14 @@ public:
 	int busquedaCiudad(Ciudad);
 	int busquedaClientes(Cliente);
 	int busquedaLineas(LineaxCliente);
+	void load();
+	void cargarCiudades();
+	void cargarClientes();
+	void cargarLineas();
+	void guardarCiudades();
+	void guardarClientes();
+	void guardarLineas();
+	Indice ciudadRRN(int, Ciudad);
+	IndiceClien clienteRRN(int, Cliente);
+	IndiceClien lineaRRN(int, LineaxCliente);
 };

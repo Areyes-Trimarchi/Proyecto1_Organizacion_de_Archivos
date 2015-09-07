@@ -9,6 +9,12 @@
 
 using namespace std;
 
+
+/*ostream& operator<<(ostream& output, const Indice& city){
+	output << city.id_ciu_index << "\t" << city.RRN_index << endl;
+	return output;  
+}*/
+
 /*
 	Constructor
 	Tiene que verificar si existe indice, sino lo crea; si ya existia previamente, lo carga
@@ -17,11 +23,15 @@ Index::Index(string nombre){
 	this->direccion = nombre;
 	ifstream file;
 	file.open(direccion);
-	
-	if(file.fail()){
-		cout << "Hola2" << endl;
+
+	if(!file.good()){
+		cout << "No existe" << endl;
 		create(direccion);
+	} else{
+		cout << "Cargando" << endl;
+		load();
 	}
+	file.close();
 }
 
 Index::~Index(){
@@ -32,18 +42,21 @@ Index::~Index(){
 	Agregar al indice
 	Verifica que tipo agrega y funciona con ek metodo apropiado por tipo
 */
-bool Index::add(Ciudad city){
-	orderIndexCiudad(indexCiudades, city, indexCiudades.size());
+bool Index::add(Ciudad city, int rrn){
+	orderIndexCiudad(indexCiudades, city, rrn);
+	guardarCiudades();
 	return true;
 }
 
-bool Index::add(Cliente client){
-	orderIndexCliente(indexClientesOLineas, client, indexCiudades.size());
+bool Index::add(Cliente client, int rrn){
+	orderIndexCliente(indexClientesOLineas, client, rrn);
+	guardarClientes();
 	return true;
 }
 
-bool Index::add(LineaxCliente linea){
-	orderIndexLineaxCliente(indexClientesOLineas, linea, indexCiudades.size());
+bool Index::add(LineaxCliente linea, int rrn){
+	orderIndexLineaxCliente(indexClientesOLineas, linea, rrn);
+	guardarLineas();
 	return true;
 }
 
@@ -53,17 +66,23 @@ bool Index::add(LineaxCliente linea){
 */
 bool Index::remove(Ciudad city){
 	int RRN = busquedaCiudad(city);
-	indexCiudades.at(RRN).id_ciu_index = -99;
+	indexCiudades.erase(indexCiudades.begin() + RRN);
+	guardarCiudades();
+	return true;
 }
 
 bool Index::remove(Cliente client){
 	int RRN = busquedaClientes(client);
-	indexClientesOLineas.at(RRN).id_clie_index[0] = '*';
+	indexClientesOLineas.erase(indexClientesOLineas.begin() + RRN);
+	guardarClientes();
+	return true;
 }
 
 bool Index::remove(LineaxCliente linea){
 	int RRN = busquedaLineas(linea);
-	indexClientesOLineas.at(RRN).id_clie_index[0] = '*';
+	indexClientesOLineas.erase(indexClientesOLineas.begin() + RRN);
+	guardarLineas();
+	return true;
 }
 
 /*
@@ -71,8 +90,13 @@ bool Index::remove(LineaxCliente linea){
 */
 Indice Index::get(Ciudad city){
 	int regresar;
+	Indice i;
+	i.RRN_index = -99;
 	regresar = busquedaCiudad(city);
-	return indexCiudades.at(regresar);
+	if(regresar != -1)	
+		return indexCiudades.at(regresar);
+	else
+		return i;
 }
 
 /*
@@ -81,7 +105,12 @@ Indice Index::get(Ciudad city){
 IndiceClien Index::get(Cliente client){
 	int regresar;
 	regresar = busquedaClientes(client);
-	return indexClientesOLineas.at(regresar);
+	IndiceClien i;
+	i.RRN_index = -99;
+	if(regresar != -1)
+		return indexClientesOLineas.at(regresar);
+	else
+		return i;
 }
 
 /*
@@ -90,7 +119,34 @@ IndiceClien Index::get(Cliente client){
 IndiceClien Index::get(LineaxCliente linea){
 	int regresar;
 	regresar = busquedaLineas(linea);
-	return indexClientesOLineas.at(regresar);
+	IndiceClien i;
+	i.RRN_index = -99;
+	if(regresar != -1)
+		return indexClientesOLineas.at(regresar);
+	else
+		return i;
+}
+
+/*
+	Retornar una ciudad en base al numero
+*/
+Indice Index::at(int pos, Ciudad city){
+	return indexCiudades.at(pos);
+}
+
+/*
+	Retornar un cliente en base al numero
+*/
+IndiceClien Index::at(int pos, Cliente client){
+	return indexClientesOLineas.at(pos);
+
+}
+
+/*
+	Retornar una linea x cliente en base al numero
+*/
+IndiceClien Index::at(int pos, LineaxCliente linea){
+	return indexClientesOLineas.at(pos);
 }
 
 void Index::reindex(){
@@ -98,13 +154,15 @@ void Index::reindex(){
 }
 
 /*
-	Metodo para crear el indice por si no funciona
+	Metodo para crear el indice por si no ha sido creado
 */
 void Index::create(string nombre){
-	if(nombre ==  "ciudades.bin")
+	if(nombre ==  "indexCiudades.bin")
 		createCiudades(nombre);
-	else if(nombre ==  "clientes.bin")
-		createClientes(nombre);
+	else if(nombre ==  "indexClientes.bin"){
+		char* hola;
+		createClientes( strcpy(hola, nombre.c_str()) );
+	}
 	else
 		createLineas(nombre);
 }
@@ -114,40 +172,47 @@ void Index::create(string nombre){
 */
 void Index::createCiudades(string nombre){
 	ifstream file;
-	file.open(nombre);
-	if(file.fail()){
-		cerr << "Error al abrir el archivo." << endl;
+	file.open("ciudades.bin");
+	if(!file.is_open()){
+		cerr << "Error al abrir el archivo. Aqui es el error" << endl;
 	} else{
-		file.read(reinterpret_cast<char*>(&sizeRegistros), sizeof(sizeRegistros));
-		file.read(reinterpret_cast<char*>(&availList), sizeof(availList));
+		Header head;
+
+		file.seekg(0);
+		file.read(reinterpret_cast<char*>(&head), sizeof(Header));
+		sizeRegistros = head.sizeRegistro; 
+		availList = head.availList;
 
 		int RRN;
 		vector<Indice>index;
 		
+		cout << "3 sizeRegistros = " << sizeRegistros << "\tAvail = " << availList  << "\tUltimo = " << head.sizeRegistro << endl;
 		for (int i = 0; i < sizeRegistros; ++i){
 			Ciudad city;
-			file.read(reinterpret_cast<char*>(&city), sizeof(city));
+			file.read(reinterpret_cast<char*>(&city), sizeof(Ciudad));
 
 			RRN = i;
 			orderIndexCiudad(index, city, RRN);
 
 		}
-		cout << "Pene``````" << index.size() << endl;
-		ofstream salida("indexCiudad.bin", ofstream::binary);
+		ofstream salida("indexCiudades.bin", ofstream::binary);
 		for (int i = 0; i < index.size(); i++){
-			salida.write(reinterpret_cast<const char*> (&index.at(i).id_ciu_index), sizeof(index.at(i).id_ciu_index));
-			salida.write(reinterpret_cast<const char*> (&index.at(i).RRN_index), sizeof(index.at(i).RRN_index));
+			salida.write(reinterpret_cast<const char*> (&index.at(i)), sizeof(Indice));
 		}
+		salida.close();
 	}
+	file.clear();
+	file.seekg(0);
+	file.close();
 }
 
 /*
 	Metodo para crear Clientes
 */
-void Index::createClientes(string nombre){
+void Index::createClientes(char* nombre){
 	ifstream file;
-	file.open(nombre);
-	if(file.fail()){
+	file.open("clientes.bin");
+	if(!file.is_open()){
 	} else{
 		cout<<"ENTRO ELSE"<<endl;
 		Header head;
@@ -171,6 +236,7 @@ void Index::createClientes(string nombre){
 		for (int i = 0; i < index_cliente.size(); i++){
 			salida.write(reinterpret_cast<const char*> (&index_cliente.at(i)), sizeof(IndiceClien));
 		}
+		salida.close();
 	}
 }
 
@@ -179,8 +245,8 @@ void Index::createClientes(string nombre){
 */
 void Index::createLineas(string nombre){
 	ifstream file;
-	file.open(nombre);
-	if(file.fail()){
+	file.open("lineasxcliente.bin");
+	if(!file.is_open()){
 		cerr << "Error al abrir el archivo." << endl;
 	} else{
 		file.read(reinterpret_cast<char*>(&sizeRegistros), sizeof(sizeRegistros));
@@ -199,10 +265,11 @@ void Index::createLineas(string nombre){
 		}
 		ofstream salida("indexLineasXCliente.bin", ofstream::binary);
 		for (int i = 0; i < index.size(); i++){
-			salida.write(reinterpret_cast<const char*> (&index.at(i).id_clie_index), sizeof(index.at(i).id_clie_index));
-			salida.write(reinterpret_cast<const char*> (&index.at(i).RRN_index), sizeof(index.at(i).RRN_index));
+			salida.write(reinterpret_cast<const char*> (&index.at(i)), sizeof(IndiceClien));
 		}
+		salida.close();
 	}
+	file.close();
 }
 
 /*
@@ -219,7 +286,7 @@ void Index::orderIndexCiudad(vector<Indice>& indexC, Ciudad city, int RRN){
 
 	if(tamano == 0)
 		indexC.push_back(indice);
-	else{
+	else if(city.idCiudad != -99){
 		int primerIndice = 0, ultimoIndice = tamano - 1, centro;
 		while (primerIndice <= ultimoIndice)
 	    {
@@ -403,4 +470,99 @@ int Index::busquedaLineas(LineaxCliente linea){
 	   	}
     }
     return -1;
+}
+
+void Index::load(){
+	if(this->direccion ==  "indexCiudades.bin")
+		cargarCiudades();
+	else if(this->direccion ==  "indexClientes.bin"){
+		char* hola;
+		cargarClientes();
+	}
+	else
+		cargarLineas();
+}
+
+void Index::cargarCiudades(){
+	ifstream file;
+	file.open("indexCiudades.bin");
+	if(file.fail()){
+		cerr << "Error al abrir el archivo." << endl;
+	} else{
+		Indice indi;
+		while(file.read(reinterpret_cast<char*>(&indi), sizeof(Indice))){
+			indexCiudades.push_back(indi);
+		}
+	}
+}
+
+void Index::cargarClientes(){
+	ifstream file;
+	file.open("indexClientes.bin");
+	if(file.fail()){
+		cerr << "Error al abrir el archivo." << endl;
+	} else{
+		IndiceClien indi;
+		while(file.read(reinterpret_cast<char*>(&indi), sizeof(IndiceClien))){
+			indexClientesOLineas.push_back(indi);
+		}
+	}
+}
+
+void Index::cargarLineas(){
+	ifstream file;
+	file.open("indexLineasXCliente.bin");
+	if(file.fail()){
+		cerr << "Error al abrir el archivo." << endl;
+	} else{
+		IndiceClien indi;
+		while(file.read(reinterpret_cast<char*>(&indi), sizeof(IndiceClien))){
+			indexClientesOLineas.push_back(indi);
+		}
+	}
+}
+
+void Index::guardarCiudades(){
+	ofstream salida("indexCiudades.bin", ofstream::binary);
+	for (int i = 0; i < indexCiudades.size(); i++){
+		salida.write(reinterpret_cast<const char*> (&indexCiudades.at(i)), sizeof(Indice));
+	}
+	salida.close();
+}
+
+void Index::guardarClientes(){
+	ofstream salida("indexClientes.bin", ofstream::binary);
+	for (int i = 0; i < indexClientesOLineas.size(); i++){
+		salida.write(reinterpret_cast<const char*> (&indexClientesOLineas.at(i)), sizeof(IndiceClien));
+	}
+	salida.close();
+}
+
+void Index::guardarLineas(){
+	ofstream salida("indexLineasXCliente.bin", ofstream::binary);
+	for (int i = 0; i < indexClientesOLineas.size(); i++){
+		salida.write(reinterpret_cast<const char*> (&indexClientesOLineas.at(i)), sizeof(IndiceClien));
+	}
+	salida.close();
+}
+
+Indice Index::ciudadRRN(int rrn, Ciudad city){
+	Indice c;
+	for (int i = 0; i < indexCiudades.size(); ++i)
+		if(rrn == indexCiudades.at(i).RRN_index){
+			return indexCiudades.at(i);
+		}
+	return c;
+}
+
+IndiceClien Index::clienteRRN(int rrn, Cliente client){
+
+}
+
+IndiceClien Index::lineaRRN(int rrn, LineaxCliente linea){
+	IndiceClien c;
+	for (int i = 0; i < indexClientesOLineas.size(); ++i)
+		if(rrn == indexClientesOLineas.at(i).RRN_index)
+			return indexClientesOLineas.at(i);
+	return c;
 }
