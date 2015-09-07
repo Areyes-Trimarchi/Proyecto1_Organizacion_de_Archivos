@@ -245,19 +245,25 @@ void Index::createClientes(char* nombre){
 */
 void Index::createLineas(string nombre){
 	ifstream file;
-	file.open("lineasxcliente.bin");
+	file.open("LineaxCliente.bin");
 	if(!file.is_open()){
 		cerr << "Error al abrir el archivo." << endl;
+		cout << "Porque [utas" << endl;
 	} else{
-		file.read(reinterpret_cast<char*>(&sizeRegistros), sizeof(sizeRegistros));
-		file.read(reinterpret_cast<char*>(&availList), sizeof(availList));
+		Header head;
+
+		file.seekg(0);
+		file.read(reinterpret_cast<char*>(&head), sizeof(Header));
+		sizeRegistros = head.sizeRegistro; 
+		availList = head.availList;
 
 		int RRN;
 		vector<IndiceClien>index;
 		
+		cout << "3 sizeRegistros = " << sizeRegistros << "\tAvail = " << availList  << "\tUltimo = " << head.sizeRegistro << endl;
 		for (int i = 0; i < sizeRegistros; ++i){
 			LineaxCliente lineas;
-			file.read(reinterpret_cast<char*>(&lineas), sizeof(lineas));
+			file.read(reinterpret_cast<char*>(&lineas), sizeof(LineaxCliente));
 
 			RRN = i;
 			orderIndexLineaxCliente(index, lineas, RRN);
