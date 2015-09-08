@@ -179,12 +179,16 @@ bool Crud_Clientes::Borrar(){
 	ifstream file_cliente;
 	file_cliente.open("clientes.bin");
 	int RRN;
-	for (int i = 0; i < indice_clientes.size(); ++i)
-	{
-		if(strncmp(idCliente,indice_clientes.at(i).id_clie_index,13)==0){
-			RRN=indice_clientes.at(i).RRN_index;	
+	IndiceClien indice_clien;
+	ifstream file_indice("indexClientes.bin", ifstream::binary);
+	while (file_indice.read(reinterpret_cast<char*>(&indice_clien), sizeof(IndiceClien))){
+		
+		if(strncmp(idCliente,indice_clien.id_clie_index,13)==0){
+			RRN=indice_clien.RRN_index;	
+			break;
 		}
 	}
+	file_indice.close();
 	file_cliente.seekg(0);
 	file_cliente.read(reinterpret_cast<char*>(&head), sizeof(Header));
 	int availList=head.availList;
@@ -193,7 +197,7 @@ bool Crud_Clientes::Borrar(){
 		cout<<"El cliente que usted intenta borrar no existe "<<endl;
 	}else{
 		head.sizeRegistro=head.sizeRegistro-1;
-		int ecuacion=(sizeof(Header)+((ElementoBorrado(RRN))*sizeof(Cliente))+(sizeof(Cliente)*RRN));
+		int ecuacion=(sizeof(Header)+(sizeof(Cliente)*RRN));
 		file_cliente.seekg(ecuacion);
 		file_cliente.read(reinterpret_cast<char*>(&client), sizeof(Cliente));
 		cout<<"El cliente que esta siendo borrado es: "<<endl;
@@ -206,13 +210,7 @@ bool Crud_Clientes::Borrar(){
 			{
 				client.idCliente[i]='+';
 			}
-			for (int i = 0; i < indice_clientes.size(); ++i)
-			{
-				if(indice_clientes.at(i).RRN_index==RRN){
-					strncpy(indice_clientes.at(i).id_clie_index,client.idCliente,14);
-					break;
-				}
-			}
+			strncpy(indice_clien.id_clie_index,client.idCliente,14);
 			ReescribirArchivo(head,client,RRN);
 		}else{
 			head.availList=RRN;
@@ -229,13 +227,7 @@ bool Crud_Clientes::Borrar(){
 			{
 				client.idCliente[i]='+';
 			}
-			for (int i = 0; i < indice_clientes.size(); ++i)
-			{
-				if(indice_clientes.at(i).RRN_index==RRN){
-					strncpy(indice_clientes.at(i).id_clie_index,client.idCliente,14);
-					break;
-				}
-			}
+			strncpy(indice_clien.id_clie_index,client.idCliente,14);
 			ReescribirArchivo(head,client,RRN);
 		}
 	}
@@ -260,17 +252,20 @@ bool Crud_Clientes::Listar(){
 	file_cliente.read(reinterpret_cast<char*>(&head), sizeof(Header));
 	int sizeRegistros=head.sizeRegistro;
 	int RRN;
-	for (int i = 0; i < indice_clientes.size(); ++i)
-	{
-		RRN=indice_clientes.at(i).RRN_index;
+	IndiceClien indice_clien;
+	ifstream file_indice("indexClientes.bin", ifstream::binary);
+	while (file_indice.read(reinterpret_cast<char*>(&indice_clien), sizeof(IndiceClien))){
+		
+		RRN=indice_clien.RRN_index;
 		//cout<<"BORRADOS "<<((ElementoBorrado(RRN)*sizeof(Cliente))<<endl;
 		int ecuacion=(sizeof(Header)+(sizeof(Cliente)*RRN));
 		file_cliente.seekg(ecuacion);
 		file_cliente.read(reinterpret_cast<char*>(&client), sizeof(Cliente));
 		if(client.idCliente[0]!='*'){
 			cout<<client<<endl;
-		}	
+		}
 	}
+	file_indice.close();
 	file_cliente.close();
 
 	return true;
@@ -279,7 +274,6 @@ bool Crud_Clientes::Listar(){
 bool Crud_Clientes::BuscarIndex(){
 	Cliente client;
 	cout<<"Buscar por Indice"<<endl;
-	CargarVectorIndice();
 	char idCliente[14];
 	cout<<"Ingrese un numero de identidad para realizar la busqueda: ";
 	cin>>idCliente;
@@ -306,12 +300,16 @@ bool Crud_Clientes::BuscarIndex(){
 	ifstream file_cliente;
 	file_cliente.open("clientes.bin");
 	int RRN;
-	for (int i = 0; i < indice_clientes.size(); ++i)
-	{
-		if(strncmp(idCliente,indice_clientes.at(i).id_clie_index,13)==0){
-			RRN=indice_clientes.at(i).RRN_index;	
+	IndiceClien indice_clien;
+	ifstream file_indice("indexClientes.bin", ifstream::binary);
+	while (file_indice.read(reinterpret_cast<char*>(&indice_clien), sizeof(IndiceClien))){
+		
+		if(strncmp(idCliente,indice_clien.id_clie_index,13)==0){
+			RRN=indice_clien.RRN_index;	
+			break;
 		}
 	}
+	file_indice.close();
 	file_cliente.seekg(0);
 	file_cliente.read(reinterpret_cast<char*>(&head), sizeof(Header));
 	if(RRN<0||RRN>head.sizeRegistro-1){
@@ -375,12 +373,15 @@ bool Crud_Clientes::Reindexar(){
 }
 
 bool Crud_Clientes::VerificarIndex(char idCliente[14]){
-	for (int i = 0; i < indice_clientes.size(); ++i)
-	{
-		if(strncmp(idCliente,indice_clientes.at(i).id_clie_index,14)==0){
+	IndiceClien indice_clien;
+	ifstream file_indice("indexClientes.bin", ifstream::binary);
+	while (file_indice.read(reinterpret_cast<char*>(&indice_clien), sizeof(IndiceClien))){
+		
+		if(strncmp(idCliente,indice_clien.id_clie_index,13)==0){
 			return true;
 		}
 	}
+	file_indice.close();
 	return false;
 }
 
