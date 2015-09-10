@@ -66,22 +66,3 @@ int main(int argc, char* argv[]){
 	lineaxcliente.close();
 	return 0;
 }
- reset(char info[15]){
-	for (int i = 0; i < 15; ++i)
-	{
-		info[i]='\0';
-	}
-}
-
-void combineidCliente(char id[14],char info[15]){
-	for (int i = 0; i < 14; ++i)
-	{
-		id[i]=info[i];
-	}
-}
-void combinenumero(char num[9],char info[15]){
-	for (int i = 0; i < 9; ++i)
-	{
-		num[i]=info[i];
-	}
-}
