@@ -11,6 +11,11 @@ struct LineaxCliente{
 	char idCliente[14];
 };
 
+struct Header{
+	int availList;
+	int sizeRegistro;
+};
+
 void reset(char info[15]);
 void combineidCliente(char id[9],char info[15]);
 void combinenumero(char id[14],char info[15]);
@@ -18,69 +23,46 @@ void combinenumero(char id[14],char info[15]);
 int main(int argc, char* argv[]){
 	string texto;
 	ifstream lineaxcliente("lineasxcliente.txt");
-	ofstream file("clientes.bin", ofstream::binary);
-	
+	ofstream file("lineaxclientes.bin", ofstream::binary);
 	int sizeRegistro = 0;
 	int availList =  -1;
-
-	file.write(reinterpret_cast<char*>(&sizeRegistro), sizeof(sizeRegistro));
-	file.write(reinterpret_cast<char*>(&availList), sizeof(availList));
-	cout << "Antes = " << sizeRegistro << endl;
+	Header head;
+	head.availList=availList;
+	head.sizeRegistro=sizeRegistro;
+	file.write(reinterpret_cast<char*>(&head), sizeof(Header));
 	while (!lineaxcliente.eof()){
+		char numero[9];
+		char idCliente[14];
 		getline(lineaxcliente,texto);
 		LineaxCliente linea;
-		int coma=0;
-		char info[15];
-		int contador=0;
-		for(int i=0;i<texto.size();i++){
-			if(texto[i]==','){
-				coma++;
-				switch(coma){
-					case 1:{
-						info[contador+1]='\0';
-						combinenumero(linea.numero,info);
-						contador=0;
-						reset(info);
-						info[0]='0';
-						break;
-					}
+		int contadorcoma=0;
+		int contador_numero=0;
+		int contador_id=1;
+		idCliente[0]='0';
+		for(int i=0;i<22;i++){
+			if(texto[i]==','||contadorcoma!=0){
+				contadorcoma++;
+				if(texto[i]!=','){
+					idCliente[contador_id]=texto[i];
+					contador_id++;
 				}
 			}else{
-				info[contador]=texto[i];
-			}	
-			contador++;
-		}
-		info[contador+1]='\0';
+				numero[contador_numero]=texto[i];
+				contador_numero++;
+			}
 
-		combineidCliente(linea.idCliente,info);
-		file.write(reinterpret_cast<char*>(&linea), sizeof(linea));
-		reset(info);
+		}
+		numero[8]='\0';
+		idCliente[13]='\0';
+		strncpy(linea.numero,numero,9);
+		strncpy(linea.idCliente,idCliente,14);
+		file.write(reinterpret_cast<char*>(&linea), sizeof(LineaxCliente));
 		sizeRegistro++;
 	}
-	sizeRegistro = sizeRegistro - 1;
+	head.sizeRegistro = sizeRegistro - 1;
 	file.seekp(0);
-	cout << "Final = " << sizeRegistro << endl;
-	file.write(reinterpret_cast<char*>(&sizeRegistro), sizeof(sizeRegistro));
+	file.write(reinterpret_cast<char*>(&head), sizeof(Header));
 	file.close();
 	lineaxcliente.close();
 	return 0;
-}
-void reset(char info[15]){
-	for (int i = 0; i < 15; ++i)
-	{
-		info[i]='\0';
-	}
-}
-
-void combineidCliente(char id[14],char info[15]){
-	for (int i = 0; i < 14; ++i)
-	{
-		id[i]=info[i];
-	}
-}
-void combinenumero(char num[9],char info[15]){
-	for (int i = 0; i < 9; ++i)
-	{
-		num[i]=info[i];
-	}
 }
