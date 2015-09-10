@@ -6,7 +6,7 @@
 using namespace std;
 
 ostream& operator<<(ostream& output, const LineaxCliente& linea){
-	output << linea.idCliente << "\t" << linea.numero << endl;
+	output << "IDCLIENTE = " << linea.idCliente << "\tNUMERO = " << linea.numero << endl;
 	return output;  
 }
 istream& operator>>(istream& input, LineaxCliente& linea){
@@ -30,10 +30,10 @@ int elementoBorrado(int);
 int main(int argc, char const *argv[]){
 
 	//Index indice("indexCiudades.bin");
-	fstream file("LineaxCliente.bin", fstream::binary);
-	file.open("LineaxCliente.bin");
+	fstream file("lineaxclientes.bin", fstream::binary);
+	file.open("lineaxclientes.bin");
 	//ofstream fileSalida("ciudades.bin", ofstream::binary);
-	Index indice("indexLineaxCliente.bin");
+	Index indice("indexLineasXCliente.bin");
 
 	Header head;
 	file.seekg(0);
@@ -59,10 +59,12 @@ int main(int argc, char const *argv[]){
 			cout << "Ingrese el numero de la linea: " << endl;
 			cin >> numero;
 			cout << "Ingrese el numero de cliente de la linea: " << endl;
-			cin >> numeroCliente;
+			cin >> idCliente;
 			LineaxCliente lineaNueva;
+			cout << "Justo antes de guardar = " << numero << endl;
 			strcpy(lineaNueva.numero, numero);
 			strcpy(lineaNueva.idCliente, idCliente);
+			cout << "Justo despues imbeciles de guardar = " << lineaNueva.numero << endl;
 			indice.add(lineaNueva, sizeRegistros /*+ elementoBorrado(sizeRegistros)*/);
 			//cout << "Pos 1 = " << file.tellp() << endl;
 			if (availList == -1)
@@ -75,7 +77,7 @@ int main(int argc, char const *argv[]){
 				file.seekg(0);
 				file.seekg(ecuacion);
 				file.read(reinterpret_cast<char*>(&linea), sizeof(LineaxCliente));
-				availList = atoi(linea.name);
+				availList = atoi(linea.numero);
 				head.availList = availList;
 
 				file.seekp(0);
@@ -83,6 +85,7 @@ int main(int argc, char const *argv[]){
 			}
 			//cout << "Pos 2 = " << file.tellp() << endl;
 			file.write(reinterpret_cast<char*>(&lineaNueva), sizeof(LineaxCliente));
+			cout << "Despues = " << lineaNueva;
 			//cout << "Pos 3 = " << file.tellp() << endl;
 			file.seekp (0, file.beg);
 			//cout << "Pos 4 = " << file.tellp() << endl;
@@ -93,26 +96,26 @@ int main(int argc, char const *argv[]){
 		}
 		break;
 		case 2:{
-			cout << "\tModificar una Ciudad" << endl;
+			cout << "\tModificar una Linea" << endl;
 
 			char numero[9];
 			char numeroNUEVO[9];
-			char numeroCliente[14];
+			char idCliente[14];
 			cout << "Ingrese el numero de la linea a modificar: " << endl;
 			cin >> numero;
 			cout << "Ingrese el NUEVO numero de la linea: " << endl;
 			cin >> numeroNUEVO;
 			cout << "Ingrese el NUEVO numeroCliente de la linea: " << endl;
-			cin >> numeroCliente;
+			cin >> idCliente;
 
 			LineaxCliente lineaNueva;
-			strcpy(lineaNueva.numero, IDNUEVO);
-			strcpy(lineaNueva.numeroCliente, numeroCliente);
+			strcpy(lineaNueva.numero, numeroNUEVO);
+			strcpy(lineaNueva.idCliente, idCliente);
 
 			LineaxCliente lineaVieja;
 			strcpy(lineaVieja.numero, numero);
-			strcpy(lineaVieja.numeroCliente, "NOM");
-			IndiceClien ind = indice.get(lineaVieja);
+			strcpy(lineaVieja.idCliente, "NOM");
+			IndiceLineas ind = indice.get(lineaVieja);
 			int meter = indice.lineaRRN(ind.RRN_index, lineaVieja).RRN_index;
 			indice.remove(lineaVieja);
 			int rrn = ind.RRN_index;
@@ -143,14 +146,16 @@ int main(int argc, char const *argv[]){
 						file.seekg(0);
 						file.seekg(ecuacion);
 						file.read(reinterpret_cast<char*>(&linea), sizeof(LineaxCliente));
-						cout << linea;
+						cout << i << ": " << linea;
 					}
 				}
 				break;
 				case 2:{
 					LineaxCliente linea;
+					int cont = 0;
 					while(file.read(reinterpret_cast<char*>(&linea), sizeof(LineaxCliente))){
-						cout << linea;
+						cout << cont << ": " << linea;
+						cont++;
 					}
 				}
 				break;
@@ -162,13 +167,13 @@ int main(int argc, char const *argv[]){
 			cout << "\tEliminar una LineaxCliente" << endl;
 
 			char numero[9];
-			char numeroCliente[14];
+			char idCliente[14];
 			cout << "Ingrese el numero de la linea a eliminar: " << endl;
 			cin >> numero;
 			LineaxCliente lineaNueva;
 			strcpy(lineaNueva.numero, numero);
-			strcpy(ciudadNueva.numeroCliente, "NOM");
-			Indice ind = indice.get(lineaNueva);
+			strcpy(lineaNueva.idCliente, "NOM");
+			IndiceLineas ind = indice.get(lineaNueva);
 			//availList =  ind.RRN_index;
 			indice.remove(lineaNueva);
 			int rrn = ind.RRN_index;
@@ -197,7 +202,7 @@ int main(int argc, char const *argv[]){
 			switch(opcionBuscar){
 				case 1:{
 					char numero[9];
-					cout << "Ingrese el ID de la Ciudad que desea encontrar: " << endl;
+					cout << "Ingrese el numero de la linea que desea encontrar: " << endl;
 					cin >> numero;
 					LineaxCliente linea;
 					file.seekg(0, file.beg);
@@ -210,28 +215,28 @@ int main(int argc, char const *argv[]){
 						}
 					}
 					if(encontro)
-						cout << "Busqueda realizada con exito.\nLa ciudad que busca es: " << linea;
+						cout << "Busqueda realizada con exito.\nLa ciudad que busca es: " << linea ; 
 					else
-						cout << "La ciudad no existe en la base de datos." << endl;
+						cout << "El numero no existe en la base de datos." << endl;
 				}
 				break;
 				case 2:{
 					char numero[9];
-					cout << "Ingrese el ID de la Ciudad que desea encontrar: " << endl;
+					cout << "Ingrese el numero de la linea que desea encontrar: " << endl;
 					cin >> numero;
 					LineaxCliente linea;
 					strcpy(linea.numero, numero);
-					strcpy(linea.name, "NOM");
-					Indice ind = indice.get(linea);
+					strcpy(linea.idCliente, "NOM");
+					IndiceLineas ind = indice.get(linea);
 					int rrn = ind.RRN_index;
 					if(rrn != -99){
 						int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * rrn) );
 						file.seekg(0);
 						file.seekg(ecuacion);
 						file.read(reinterpret_cast<char*>(&linea), sizeof(LineaxCliente));
-						cout << "Busqueda realizada con exito.\nLa ciudad que busca es: " << linea;
+						cout << "Busqueda realizada con exito.\nLa ciudad que busca es: " << linea; 
 					} else
-						cout << "La ciudad no existe en la base de datos." << endl;
+						cout << "El numero no existe en la base de datos." << endl;
 				}
 				break;
 			}

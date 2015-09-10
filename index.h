@@ -37,24 +37,55 @@ struct IndiceClien{
 	int RRN_index;
 };
 
+struct IndiceLineas{
+	char numero[9];
+	int RRN_index;
+};
+
 class Index{
 
 private:
 	unsigned int size;
 	int sizeRegistros;
 	int availList;
+	string direccion;
+	vector<Indice> indexCiudades;
+	vector<IndiceClien> indexClientes;
+	vector<IndiceLineas> indexLineas;
 public:
 	Index(string);
 	~Index();
-	bool add();
-	bool remove();
-	bool get();
+	bool add(Ciudad, int);
+	bool add(Cliente, int);
+	bool add(LineaxCliente, int);
+	bool remove(Ciudad);
+	bool remove(Cliente);
+	bool remove(LineaxCliente);
+	Indice get(Ciudad);
+	IndiceClien get(Cliente);
+	IndiceLineas get(LineaxCliente);
+	Indice at(int, Ciudad);
+	IndiceClien at(int, Cliente);
+	IndiceLineas at(int, LineaxCliente);
 	void reindex();
 	void create(string);
 	void createCiudades(string);
-	void createClientes(string);
+	void createClientes(char*);
 	void createLineas(string);
-	void orderIndexCiudad(vector<Indice>&, Ciudad, int);
+	bool orderIndexCiudad(vector<Indice>&, Ciudad, int);
 	void orderIndexCliente(vector<IndiceClien>&, Cliente, int);
-	void orderIndexLineaxCliente(vector<IndiceClien>&, LineaxCliente, int);
+	bool orderIndexLineaxCliente(vector<IndiceLineas>&, LineaxCliente, int);
+	int busquedaCiudad(Ciudad);
+	int busquedaClientes(Cliente);
+	int busquedaLineas(LineaxCliente);
+	void load();
+	void cargarCiudades();
+	void cargarClientes();
+	void cargarLineas();
+	void guardarCiudades();
+	void guardarClientes();
+	void guardarLineas();
+	Indice ciudadRRN(int, Ciudad);
+	IndiceClien clienteRRN(int, Cliente);
+	IndiceLineas lineaRRN(int, LineaxCliente);
 };
