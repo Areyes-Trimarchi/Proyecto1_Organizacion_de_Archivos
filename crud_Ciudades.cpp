@@ -24,7 +24,6 @@ istream& operator>>(istream& input, Ciudad& city){
 int elementoBorrado(int);
 
 int main(int argc, char const *argv[]){
-
 	fstream file("ciudades.bin", fstream::binary);
 	file.open("ciudades.bin");
 	//ofstream fileSalida("ciudades.bin", ofstream::binary);
@@ -59,7 +58,6 @@ int main(int argc, char const *argv[]){
 			ciudadNueva.idCiudad = ID;
 			strcpy(ciudadNueva.name, NOM);
 			bool continuarGuardando = indice.add(ciudadNueva, sizeRegistros /*+ elementoBorrado(sizeRegistros)*/);
-			//cout << "Pos 1 = " << file.tellp() << endl;
 			if(continuarGuardando){
 				if (availList == -1)
 					file.seekp (0, file.end);
@@ -128,6 +126,7 @@ int main(int argc, char const *argv[]){
 			int opcionListar;
 			cout << "1)Sin Borrados\n2)Con Borrados" << endl << endl;
 			cin >> opcionListar;
+			//indice.create("indexCiudades.bin");		<-----------
 			switch(opcionListar){
 				case 1:{
 					Ciudad city;
@@ -180,12 +179,12 @@ int main(int argc, char const *argv[]){
 
 				file.write(reinterpret_cast<char*>(&borrada), sizeof(Ciudad));
 				sizeRegistros--;
-				head.sizeRegistro = sizeRegistros;
+				head.sizeRegistro = head.sizeRegistro - 1;
 				availList =  ind.RRN_index;
 				head.availList = availList;
 				file.seekp (0, file.beg);
 				file.write(reinterpret_cast<char*>(&head), sizeof(Header));
-			{
+			}
 		}
 		break;
 		case 5:{
