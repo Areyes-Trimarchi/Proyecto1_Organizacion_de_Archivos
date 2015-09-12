@@ -48,12 +48,12 @@ private:
 	unsigned int size;
 	int sizeRegistros;
 	int availList;
-	string direccion;
+	char direccion[14];
 	vector<Indice> indexCiudades;
 	vector<IndiceClien> indexClientes;
 	vector<IndiceLineas> indexLineas;
 public:
-	Index(string);
+	Index(char[14]);
 	~Index();
 	bool add(Ciudad, int);
 	bool add(Cliente, int);
@@ -68,7 +68,7 @@ public:
 	IndiceClien at(int, Cliente);
 	IndiceLineas at(int, LineaxCliente);
 	void reindex();
-	void create(string);
+	void create(char [14]);
 	void createCiudades(string);
 	void createClientes(char*);
 	void createLineas(string);
@@ -88,4 +88,5 @@ public:
 	Indice ciudadRRN(int, Ciudad);
 	IndiceClien clienteRRN(int, Cliente);
 	IndiceLineas lineaRRN(int, LineaxCliente);
+	void imprimirIndexLineas();
 };

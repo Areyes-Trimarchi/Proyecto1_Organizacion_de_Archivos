@@ -10,10 +10,10 @@
 using namespace std;
 
 
-/*ostream& operator<<(ostream& output, const Indice& city){
-	output << city.id_ciu_index << "\t" << city.RRN_index << endl;
+ostream& operator<<(ostream& output, const IndiceLineas& city){
+	output << "idCliente = " << city.numero << "\t" << "\tRRN = " << city.RRN_index << endl;
 	return output;  
-}*/
+}
 /*ostream& operator<<(ostream& output, const LineaxCliente& city){
 	output << city.numero << "\t" << city.idCliente << endl;
 	return output;  
@@ -22,13 +22,13 @@ using namespace std;
 	Constructor
 	Tiene que verificar si existe indice, sino lo crea; si ya existia previamente, lo carga
 */
-Index::Index(string nombre){
-	this->direccion = nombre;
+Index::Index(char nombre[14]){
+	strncpy(direccion,nombre,14);
 	ifstream file;
-	file.open(direccion);
+	file.open(nombre);
 
 	if(!file.good()){
-		cout << "No existe" << endl;
+		cout << "Creando" << endl;
 		create(direccion);
 	} else{
 		cout << "Cargando" << endl;
@@ -80,23 +80,32 @@ bool Index::add(LineaxCliente linea, int rrn){
 */
 bool Index::remove(Ciudad city){
 	int RRN = busquedaCiudad(city);
-	indexCiudades.erase(indexCiudades.begin() + RRN);
-	guardarCiudades();
-	return true;
+	if (  RRN != -1 ){
+		indexCiudades.erase(indexCiudades.begin() + RRN);
+		guardarCiudades();
+		return true;
+	} else
+		return false;
 }
 
 bool Index::remove(Cliente client){
 	int RRN = busquedaClientes(client);
-	indexClientes.erase(indexClientes.begin() + RRN);
-	guardarClientes();
-	return true;
+	if(RRN != -1){
+		indexClientes.erase(indexClientes.begin() + RRN);
+		guardarClientes();
+		return true;
+	} else
+		return false;
 }
 
 bool Index::remove(LineaxCliente linea){
 	int RRN = busquedaLineas(linea);
-	indexLineas.erase(indexLineas.begin() + RRN);
-	guardarLineas();
-	return true;
+	if ( RRN != -1 ){
+		indexLineas.erase(indexLineas.begin() + RRN);
+		guardarLineas();
+		return true;
+	} else
+		return false;
 }
 
 /*
@@ -170,12 +179,12 @@ void Index::reindex(){
 /*
 	Metodo para crear el indice por si no ha sido creado
 */
-void Index::create(string nombre){
+void Index::create(char nombre[14]){
 	if(nombre ==  "indexCiudades.bin")
 		createCiudades(nombre);
 	else if(nombre ==  "indexClientes.bin"){
 		char* hola;
-		createClientes( strcpy(hola, nombre.c_str()) );
+		createClientes( nombre );
 	}
 	else
 		createLineas(nombre);
@@ -392,7 +401,7 @@ bool Index::orderIndexLineaxCliente(vector<IndiceLineas>& indexC, LineaxCliente 
   	it = indexC.begin();
 	if(tamano == 0)
 		indexC.push_back(indice);
-	else{
+	else if(strncmp (line.numero, "-99", 9) != 0){
 		int primerIndice = 0, ultimoIndice = tamano - 1, centro;
 		while (primerIndice <= ultimoIndice)
 	    {
@@ -475,11 +484,11 @@ int Index::busquedaClientes(Cliente client){
 	Metodo para buscar una linea x cliente, retorna la posicion en el vector
 */
 int Index::busquedaLineas(LineaxCliente linea){
-	int primerIndice = 0, ultimoIndice = indexCiudades.size() - 1, centro;
+	int primerIndice = 0, ultimoIndice = indexLineas.size() - 1, centro;
 
 	while (primerIndice <= ultimoIndice)
     {
-    	centro = (ultimoIndice + primerIndice)/2;
+    	centro = (ultimoIndice + primerIndice)/2; 
 	    if (strncmp(indexLineas.at(centro).numero, linea.numero, 9) == 0 ) {
 			return centro;
 		}
@@ -513,6 +522,7 @@ void Index::cargarCiudades(){
 		cerr << "Error al abrir el archivo." << endl;
 	} else{
 		Indice indi;
+		indexCiudades.clear();
 		while(file.read(reinterpret_cast<char*>(&indi), sizeof(Indice))){
 			indexCiudades.push_back(indi);
 		}
@@ -526,6 +536,7 @@ void Index::cargarClientes(){
 		cerr << "Error al abrir el archivo." << endl;
 	} else{
 		IndiceClien indi;
+		indexClientes.clear();
 		while(file.read(reinterpret_cast<char*>(&indi), sizeof(IndiceClien))){
 			indexClientes.push_back(indi);
 		}
@@ -539,6 +550,7 @@ void Index::cargarLineas(){
 		cerr << "Error al abrir el archivo." << endl;
 	} else{
 		IndiceLineas indi;
+		indexLineas.clear();
 		while(file.read(reinterpret_cast<char*>(&indi), sizeof(IndiceLineas))){
 			indexLineas.push_back(indi);
 		}
@@ -588,4 +600,10 @@ IndiceLineas Index::lineaRRN(int rrn, LineaxCliente linea){
 		if(rrn == indexLineas.at(i).RRN_index)
 			return indexLineas.at(i);
 	return c;
+}
+
+void Index::imprimirIndexLineas(){
+	for (int i = 0; i < indexLineas.size(); ++i){
+		cout << i << ": " << indexLineas.at(i);
+	}
 }

@@ -2,6 +2,9 @@
 #include <iostream>
 #include <stdlib.h>
 #include <fstream>
+#include <cstring>		
+#include <string>		
+#include <sstream>
 
 using namespace std;
 
@@ -29,7 +32,6 @@ int elementoBorrado(int);
 
 int main(int argc, char const *argv[]){
 
-	//Index indice("indexCiudades.bin");
 	fstream file("lineaxclientes.bin", fstream::binary);
 	file.open("lineaxclientes.bin");
 	//ofstream fileSalida("ciudades.bin", ofstream::binary);
@@ -56,43 +58,43 @@ int main(int argc, char const *argv[]){
 
 			char numero[9];
 			char idCliente[14];
-			cout << "Ingrese el numero de la linea: " << endl;
+			cout << "Ingrese el numero de la linea telefonica: " << endl;
 			cin >> numero;
 			cout << "Ingrese el numero de cliente de la linea: " << endl;
 			cin >> idCliente;
 			LineaxCliente lineaNueva;
-			cout << "Justo antes de guardar = " << numero << endl;
 			strcpy(lineaNueva.numero, numero);
 			strcpy(lineaNueva.idCliente, idCliente);
-			cout << "Justo despues imbeciles de guardar = " << lineaNueva.numero << endl;
-			indice.add(lineaNueva, sizeRegistros /*+ elementoBorrado(sizeRegistros)*/);
-			//cout << "Pos 1 = " << file.tellp() << endl;
-			if (availList == -1)
-				file.seekp (0, file.end);
-			else{
-				LineaxCliente linea;
-				//int rrn = indice.ciudadRRN(availList, city).RRN_index;
-				//cout << "Avail = " << availList << "\tRRN = " << rrn << endl;
-				int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * availList) );
-				file.seekg(0);
-				file.seekg(ecuacion);
-				file.read(reinterpret_cast<char*>(&linea), sizeof(LineaxCliente));
-				availList = atoi(linea.numero);
-				head.availList = availList;
 
-				file.seekp(0);
-				file.seekp(ecuacion);
+			bool continuarGuardando = indice.add(lineaNueva, sizeRegistros /*+ elementoBorrado(sizeRegistros)*/);
+			//cout << "Pos 1 = " << file.tellp() << endl;
+			if (continuarGuardando){
+				if (availList == -1)
+					file.seekp (0, file.end);
+				else{
+					LineaxCliente linea;
+					//int rrn = indice.ciudadRRN(availList, city).RRN_index;
+					//cout << "Avail = " << availList << "\tRRN = " << rrn << endl;
+					int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(LineaxCliente) * availList) );
+					file.seekg(0);
+					file.seekg(ecuacion);
+					file.read(reinterpret_cast<char*>(&linea), sizeof(LineaxCliente));
+					availList = atoi(linea.numero);
+					head.availList = availList;
+
+					file.seekp(0);
+					file.seekp(ecuacion);
+				}
+				//cout << "Pos 2 = " << file.tellp() << endl;
+				file.write(reinterpret_cast<char*>(&lineaNueva), sizeof(LineaxCliente));
+				//cout << "Pos 3 = " << file.tellp() << endl;
+				file.seekp (0, file.beg);
+				//cout << "Pos 4 = " << file.tellp() << endl;
+				sizeRegistros++;
+				head.sizeRegistro = head.sizeRegistro + 1;
+				file.write(reinterpret_cast<char*>(&head), sizeof(Header));
+				//cout << "Pos 5 = " << file.tellp() << endl;
 			}
-			//cout << "Pos 2 = " << file.tellp() << endl;
-			file.write(reinterpret_cast<char*>(&lineaNueva), sizeof(LineaxCliente));
-			cout << "Despues = " << lineaNueva;
-			//cout << "Pos 3 = " << file.tellp() << endl;
-			file.seekp (0, file.beg);
-			//cout << "Pos 4 = " << file.tellp() << endl;
-			sizeRegistros++;
-			head.sizeRegistro = head.sizeRegistro + 1;
-			file.write(reinterpret_cast<char*>(&head), sizeof(Header));
-			//cout << "Pos 5 = " << file.tellp() << endl;
 		}
 		break;
 		case 2:{
@@ -101,9 +103,9 @@ int main(int argc, char const *argv[]){
 			char numero[9];
 			char numeroNUEVO[9];
 			char idCliente[14];
-			cout << "Ingrese el numero de la linea a modificar: " << endl;
+			cout << "Ingrese el numero de la linea telefonica a modificar: " << endl;
 			cin >> numero;
-			cout << "Ingrese el NUEVO numero de la linea: " << endl;
+			cout << "Ingrese el NUEVO numero de la linea telefonica: " << endl;
 			cin >> numeroNUEVO;
 			cout << "Ingrese el NUEVO numeroCliente de la linea: " << endl;
 			cin >> idCliente;
@@ -119,7 +121,7 @@ int main(int argc, char const *argv[]){
 			int meter = indice.lineaRRN(ind.RRN_index, lineaVieja).RRN_index;
 			indice.remove(lineaVieja);
 			int rrn = ind.RRN_index;
-			int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * rrn) );
+			int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(LineaxCliente) * rrn) );
 			indice.add(lineaNueva, meter);
 
 			file.seekp(0);
@@ -133,20 +135,19 @@ int main(int argc, char const *argv[]){
 
 			int opcionListar;
 			cout << "1)Sin Borrados\n2)Con Borrados" << endl << endl;
-			cin >> opcionListar;
+			cin >> opcionListar;//11416   //499
 			switch(opcionListar){
 				case 1:{
 					LineaxCliente linea;
 					int rrn;
-					cout << "sizeRegistros= " << sizeRegistros << endl;
 					for (int i = 0; i < sizeRegistros ; ++i){
 						rrn = indice.at(i, linea).RRN_index;
 						int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(LineaxCliente) * rrn) );
-						//cout << "Ecuacion = " << ecuacion << "\tRRN = " << rrn << endl;
+						//cout << "Ecuacion = " << ecuacion << "\tRRN = " << rrn;
 						file.seekg(0);
 						file.seekg(ecuacion);
 						file.read(reinterpret_cast<char*>(&linea), sizeof(LineaxCliente));
-						cout << i << ": " << linea;
+						cout << linea;
 					}
 				}
 				break;
@@ -168,31 +169,42 @@ int main(int argc, char const *argv[]){
 
 			char numero[9];
 			char idCliente[14];
-			cout << "Ingrese el numero de la linea a eliminar: " << endl;
+			cout << "Ingrese el numero de la linea telefonica a eliminar: " << endl;
 			cin >> numero;
 			LineaxCliente lineaNueva;
 			strcpy(lineaNueva.numero, numero);
 			strcpy(lineaNueva.idCliente, "NOM");
 			IndiceLineas ind = indice.get(lineaNueva);
+			cout << "RRN borrar = " << ind.RRN_index << endl;
 			//availList =  ind.RRN_index;
-			indice.remove(lineaNueva);
-			int rrn = ind.RRN_index;
-			int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * rrn) );
-			file.seekp(0);
-			file.seekp(ecuacion);
-			LineaxCliente lineaVieja;
+			bool borrar = indice.remove(lineaNueva);
+			if (borrar){
+				cout << "Entro = " << lineaNueva.numero << endl;
+				int rrn = ind.RRN_index;
+				int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(LineaxCliente) * rrn) );
+				file.seekp(0);
+				file.seekp(ecuacion);
+				cout << "Ecuacion = " << ecuacion << endl;
+				LineaxCliente lineaVieja;
 
-			string s = to_string(-99);
-			char const *pchar = s.c_str();
-			strcpy(lineaVieja.numero, pchar);
+				strcpy(lineaVieja.numero, "-99");
+				stringstream ss;
+				ss<<availList;
 
-			file.write(reinterpret_cast<char*>(&lineaVieja), sizeof(LineaxCliente));
-			sizeRegistros--;
-			head.sizeRegistro = sizeRegistros - 1;
-			availList =  ind.RRN_index;
-			head.availList = availList;
-			file.seekp (0, file.beg);
-			file.write(reinterpret_cast<char*>(&head), sizeof(Header));
+				//strcpy(lineaVieja.numero, "-99");
+				string s = ss.str();
+				char const *pchar = s.c_str();
+				strcpy(lineaVieja.idCliente, pchar);
+
+
+				file.write(reinterpret_cast<char*>(&lineaVieja), sizeof(LineaxCliente));
+				sizeRegistros--;
+				head.sizeRegistro = sizeRegistros;
+				availList =  ind.RRN_index;
+				head.availList = availList;
+				file.seekp (0, file.beg);
+				file.write(reinterpret_cast<char*>(&head), sizeof(Header));
+			}
 		}
 		break;
 		case 5:{
@@ -202,22 +214,22 @@ int main(int argc, char const *argv[]){
 			switch(opcionBuscar){
 				case 1:{
 					char numero[9];
-					cout << "Ingrese el numero de la linea que desea encontrar: " << endl;
+					cout << "Ingrese el numero de la linea telefonica que desea encontrar: " << endl;
 					cin >> numero;
 					LineaxCliente linea;
 					file.seekg(0, file.beg);
 					file.read(reinterpret_cast<char*>(&head), sizeof(Header));
 					bool encontro = false;
 					while(file.read(reinterpret_cast<char*>(&linea), sizeof(LineaxCliente))){
-						if(numero == linea.numero){
+						if(strncmp (numero, linea.numero, 9) == 0 ){
 							encontro = true;
 							break;
 						}
 					}
 					if(encontro)
-						cout << "Busqueda realizada con exito.\nLa ciudad que busca es: " << linea ; 
+						cout << "Busqueda realizada con exito.\nLa linea telefonica que busca es: " << linea ; 
 					else
-						cout << "El numero no existe en la base de datos." << endl;
+						cout << "La linea telefonica no existe en la base de datos." << endl;
 				}
 				break;
 				case 2:{
@@ -229,14 +241,16 @@ int main(int argc, char const *argv[]){
 					strcpy(linea.idCliente, "NOM");
 					IndiceLineas ind = indice.get(linea);
 					int rrn = ind.RRN_index;
+					file.seekg(0, file.beg);
+					file.read(reinterpret_cast<char*>(&head), sizeof(Header));
 					if(rrn != -99){
-						int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * rrn) );
+						int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(LineaxCliente) * rrn) );
 						file.seekg(0);
 						file.seekg(ecuacion);
 						file.read(reinterpret_cast<char*>(&linea), sizeof(LineaxCliente));
-						cout << "Busqueda realizada con exito.\nLa ciudad que busca es: " << linea; 
+						cout << "Busqueda realizada con exito.\nLa linea telefonica que busca es: " << linea; 
 					} else
-						cout << "El numero no existe en la base de datos." << endl;
+						cout << "La linea telefonica no existe en la base de datos." << endl;
 				}
 				break;
 			}
