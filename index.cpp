@@ -10,22 +10,25 @@
 using namespace std;
 
 
-/*ostream& operator<<(ostream& output, const Indice& city){
-	output << city.id_ciu_index << "\t" << city.RRN_index << endl;
+ostream& operator<<(ostream& output, const IndiceLineas& city){
+	output << "idCliente = " << city.numero << "\t" << "\tRRN = " << city.RRN_index << endl;
 	return output;  
-}*/
-
+}
+/*ostream& operator<<(ostream& output, const LineaxCliente& city){
+	output << city.numero << "\t" << city.idCliente << endl;
+	return output;  
+}
 /*
 	Constructor
 	Tiene que verificar si existe indice, sino lo crea; si ya existia previamente, lo carga
 */
-Index::Index(string nombre){
-	this->direccion = nombre;
+Index::Index(char nombre[14]){
+	strncpy(direccion,nombre,14);
 	ifstream file;
-	file.open(direccion);
+	file.open(nombre);
 
 	if(!file.good()){
-		cout << "No existe" << endl;
+		cout << "Creando" << endl;
 		create(direccion);
 	} else{
 		cout << "Cargando" << endl;
@@ -43,21 +46,32 @@ Index::~Index(){
 	Verifica que tipo agrega y funciona con ek metodo apropiado por tipo
 */
 bool Index::add(Ciudad city, int rrn){
-	orderIndexCiudad(indexCiudades, city, rrn);
+	bool guardar;
+	guardar = orderIndexCiudad(indexCiudades, city, rrn);
 	guardarCiudades();
-	return true;
+	cargarCiudades();
+	if(guardar)
+		return true;
+	else
+		return false;
 }
 
 bool Index::add(Cliente client, int rrn){
-	orderIndexCliente(indexClientesOLineas, client, rrn);
+	orderIndexCliente(indexClientes, client, rrn);
 	guardarClientes();
+	cargarClientes();
 	return true;
 }
 
 bool Index::add(LineaxCliente linea, int rrn){
-	orderIndexLineaxCliente(indexClientesOLineas, linea, rrn);
+	bool guardar;
+	guardar = orderIndexLineaxCliente(indexLineas, linea, rrn);
 	guardarLineas();
-	return true;
+	cargarLineas();
+	if(guardar)
+		return true;
+	else
+		return false;
 }
 
 /*
@@ -66,23 +80,32 @@ bool Index::add(LineaxCliente linea, int rrn){
 */
 bool Index::remove(Ciudad city){
 	int RRN = busquedaCiudad(city);
-	indexCiudades.erase(indexCiudades.begin() + RRN);
-	guardarCiudades();
-	return true;
+	if (  RRN != -1 ){
+		indexCiudades.erase(indexCiudades.begin() + RRN);
+		guardarCiudades();
+		return true;
+	} else
+		return false;
 }
 
 bool Index::remove(Cliente client){
 	int RRN = busquedaClientes(client);
-	indexClientesOLineas.erase(indexClientesOLineas.begin() + RRN);
-	guardarClientes();
-	return true;
+	if(RRN != -1){
+		indexClientes.erase(indexClientes.begin() + RRN);
+		guardarClientes();
+		return true;
+	} else
+		return false;
 }
 
 bool Index::remove(LineaxCliente linea){
 	int RRN = busquedaLineas(linea);
-	indexClientesOLineas.erase(indexClientesOLineas.begin() + RRN);
-	guardarLineas();
-	return true;
+	if ( RRN != -1 ){
+		indexLineas.erase(indexLineas.begin() + RRN);
+		guardarLineas();
+		return true;
+	} else
+		return false;
 }
 
 /*
@@ -108,7 +131,7 @@ IndiceClien Index::get(Cliente client){
 	IndiceClien i;
 	i.RRN_index = -99;
 	if(regresar != -1)
-		return indexClientesOLineas.at(regresar);
+		return indexClientes.at(regresar);
 	else
 		return i;
 }
@@ -116,13 +139,13 @@ IndiceClien Index::get(Cliente client){
 /*
 	Retornar una linea x cliente es de tipo IndiceClien
 */
-IndiceClien Index::get(LineaxCliente linea){
+IndiceLineas Index::get(LineaxCliente linea){
 	int regresar;
 	regresar = busquedaLineas(linea);
-	IndiceClien i;
+	IndiceLineas i;
 	i.RRN_index = -99;
 	if(regresar != -1)
-		return indexClientesOLineas.at(regresar);
+		return indexLineas.at(regresar);
 	else
 		return i;
 }
@@ -138,15 +161,15 @@ Indice Index::at(int pos, Ciudad city){
 	Retornar un cliente en base al numero
 */
 IndiceClien Index::at(int pos, Cliente client){
-	return indexClientesOLineas.at(pos);
+	return indexClientes.at(pos);
 
 }
 
 /*
 	Retornar una linea x cliente en base al numero
 */
-IndiceClien Index::at(int pos, LineaxCliente linea){
-	return indexClientesOLineas.at(pos);
+IndiceLineas Index::at(int pos, LineaxCliente linea){
+	return indexLineas.at(pos);
 }
 
 void Index::reindex(){
@@ -156,12 +179,12 @@ void Index::reindex(){
 /*
 	Metodo para crear el indice por si no ha sido creado
 */
-void Index::create(string nombre){
+void Index::create(char nombre[14]){
 	if(nombre ==  "indexCiudades.bin")
 		createCiudades(nombre);
 	else if(nombre ==  "indexClientes.bin"){
 		char* hola;
-		createClientes( strcpy(hola, nombre.c_str()) );
+		createClientes( nombre );
 	}
 	else
 		createLineas(nombre);
@@ -245,10 +268,9 @@ void Index::createClientes(char* nombre){
 */
 void Index::createLineas(string nombre){
 	ifstream file;
-	file.open("LineaxCliente.bin");
+	file.open("lineaxclientes.bin");
 	if(!file.is_open()){
 		cerr << "Error al abrir el archivo." << endl;
-		cout << "Porque [utas" << endl;
 	} else{
 		Header head;
 
@@ -258,7 +280,7 @@ void Index::createLineas(string nombre){
 		availList = head.availList;
 
 		int RRN;
-		vector<IndiceClien>index;
+		vector<IndiceLineas> index;
 		
 		cout << "3 sizeRegistros = " << sizeRegistros << "\tAvail = " << availList  << "\tUltimo = " << head.sizeRegistro << endl;
 		for (int i = 0; i < sizeRegistros; ++i){
@@ -271,7 +293,7 @@ void Index::createLineas(string nombre){
 		}
 		ofstream salida("indexLineasXCliente.bin", ofstream::binary);
 		for (int i = 0; i < index.size(); i++){
-			salida.write(reinterpret_cast<const char*> (&index.at(i)), sizeof(IndiceClien));
+			salida.write(reinterpret_cast<const char*> (&index.at(i)), sizeof(IndiceLineas));
 		}
 		salida.close();
 	}
@@ -281,7 +303,7 @@ void Index::createLineas(string nombre){
 /*
 	Ordena el vector del indice de las ciudades
 */
-void Index::orderIndexCiudad(vector<Indice>& indexC, Ciudad city, int RRN){
+bool Index::orderIndexCiudad(vector<Indice>& indexC, Ciudad city, int RRN){
 	int tamano = indexC.size();
 	Indice indice;
 	indice.id_ciu_index = city.idCiudad;
@@ -298,7 +320,8 @@ void Index::orderIndexCiudad(vector<Indice>& indexC, Ciudad city, int RRN){
 	    {
 	    	centro = (ultimoIndice + primerIndice)/2;
 		    if (indexC.at(centro).id_ciu_index == city.idCiudad){
-				indexC.insert(it + centro, indice);
+				cerr<<"Ya existe ese id"<<endl;
+				return false;
 			}
 		    else{
 		 		if (city.idCiudad < indexC.at(centro).id_ciu_index){
@@ -319,6 +342,7 @@ void Index::orderIndexCiudad(vector<Indice>& indexC, Ciudad city, int RRN){
 	    }
 	}
 	indexCiudades = indexC;
+	return true;
 }
 
 /*
@@ -342,6 +366,7 @@ void Index::orderIndexCliente(vector<IndiceClien>& indexC, Cliente client, int R
 	    		centro = (ultimoIndice + primerIndice)/2;
 	    		if (strncmp(indexC.at(centro).id_clie_index,client.idCliente,14)==0){
 				cerr<<"Ya existe ese id"<<endl;
+				break;
 			}
 	    		else{
  				if (strncmp(client.idCliente,indexC.at(centro).id_clie_index,14)<0){
@@ -366,27 +391,27 @@ void Index::orderIndexCliente(vector<IndiceClien>& indexC, Cliente client, int R
 /*
 	Ordena el vector del indice de las lineas x cliente
 */
-void Index::orderIndexLineaxCliente(vector<IndiceClien>& indexC, LineaxCliente line, int RRN){
+bool Index::orderIndexLineaxCliente(vector<IndiceLineas>& indexC, LineaxCliente line, int RRN){
 	int tamano = indexC.size();
-	IndiceClien indice;
-	strcpy(indice.id_clie_index, line.idCliente);
+	IndiceLineas indice;
+	strcpy(indice.numero, line.numero);
 	indice.RRN_index = RRN;
 
-	vector<IndiceClien>::iterator it;
+	vector<IndiceLineas>::iterator it;
   	it = indexC.begin();
-
 	if(tamano == 0)
 		indexC.push_back(indice);
-	else{
+	else if(strncmp (line.numero, "-99", 9) != 0){
 		int primerIndice = 0, ultimoIndice = tamano - 1, centro;
 		while (primerIndice <= ultimoIndice)
 	    {
 	    	centro = (ultimoIndice + primerIndice)/2;
-		    if ( strncmp(indexC.at(centro).id_clie_index, line.idCliente, 14) == 0 ){
-				indexC.insert(it + centro, indice);
+		    if ( strncmp(indexC.at(centro).numero, line.numero, 9) == 0 ){
+				cerr<<"Ya existe ese id"<<endl;
+				return false;
 			}
 		    else{
-		 		if ( strncmp(line.idCliente, indexC.at(centro).id_clie_index, 14) == 0 ){
+		 		if ( strncmp(line.numero, indexC.at(centro).numero, 9) < 0 ){
 		   			ultimoIndice=centro-1;
 		   			if(ultimoIndice < 0)
 		   				indexC.insert(it, indice);
@@ -403,7 +428,8 @@ void Index::orderIndexLineaxCliente(vector<IndiceClien>& indexC, LineaxCliente l
 		   	}
 	    }
 	}
-	indexClientesOLineas = indexC;
+	indexLineas = indexC;
+	return true;
 }
 
 /*
@@ -439,11 +465,11 @@ int Index::busquedaClientes(Cliente client){
 	while (primerIndice <= ultimoIndice)
     {
     	centro = (ultimoIndice + primerIndice)/2;
-	    if (strncmp(indexClientesOLineas.at(centro).id_clie_index, client.idCliente, 14) == 0 ){
+	    if (strncmp(indexClientes.at(centro).id_clie_index, client.idCliente, 14) == 0 ){
 			return centro;
 		}
 	    else{
-	 		if (strncmp(client.idCliente, indexClientesOLineas.at(centro).id_clie_index, 14) < 0 ){
+	 		if (strncmp(client.idCliente, indexClientes.at(centro).id_clie_index, 14) < 0 ){
 	   			ultimoIndice=centro-1;
 	   		}
 	 		else{
@@ -458,16 +484,16 @@ int Index::busquedaClientes(Cliente client){
 	Metodo para buscar una linea x cliente, retorna la posicion en el vector
 */
 int Index::busquedaLineas(LineaxCliente linea){
-	int primerIndice = 0, ultimoIndice = indexCiudades.size() - 1, centro;
+	int primerIndice = 0, ultimoIndice = indexLineas.size() - 1, centro;
 
 	while (primerIndice <= ultimoIndice)
     {
-    	centro = (ultimoIndice + primerIndice)/2;
-	    if (strncmp(indexClientesOLineas.at(centro).id_clie_index, linea.idCliente, 14) == 0 ){
+    	centro = (ultimoIndice + primerIndice)/2; 
+	    if (strncmp(indexLineas.at(centro).numero, linea.numero, 9) == 0 ) {
 			return centro;
 		}
 	    else{
-	 		if (strncmp(linea.idCliente, indexClientesOLineas.at(centro).id_clie_index, 14) < 0 ){
+	 		if (strncmp(linea.numero, indexLineas.at(centro).numero, 9) < 0 ){
 	   			ultimoIndice=centro-1;
 	   		}
 	 		else{
@@ -496,6 +522,7 @@ void Index::cargarCiudades(){
 		cerr << "Error al abrir el archivo." << endl;
 	} else{
 		Indice indi;
+		indexCiudades.clear();
 		while(file.read(reinterpret_cast<char*>(&indi), sizeof(Indice))){
 			indexCiudades.push_back(indi);
 		}
@@ -509,8 +536,9 @@ void Index::cargarClientes(){
 		cerr << "Error al abrir el archivo." << endl;
 	} else{
 		IndiceClien indi;
+		indexClientes.clear();
 		while(file.read(reinterpret_cast<char*>(&indi), sizeof(IndiceClien))){
-			indexClientesOLineas.push_back(indi);
+			indexClientes.push_back(indi);
 		}
 	}
 }
@@ -521,9 +549,10 @@ void Index::cargarLineas(){
 	if(file.fail()){
 		cerr << "Error al abrir el archivo." << endl;
 	} else{
-		IndiceClien indi;
-		while(file.read(reinterpret_cast<char*>(&indi), sizeof(IndiceClien))){
-			indexClientesOLineas.push_back(indi);
+		IndiceLineas indi;
+		indexLineas.clear();
+		while(file.read(reinterpret_cast<char*>(&indi), sizeof(IndiceLineas))){
+			indexLineas.push_back(indi);
 		}
 	}
 }
@@ -538,16 +567,16 @@ void Index::guardarCiudades(){
 
 void Index::guardarClientes(){
 	ofstream salida("indexClientes.bin", ofstream::binary);
-	for (int i = 0; i < indexClientesOLineas.size(); i++){
-		salida.write(reinterpret_cast<const char*> (&indexClientesOLineas.at(i)), sizeof(IndiceClien));
+	for (int i = 0; i < indexClientes.size(); i++){
+		salida.write(reinterpret_cast<const char*> (&indexClientes.at(i)), sizeof(IndiceClien));
 	}
 	salida.close();
 }
 
 void Index::guardarLineas(){
 	ofstream salida("indexLineasXCliente.bin", ofstream::binary);
-	for (int i = 0; i < indexClientesOLineas.size(); i++){
-		salida.write(reinterpret_cast<const char*> (&indexClientesOLineas.at(i)), sizeof(IndiceClien));
+	for (int i = 0; i < indexLineas.size(); i++){
+		salida.write(reinterpret_cast<const char*> (&indexLineas.at(i)), sizeof(IndiceLineas));
 	}
 	salida.close();
 }
@@ -565,10 +594,16 @@ IndiceClien Index::clienteRRN(int rrn, Cliente client){
 
 }
 
-IndiceClien Index::lineaRRN(int rrn, LineaxCliente linea){
-	IndiceClien c;
-	for (int i = 0; i < indexClientesOLineas.size(); ++i)
-		if(rrn == indexClientesOLineas.at(i).RRN_index)
-			return indexClientesOLineas.at(i);
+IndiceLineas Index::lineaRRN(int rrn, LineaxCliente linea){
+	IndiceLineas c;
+	for (int i = 0; i < indexLineas.size(); ++i)
+		if(rrn == indexLineas.at(i).RRN_index)
+			return indexLineas.at(i);
 	return c;
+}
+
+void Index::imprimirIndexLineas(){
+	for (int i = 0; i < indexLineas.size(); ++i){
+		cout << i << ": " << indexLineas.at(i);
+	}
 }
