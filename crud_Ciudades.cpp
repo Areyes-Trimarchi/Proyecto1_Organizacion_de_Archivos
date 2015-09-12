@@ -8,12 +8,12 @@
 
 using namespace std;
 
-ostream& operator<<(ostream& output, const LineaxCliente& linea){
-	output << linea.idCliente << "\t" << linea.numero << endl;
+ostream& operator<<(ostream& output, const Ciudad& city){
+	output << "IDCIUDAD = " << city.idCiudad << "\tNOMBRE = " << city.name << endl;
 	return output;  
 }
-istream& operator>>(istream& input, LineaxCliente& linea){
-	 input >> linea.idCliente >> linea.numero;
+istream& operator>>(istream& input, Ciudad& city){
+	 input >> city.idCiudad >> city.name;
 	 return input;
 }
 /*ostream& operator<<(ostream& output, const Indice& city){
@@ -25,7 +25,6 @@ int elementoBorrado(int);
 
 int main(int argc, char const *argv[]){
 
-	//Index indice("indexCiudades.bin");
 	fstream file("ciudades.bin", fstream::binary);
 	file.open("ciudades.bin");
 	//ofstream fileSalida("ciudades.bin", ofstream::binary);
@@ -59,33 +58,35 @@ int main(int argc, char const *argv[]){
 			Ciudad ciudadNueva;
 			ciudadNueva.idCiudad = ID;
 			strcpy(ciudadNueva.name, NOM);
-			indice.add(ciudadNueva, sizeRegistros /*+ elementoBorrado(sizeRegistros)*/);
+			bool continuarGuardando = indice.add(ciudadNueva, sizeRegistros /*+ elementoBorrado(sizeRegistros)*/);
 			//cout << "Pos 1 = " << file.tellp() << endl;
-			if (availList == -1)
-				file.seekp (0, file.end);
-			else{
-				Ciudad city;
-				//int rrn = indice.ciudadRRN(availList, city).RRN_index;
-				//cout << "Avail = " << availList << "\tRRN = " << rrn << endl;
-				int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * availList) );
-				file.seekg(0);
-				file.seekg(ecuacion);
-				file.read(reinterpret_cast<char*>(&city), sizeof(Ciudad));
-				availList = atoi(city.name);
-				head.availList = availList;
+			if(continuarGuardando){
+				if (availList == -1)
+					file.seekp (0, file.end);
+				else{
+					Ciudad city;
+					//int rrn = indice.ciudadRRN(availList, city).RRN_index;
+					//cout << "Avail = " << availList << "\tRRN = " << rrn << endl;
+					int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * availList) );
+					file.seekg(0);
+					file.seekg(ecuacion);
+					file.read(reinterpret_cast<char*>(&city), sizeof(Ciudad));
+					availList = atoi(city.name);
+					head.availList = availList;
 
-				file.seekp(0);
-				file.seekp(ecuacion);
+					file.seekp(0);
+					file.seekp(ecuacion);
+				}
+				//cout << "Pos 2 = " << file.tellp() << endl;
+				file.write(reinterpret_cast<char*>(&ciudadNueva), sizeof(Ciudad));
+				//cout << "Pos 3 = " << file.tellp() << endl;
+				file.seekp (0, file.beg);
+				//cout << "Pos 4 = " << file.tellp() << endl;
+				sizeRegistros++;
+				head.sizeRegistro = head.sizeRegistro + 1;
+				file.write(reinterpret_cast<char*>(&head), sizeof(Header));
+				//cout << "Pos 5 = " << file.tellp() << endl;
 			}
-			//cout << "Pos 2 = " << file.tellp() << endl;
-			file.write(reinterpret_cast<char*>(&ciudadNueva), sizeof(Ciudad));
-			//cout << "Pos 3 = " << file.tellp() << endl;
-			file.seekp (0, file.beg);
-			//cout << "Pos 4 = " << file.tellp() << endl;
-			sizeRegistros++;
-			head.sizeRegistro = head.sizeRegistro + 1;
-			file.write(reinterpret_cast<char*>(&head), sizeof(Header));
-			//cout << "Pos 5 = " << file.tellp() << endl;
 		}
 		break;
 		case 2:{
@@ -113,7 +114,6 @@ int main(int argc, char const *argv[]){
 			indice.remove(ciudadVieja);
 			int rrn = ind.RRN_index;
 			int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * rrn) );
-			cout << "meter = " << meter;
 			indice.add(ciudadNueva, meter);
 
 			file.seekp(0);
@@ -132,7 +132,6 @@ int main(int argc, char const *argv[]){
 				case 1:{
 					Ciudad city;
 					int rrn;
-					cout << "sizeRegistros= " << sizeRegistros << endl;
 					for (int i = 0; i < sizeRegistros ; ++i){
 						rrn = indice.at(i, city).RRN_index;
 						int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * rrn) );
@@ -166,24 +165,27 @@ int main(int argc, char const *argv[]){
 			strcpy(ciudadNueva.name, "NOM");
 			Indice ind = indice.get(ciudadNueva);
 			//availList =  ind.RRN_index;
-			indice.remove(ciudadNueva);
-			int rrn = ind.RRN_index;
-			int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * rrn) );
-			file.seekp(0);
-			file.seekp(ecuacion);
-			Ciudad borrada;
-			borrada.idCiudad = -99;
-			string s = to_string(availList);
-			char const *pchar = s.c_str();
-			strcpy(borrada.name, pchar);
+			bool borrar = indice.remove(ciudadNueva);
+			if(borrar){
+				int rrn = ind.RRN_index;
+				int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * rrn) );
+				file.seekp(0);
+				file.seekp(ecuacion);
+				Ciudad borrada;
 
-			file.write(reinterpret_cast<char*>(&borrada), sizeof(Ciudad));
-			sizeRegistros--;
-			head.sizeRegistro = sizeRegistros - 1;
-			availList =  ind.RRN_index;
-			head.availList = availList;
-			file.seekp (0, file.beg);
-			file.write(reinterpret_cast<char*>(&head), sizeof(Header));
+				borrada.idCiudad = -99;
+				string s = to_string(availList);
+				char const *pchar = s.c_str();
+				strcpy(borrada.name, pchar);
+
+				file.write(reinterpret_cast<char*>(&borrada), sizeof(Ciudad));
+				sizeRegistros--;
+				head.sizeRegistro = sizeRegistros;
+				availList =  ind.RRN_index;
+				head.availList = availList;
+				file.seekp (0, file.beg);
+				file.write(reinterpret_cast<char*>(&head), sizeof(Header));
+			{
 		}
 		break;
 		case 5:{
@@ -220,6 +222,8 @@ int main(int argc, char const *argv[]){
 					strcpy(city.name, "NOM");
 					Indice ind = indice.get(city);
 					int rrn = ind.RRN_index;
+					file.seekg(0, file.beg);
+					file.read(reinterpret_cast<char*>(&head), sizeof(Header));
 					if(rrn != -99){
 						int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * rrn) );
 						file.seekg(0);
