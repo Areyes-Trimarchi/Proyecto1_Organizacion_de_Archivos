@@ -4,8 +4,8 @@
 #include <cstring>
 #include <iostream>
 #include <vector>
-#include <cstring>
 #include <stdio.h>
+#include <string>	
 
 using namespace std;
 
@@ -180,9 +180,9 @@ void Index::reindex(){
 	Metodo para crear el indice por si no ha sido creado
 */
 void Index::create(char nombre[14]){
-	if(nombre ==  "indexCiudades.bin")
+	if(strncmp(nombre, "indexCiudades.bin", 14) == 0 )
 		createCiudades(nombre);
-	else if(nombre ==  "indexClientes.bin"){
+	else if(strncmp(nombre, "indexClientes.bin", 14) == 0 ){
 		char* hola;
 		createClientes( nombre );
 	}
@@ -505,9 +505,9 @@ int Index::busquedaLineas(LineaxCliente linea){
 }
 
 void Index::load(){
-	if(this->direccion ==  "indexCiudades.bin")
+	if(strncmp(this->direccion, "indexCiudades.bin", 14) == 0 )
 		cargarCiudades();
-	else if(this->direccion ==  "indexClientes.bin"){
+	else if(strncmp(this->direccion, "indexClientes.bin", 14) == 0 ){
 		char* hola;
 		cargarClientes();
 	}
