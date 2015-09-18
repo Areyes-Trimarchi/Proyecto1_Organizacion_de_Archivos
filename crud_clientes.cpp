@@ -42,7 +42,9 @@ Crud_Clientes::~Crud_Clientes(){
 }
 
 bool Crud_Clientes::Indexar(){
-	Index indice("clientes.bin");
+	char nombre_file[14];
+	strncpy(nombre_file,"indexClientes.bin",14);
+	Index indice(nombre_file);
 	ifstream file_index;
 	file_index.open("indexClientes.bin");
 	IndiceClien index;

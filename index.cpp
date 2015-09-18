@@ -26,10 +26,10 @@ Index::Index(char nombre[14]){
 	strncpy(direccion,nombre,14);
 	ifstream file;
 	file.open(nombre);
-
+	cout<<"LLEGO "<<endl;
 	if(!file.good()){
 		cout << "Creando" << endl;
-		create(direccion);
+		create(nombre);
 	} else{
 		cout << "Cargando" << endl;
 		load();

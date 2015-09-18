@@ -1,8 +1,8 @@
 #include <iostream>
 #include "index.h"
 #include "crud_clientes.h"
-#include "crud_ciudades.h"
-#include "crud_lineasxcliente.h"
+#include "crud_Ciudades.h"
+#include "crud_LineasXCliente.h"
 #include <cstring>
 #include <cstdlib>
 #include <fstream>

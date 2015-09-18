@@ -1,5 +1,5 @@
 #include "index.h"
-#include "crud_lineasxcliente.h"
+#include "crud_LineasXCliente.h"
 #include <iostream>
 #include <stdlib.h>
 #include <fstream>
@@ -37,10 +37,10 @@ void crud_lineasxcliente::correr(){
 
 	char nombre_archivo[14];
 	strncpy(nombre_archivo,"indexLineasXCliente.bin",14);
-	fstream file("lineaxclientes.bin", fstream::binary);
-	file.open("lineaxclientes.bin");
 	//ofstream fileSalida("ciudades.bin", ofstream::binary);
 	Index indice(nombre_archivo);
+	fstream file("lineaxclientes.bin", fstream::binary);
+	file.open("lineaxclientes.bin");
 
 	Header head;
 	file.seekg(0);

@@ -1,5 +1,5 @@
 #include "index.h"
-#include "crud_ciudades.h"
+#include "crud_Ciudades.h"
 #include <iostream>
 #include <stdlib.h>
 #include <fstream>
@@ -184,7 +184,9 @@ void crud_ciudades::correr(){
 				Ciudad borrada;
 
 				borrada.idCiudad = -99;
-				string s = to_string(availList);
+				stringstream ss;
+				ss<<availList;
+				string s = ss.str();
 				char const *pchar = s.c_str();
 				strcpy(borrada.name, pchar);
 
