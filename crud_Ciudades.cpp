@@ -1,4 +1,5 @@
 #include "index.h"
+#include "crud_ciudades.h"
 #include <iostream>
 #include <stdlib.h>
 #include <fstream>
@@ -21,13 +22,19 @@ istream& operator>>(istream& input, Ciudad& city){
 	return output;  
 }*/
 
-int elementoBorrado(int);
 
-int main(int argc, char const *argv[]){
+crud_ciudades::crud_ciudades(){
+
+}
+
+void crud_ciudades::correr(){
+
+	char nombre_archivo[14];
+	strncpy(nombre_archivo,"indexCiudades.bin",14);
 	fstream file("ciudades.bin", fstream::binary);
 	file.open("ciudades.bin");
 	//ofstream fileSalida("ciudades.bin", ofstream::binary);
-	Index indice("indexCiudades.bin");
+	Index indice(nombre_archivo);
 
 	Header head;
 	file.seekg(0);
@@ -58,14 +65,14 @@ int main(int argc, char const *argv[]){
 			ciudadNueva.idCiudad = ID;
 			strcpy(ciudadNueva.name, NOM);
 			bool continuarGuardando = indice.add(ciudadNueva, sizeRegistros /*+ elementoBorrado(sizeRegistros)*/);
-			if(continuarGuardando){
+			if(continuarGuardando){								
 				if (availList == -1)
 					file.seekp (0, file.end);
 				else{
 					Ciudad city;
 					//int rrn = indice.ciudadRRN(availList, city).RRN_index;
 					//cout << "Avail = " << availList << "\tRRN = " << rrn << endl;
-					int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * availList) );
+					int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * availList) );	
 					file.seekg(0);
 					file.seekg(ecuacion);
 					file.read(reinterpret_cast<char*>(&city), sizeof(Ciudad));
@@ -107,16 +114,20 @@ int main(int argc, char const *argv[]){
 			Ciudad ciudadVieja;
 			ciudadVieja.idCiudad = ID;
 			strcpy(ciudadVieja.name, "NOM");
-			Indice ind = indice.get(ciudadVieja);
-			int meter = indice.ciudadRRN(ind.RRN_index, ciudadVieja).RRN_index;
-			indice.remove(ciudadVieja);
-			int rrn = ind.RRN_index;
-			int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * rrn) );
-			indice.add(ciudadNueva, meter);
 
-			file.seekp(0);
-			file.seekp(ecuacion);
-			file.write(reinterpret_cast<char*>(&ciudadNueva), sizeof(Ciudad));
+			bool borrar = indice.remove(ciudadVieja);
+			if (borrar){
+				Indice ind = indice.get(ciudadVieja);
+				int meter = indice.ciudadRRN(ind.RRN_index, ciudadVieja).RRN_index;
+				
+				int rrn = ind.RRN_index;
+				int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * rrn) );
+				indice.add(ciudadNueva, meter);
+
+				file.seekp(0);
+				file.seekp(ecuacion);
+				file.write(reinterpret_cast<char*>(&ciudadNueva), sizeof(Ciudad));
+			}
 
 		}
 		break;
@@ -133,7 +144,7 @@ int main(int argc, char const *argv[]){
 					int rrn;
 					for (int i = 0; i < sizeRegistros ; ++i){
 						rrn = indice.at(i, city).RRN_index;
-						int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * rrn) );
+						int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * rrn) );	
 						//cout << "Ecuacion = " << ecuacion << "\tRRN = " << rrn << endl;
 						file.seekg(0);
 						file.seekg(ecuacion);
@@ -167,7 +178,7 @@ int main(int argc, char const *argv[]){
 			bool borrar = indice.remove(ciudadNueva);
 			if(borrar){
 				int rrn = ind.RRN_index;
-				int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * rrn) );
+				int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * rrn) );		
 				file.seekp(0);
 				file.seekp(ecuacion);
 				Ciudad borrada;
@@ -224,7 +235,7 @@ int main(int argc, char const *argv[]){
 					file.seekg(0, file.beg);
 					file.read(reinterpret_cast<char*>(&head), sizeof(Header));
 					if(rrn != -99){
-						int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * rrn) );
+						int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * rrn) );	
 						file.seekg(0);
 						file.seekg(ecuacion);
 						file.read(reinterpret_cast<char*>(&city), sizeof(Ciudad));
@@ -237,8 +248,10 @@ int main(int argc, char const *argv[]){
 		}
 		break;
 		case 6:{
+			char nombre_archivo[14];
+			strncpy(nombre_archivo,"indexCiudades.bin",14);
 			cout << "\tReindexar" << endl;
-			indice.create("indexCiudades.bin");
+			indice.create(nombre_archivo);
 			cout << "Reindexado con exito." << endl;
 		}
 		break;
@@ -248,23 +261,4 @@ int main(int argc, char const *argv[]){
 		break;
 	}
 	file.close();
-	return 0;
-}
-
-int elementoBorrado(int RRN){
-	int borrados = 0;
-	int azterizco = -99;
-	//char azterizco[1];
-	//azterizco[0] = '*';
-	Ciudad city;
-	int cont = 0;
-	ifstream file("ciudades.bin", ifstream::binary);
-	file.seekg(8);
-	while(file.read(reinterpret_cast<char*>(&city), sizeof(Ciudad))){
-		if(city.idCiudad == azterizco && cont < RRN)
-			borrados++;
-		cont++;
-	}
-	file.close();
-	return borrados;
 }
