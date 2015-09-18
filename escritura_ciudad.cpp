@@ -11,8 +11,18 @@ struct Ciudad{
 	int idCiudad;
 };
 
+struct Header{
+	int availList;
+	int sizeRegistro;
+};
+
 ostream& operator<<(ostream& output, const Ciudad& city){
 	output << "nombre = " << city.name << "\t" << "idCiudad = " << city.idCiudad << endl;
+	return output;  
+}
+
+ostream& operator<<(ostream& output, const Header& city){
+	output << "Avail = " << city.availList << "\t" << "Size = " << city.sizeRegistro << endl;
 	return output;  
 }
 
@@ -21,16 +31,24 @@ void combine(char name[40],char info[40]);
 int chartoidCiudad(char info[40]);
 
 int main(int argc, char* argv[]){
+	Header headA;
+	ifstream fileA("ciudades.bin", ifstream::binary);
+	fileA.read(reinterpret_cast<char*>(&headA), sizeof(Header));
+	cout << headA;
+	fileA.close();
+
 	string texto;
-	ifstream ciudad_file("ciudades.txt");
+	ifstream ciudad_file("ciudades copy.txt");
 	ofstream file("ciudades.bin", ofstream::binary);
 
 	int sizeRegistro = 0;
-	int availList =  -1;
 
-	file.write(reinterpret_cast<char*>(&sizeRegistro), sizeof(sizeRegistro));
-	file.write(reinterpret_cast<char*>(&availList), sizeof(availList));
-	cout << "Antes = " << sizeRegistro << endl;
+	Header head;
+	head.availList = -1;
+	head.sizeRegistro = 0;
+
+	file.write(reinterpret_cast<char*>(&head), sizeof(Header));
+	cout << "Antes = " << head.sizeRegistro << endl;
 	while (!ciudad_file.eof()){
 		getline(ciudad_file,texto);
 		Ciudad ciudad;
@@ -57,14 +75,17 @@ int main(int argc, char* argv[]){
 		}
 		info[contador+1]='\0';
 		ciudad.idCiudad=chartoidCiudad(info);
-		file.write(reinterpret_cast<char*>(&ciudad), sizeof(ciudad));
+		cout << ciudad;
+		file.write(reinterpret_cast<char*>(&ciudad), sizeof(Ciudad));
 		sizeRegistro++;
 	}
-	sizeRegistro = sizeRegistro - 1;
+	sizeRegistro = sizeRegistro;
 	file.seekp(0);
 	cout << "Final = " << sizeRegistro << endl;
-	file.write(reinterpret_cast<char*>(&sizeRegistro), sizeof(sizeRegistro));
+	head.sizeRegistro = sizeRegistro;
+	file.write(reinterpret_cast<char*>(&head), sizeof(Header));
 	file.close();
+
 	ciudad_file.close();
 	return 0;
 }

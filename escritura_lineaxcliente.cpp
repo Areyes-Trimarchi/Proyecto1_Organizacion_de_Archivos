@@ -59,7 +59,8 @@ int main(int argc, char* argv[]){
 		file.write(reinterpret_cast<char*>(&linea), sizeof(LineaxCliente));
 		sizeRegistro++;
 	}
-	head.sizeRegistro = sizeRegistro - 1;
+	head.sizeRegistro = sizeRegistro ;
+	cout << "size = " << head.sizeRegistro << endl;
 	file.seekp(0);
 	file.write(reinterpret_cast<char*>(&head), sizeof(Header));
 	file.close();
