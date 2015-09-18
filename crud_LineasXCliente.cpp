@@ -1,4 +1,5 @@
 #include "index.h"
+#include "crud_lineasxcliente.h"
 #include <iostream>
 #include <stdlib.h>
 #include <fstream>
@@ -28,14 +29,18 @@ istream& operator>>(istream& input, LineaxCliente& linea){
 };
 */
 
-int elementoBorrado(int);
+crud_lineasxcliente::crud_lineasxcliente(){
 
-int main(int argc, char const *argv[]){
+}
 
+void crud_lineasxcliente::correr(){
+
+	char nombre_archivo[14];
+	strncpy(nombre_archivo,"indexLineasXCliente.bin",14);
 	fstream file("lineaxclientes.bin", fstream::binary);
 	file.open("lineaxclientes.bin");
 	//ofstream fileSalida("ciudades.bin", ofstream::binary);
-	Index indice("indexLineasXCliente.bin");
+	Index indice(nombre_archivo);
 
 	Header head;
 	file.seekg(0);
@@ -68,14 +73,14 @@ int main(int argc, char const *argv[]){
 
 			bool continuarGuardando = indice.add(lineaNueva, sizeRegistros /*+ elementoBorrado(sizeRegistros)*/);
 			//cout << "Pos 1 = " << file.tellp() << endl;
-			if (continuarGuardando){
+			if (continuarGuardando){																
 				if (availList == -1)
 					file.seekp (0, file.end);
 				else{
 					LineaxCliente linea;
 					//int rrn = indice.ciudadRRN(availList, city).RRN_index;
 					//cout << "Avail = " << availList << "\tRRN = " << rrn << endl;
-					int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(LineaxCliente) * availList) );
+					int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(LineaxCliente) * availList) );	
 					file.seekg(0);
 					file.seekg(ecuacion);
 					file.read(reinterpret_cast<char*>(&linea), sizeof(LineaxCliente));
@@ -118,15 +123,18 @@ int main(int argc, char const *argv[]){
 			strcpy(lineaVieja.numero, numero);
 			strcpy(lineaVieja.idCliente, "NOM");
 			IndiceLineas ind = indice.get(lineaVieja);
-			int meter = indice.lineaRRN(ind.RRN_index, lineaVieja).RRN_index;
-			indice.remove(lineaVieja);
-			int rrn = ind.RRN_index;
-			int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(LineaxCliente) * rrn) );
-			indice.add(lineaNueva, meter);
+			bool borrar = indice.remove(lineaVieja);
+			if(borrar){
+				int meter = indice.lineaRRN(ind.RRN_index, lineaVieja).RRN_index;
+				
+				int rrn = ind.RRN_index;
+				int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(LineaxCliente) * rrn) );
+				indice.add(lineaNueva, meter);
 
-			file.seekp(0);
-			file.seekp(ecuacion);
-			file.write(reinterpret_cast<char*>(&lineaNueva), sizeof(LineaxCliente));
+				file.seekp(0);
+				file.seekp(ecuacion);
+				file.write(reinterpret_cast<char*>(&lineaNueva), sizeof(LineaxCliente));
+			}
 
 		}
 		break;
@@ -257,8 +265,10 @@ int main(int argc, char const *argv[]){
 		}
 		break;
 		case 6:{
+			char nombre_archivo[14];
+			strncpy(nombre_archivo,"indexLineasXCliente.bin",14);
 			cout << "\tReindexar" << endl;
-			indice.create("indexLineaxCliente.bin");
+			indice.create(nombre_archivo);
 			cout << "Reindexado con exito." << endl;
 		}
 		break;
@@ -268,23 +278,4 @@ int main(int argc, char const *argv[]){
 		break;
 	}
 	file.close();
-	return 0;
-}
-
-int elementoBorrado(int RRN){
-	int borrados = 0;
-	int azterizco = -99;
-	//char azterizco[1];
-	//azterizco[0] = '*';
-	Ciudad city;
-	int cont = 0;
-	ifstream file("LineaxCliente.bin", ifstream::binary);
-	file.seekg(8);
-	while(file.read(reinterpret_cast<char*>(&city), sizeof(Ciudad))){
-		if(city.idCiudad == azterizco && cont < RRN)
-			borrados++;
-		cont++;
-	}
-	file.close();
-	return borrados;
 }
