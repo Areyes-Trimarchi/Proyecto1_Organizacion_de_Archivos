@@ -29,8 +29,14 @@ int main(int argc, char* argv[]){
 	Header head;
 	head.availList=availList;
 	head.sizeRegistro=sizeRegistro;
+
+	lineaxcliente.seekg(0, lineaxcliente.end);
+	int length = lineaxcliente.tellg();
+	lineaxcliente.seekg(0, lineaxcliente.beg);
+
 	file.write(reinterpret_cast<char*>(&head), sizeof(Header));
-	while (!lineaxcliente.eof()){
+	int cont=0;
+	while (cont!=length){
 		char numero[9];
 		char idCliente[14];
 		getline(lineaxcliente,texto);
@@ -58,9 +64,9 @@ int main(int argc, char* argv[]){
 		strncpy(linea.idCliente,idCliente,14);
 		file.write(reinterpret_cast<char*>(&linea), sizeof(LineaxCliente));
 		sizeRegistro++;
+		cont = lineaxcliente.tellg();
 	}
-	head.sizeRegistro = sizeRegistro ;
-	cout << "size = " << head.sizeRegistro << endl;
+	head.sizeRegistro = sizeRegistro;
 	file.seekp(0);
 	file.write(reinterpret_cast<char*>(&head), sizeof(Header));
 	file.close();

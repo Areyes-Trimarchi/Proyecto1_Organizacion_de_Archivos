@@ -11,7 +11,12 @@ using namespace std;
 
 
 ostream& operator<<(ostream& output, const IndiceLineas& city){
-	output << "idCliente = " << city.numero << "\t" << "\tRRN = " << city.RRN_index << endl;
+	output << " idCliente = " << city.numero << "\t" << "\tRRN = " << city.RRN_index << endl;
+	return output;  
+}
+
+ostream& operator<<(ostream& output, const Indice& city){
+	output  << " idCliente = "<< city.id_ciu_index << "\tRRN = " << city.RRN_index << endl;
 	return output;  
 }
 /*ostream& operator<<(ostream& output, const LineaxCliente& city){
@@ -154,6 +159,7 @@ IndiceLineas Index::get(LineaxCliente linea){
 	Retornar una ciudad en base al numero
 */
 Indice Index::at(int pos, Ciudad city){
+	//cout << "Antes de morir posicion a borrar = " << pos << "\t aqui morira" << indexCiudades.at(pos)<< endl;
 	return indexCiudades.at(pos);
 }
 
