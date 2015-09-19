@@ -115,9 +115,9 @@ void crud_ciudades::correr(){
 			ciudadVieja.idCiudad = ID;
 			strcpy(ciudadVieja.name, "NOM");
 
+			Indice ind = indice.get(ciudadVieja);
 			bool borrar = indice.remove(ciudadVieja);
 			if (borrar){
-				Indice ind = indice.get(ciudadVieja);
 				int meter = indice.ciudadRRN(ind.RRN_index, ciudadVieja).RRN_index;
 				
 				int rrn = ind.RRN_index;
@@ -142,11 +142,9 @@ void crud_ciudades::correr(){
 				case 1:{
 					Ciudad city;
 					int rrn;
-					cout << "availList = " << availList << "\t sizeRegistro = " << sizeRegistros << endl;
 					for (int i = 0; i < sizeRegistros ; ++i){
 						rrn = indice.at(i, city).RRN_index;
 						int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * rrn) );	
-						cout <<"I "<<i<< " Ecuacion = " << ecuacion << "\tRRN = " << rrn << endl;
 						file.seekg(0);
 						file.seekg(ecuacion);
 						file.read(reinterpret_cast<char*>(&city), sizeof(Ciudad));
@@ -177,7 +175,6 @@ void crud_ciudades::correr(){
 			Indice ind = indice.get(ciudadNueva);
 			//availList =  ind.RRN_index;
 			bool borrar = indice.remove(ciudadNueva);
-			cout << "ANTES\tavailList = " << availList << "\t sizeRegistro = " << sizeRegistros << endl;
 			if(borrar){
 				int rrn = ind.RRN_index;
 				int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * rrn) );		
@@ -199,9 +196,7 @@ void crud_ciudades::correr(){
 				head.availList = availList;
 				file.seekp (0, file.beg);
 				file.write(reinterpret_cast<char*>(&head), sizeof(Header));
-				cout << "Des";
 			}
-			cout << "pues\tavailList = " << availList << "\t sizeRegistro = " << sizeRegistros << endl;
 		}
 		break;
 		case 5:{
