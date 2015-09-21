@@ -14,5 +14,6 @@ public:
 	~BTree();
 	BTreeNode* busqueda(int);
 	void insert(Key);
-	void traverse();
+	void Inorder();
+	void Remove(Key*);
 };

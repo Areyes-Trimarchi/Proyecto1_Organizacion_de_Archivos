@@ -24,7 +24,15 @@ public:
 	void split(int, BTreeNode*);
 	void insert(Key);
 	BTreeNode* busqueda(int);
-	void traverse();
+	void Inorder();
+	int LlaveExiste(int);
+	void Remove(Key);
+    *Key getPrev(int);
+    *Key getNext(int);
+    void Llenar(int);
+    void PrestadoPrev(int);
+    void PrestadoNext(int);
+    void Merge(int);
 
 friend class BTree;
 };

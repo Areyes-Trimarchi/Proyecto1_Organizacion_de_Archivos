@@ -43,7 +43,11 @@ void BTree::insert(Key llave){
     }
 }
 
-void BTree::traverse(){  
+void BTree::Remove(Key* llave){
+
+}
+
+void BTree::Inorder(){  
 	if (root != NULL) 
-		root->traverse(); 
+		root->Inorder(); 
 }
