@@ -13,38 +13,37 @@ BTree::~BTree(){
 
 }
 
-*BTreeNode BTree::busqueda(int llaveBusqueda){
+BTreeNode* BTree::busqueda(int llaveBusqueda){
 	if(root == NULL)
 		return NULL;
-	return root->busqueda(llaveBusqueda)
+	return root->busqueda(llaveBusqueda);
 }
 
 void BTree::insert(Key llave){
-	 if (root == NULL){
-        root = new BTreeNode(tamano, true);
-        root->keys[0] = llave;
+	 if (root == NULL){															//Si no existe raiz
+        root = new BTreeNode(tamano, true);										//Se crea la raiz
+        root->llaves[0] = llave;
         root->tamano = 1;
     } else{
-    	if (root->tamano == root->maximo){
-            BTreeNode *neo = new BTreeNode(tamano, false);
+    	if (root->tamano == root->maximo){										//Mira si la raiz no tiene el tamano maximo
+            BTreeNode *neo = new BTreeNode(false, tamano);
+            neo->hijos[0] = root;												//Crea un nuevo nodo que contendra a la raiz actul como hijo
  
-            // Make old root as child of new root
-            neo->hijos[0] = root;
+            neo->split(0, root);												
  
-            // Split the old root and move 1 key to the new root
-            neo->splitChild(0, root);
- 
-            // New root has two children now.  Decide which of the
-            // two children is going to have new key
             int i = 0;
-            if (neo->llaves[0] < llave)
+            if (neo->llaves[0].llave < llave.llave)							//Decidir cual de los dos hijos de la raiz tendra los hijos
                 i++;
-            neo->hijos[i]->insertNonFull(llave);
+            neo->hijos[i]->insert(llave);
  
-            // Change root
-            root = neo;
+            root = neo;															//Actualizar la raiz
         }
-        else  // If root is not full, call insertNonFull for root
-            root->insertNonFull(llave);
+        else 
+            root->insert(llave);												//Insertar normal
     }
+}
+
+void BTree::traverse(){  
+	if (root != NULL) 
+		root->traverse(); 
 }

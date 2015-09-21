@@ -12,6 +12,7 @@ private:
 public:
 	BTree(int);
 	~BTree();
-	*BTreeNode busqueda(int);
+	BTreeNode* busqueda(int);
 	void insert(Key);
+	void traverse();
 };

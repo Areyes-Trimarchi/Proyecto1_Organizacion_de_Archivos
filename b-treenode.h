@@ -12,15 +12,19 @@ struct Key{
 
 class BTreeNode{
 private:
-	Key *llaves;	//Las llaves que contiene este nodo
+	Key* llaves;	//Las llaves que contiene este nodo
 	int tamano;		//Tamano llaves actual
 	int minimo;		//Numero minimo de llaves
 	int maximo;		//Numero maximo de llaves
-	BTreeNode **hijos;	//Los nodos hijos
+	BTreeNode** hijos;	//Los nodos hijos
 	bool hoja;
 public:
-	BTreeNode(arguments);
+	BTreeNode(bool, int);
 	~BTreeNode();
-	void split();
-	*BTreeNode busqueda(int);
+	void split(int, BTreeNode*);
+	void insert(Key);
+	BTreeNode* busqueda(int);
+	void traverse();
+
+friend class BTree;
 };
