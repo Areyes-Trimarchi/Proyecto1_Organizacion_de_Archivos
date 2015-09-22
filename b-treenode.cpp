@@ -1,5 +1,7 @@
 #include "b-treenode.h"
 #include <iostream>
+#include <cstring>
+#include <string>
 
 using namespace std;
 
@@ -215,7 +217,7 @@ void BTreeNode::Remove(KeyChar llave){
             }   
         }else{//remove cuando es hoja
             for (int i=pos_key+1; i<tamano; ++i){
-                llavesChar[i-1] = llaves[i];
+                llavesChar[i-1] = llavesChar[i];
             }
             tamano--;
         }    
