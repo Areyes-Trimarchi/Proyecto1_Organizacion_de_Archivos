@@ -167,9 +167,7 @@ int BTreeNode::LlaveExiste(KeyChar llave){
 }
 
 bool BTreeNode::Remove(Key llave){
-    cout<<"LLAVE ANTES de existrir";
     int pos_key = LlaveExiste(llave);
-    cout<<"LLAVE Despues de existrir";
     if (pos_key < tamano && llaves[pos_key].llave== llave.llave){
         if (!hoja){//Remove cuando no es hoja
             Key tmp_llave = llaves[pos_key];
@@ -211,7 +209,7 @@ bool BTreeNode::Remove(Key llave){
     return true;
 }
 
-void BTreeNode::Remove(KeyChar llave){
+bool BTreeNode::Remove(KeyChar llave){
     int pos_key = LlaveExiste(llave);
     if (pos_key < tamano && strncmp(llavesChar[pos_key].llave,llave.llave,14)==0){
         if (!hoja){//Remove cuando no es hoja
@@ -238,7 +236,7 @@ void BTreeNode::Remove(KeyChar llave){
     }else{
         if (hoja){
             cout << "La llave "<< llave <<" que usted ingreso no existe :(\n";
-            return;
+            return false;
         }
         bool esta_noesta = ((pos_key==tamano)? true : false );
         if (hijos[pos_key]->tamano < minimo){
@@ -251,7 +249,7 @@ void BTreeNode::Remove(KeyChar llave){
             hijos[pos_key]->Remove(llave);
         }
     }
-    return;
+    return true;
 }
 
 Key BTreeNode::getPrev(int pos_key){

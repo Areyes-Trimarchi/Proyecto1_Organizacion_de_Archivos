@@ -1,6 +1,5 @@
 #include "b-treenode.h"
 #include "b-tree.h"
-#include "index.h"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -89,9 +88,7 @@ bool BTree::Remove(Key llave){
         return false;
     }
     bool retornar;
-    cout<<"LLAMAR REMOVE";
     retornar = root->Remove(llave);
-    cout<<"DESPUES LLAMAR REMOVE";
     if (root->tamano==0){
         BTreeNode *tmp = root;
         if (root->hoja){
@@ -106,11 +103,13 @@ bool BTree::Remove(Key llave){
     return false;
 }
 
-void BTree::Remove(KeyChar llave){
+bool BTree::Remove(KeyChar llave){
     if (!root){
         cout << "El árbol esta vacío\n";
-        return;
+        return false;
     }
+    bool retornar;
+    retornar = root->Remove(llave);
     root->Remove(llave);
     if (root->tamano==0){
         BTreeNode *tmp = root;
@@ -121,15 +120,17 @@ void BTree::Remove(KeyChar llave){
         }
         delete tmp;
     }
-    return;
+    if (retornar)
+        return true;
+    return false;
 }
 
 void BTree::inorder(const char * nombre){
     bool tipo;
     bool tipo2 = false;
-    if(strncmp(nombre, "indexCiudades.bin", 14) == 0 )
+    if(strncmp(nombre, "indexCiudadArboles.bin", 14) == 0 )
         tipo = true;
-    else if(strncmp(nombre, "indexClientes.bin", 14) == 0 )
+    else if(strncmp(nombre, "indexClienteArbols.bin", 14) == 0 )
         tipo = false;
     else
         tipo2 = true;
@@ -138,24 +139,24 @@ void BTree::inorder(const char * nombre){
 }
 
 void BTree::create(const char * nombre){
-    if(strncmp(nombre, "indexCiudades.bin", 14) == 0 )
-        createCiudades();
-    else if(strncmp(nombre, "indexClientes.bin", 14) == 0 )
-        createClientes();
+    if(strncmp(nombre, "indexCiudadArboles.bin", 14) == 0 )
+        createCiudadArboles();
+    else if(strncmp(nombre, "indexClienteArbols.bin", 14) == 0 )
+        createClienteArbols();
     else
         createLineas();
 }
 
-void BTree::createCiudades(){
+void BTree::createCiudadArboles(){
     ifstream file;
     file.open("ciudades.bin");
     if(!file.is_open()){
         cerr << "Error al abrir el archivo. Aqui es el error" << endl;
     } else{
-        Header head;
+        HeaderArbol head;
 
         file.seekg(0);
-        file.read(reinterpret_cast<char*>(&head), sizeof(Header));
+        file.read(reinterpret_cast<char*>(&head), sizeof(HeaderArbol));
         int sizeRegistros = head.sizeRegistro; 
         int availList = head.availList;
 
@@ -165,8 +166,8 @@ void BTree::createCiudades(){
         
         cout << "3 sizeRegistros = " << sizeRegistros << "\tAvail = " << availList  << "\tUltimo = " << head.sizeRegistro << endl;
         for (int i = 0; i < sizeRegistros; i++){
-            Ciudad city;
-            file.read(reinterpret_cast<char*>(&city), sizeof(Ciudad));
+            CiudadArbol city;
+            file.read(reinterpret_cast<char*>(&city), sizeof(CiudadArbol));
 
             if(skip == 0)
                 RRN = i;
@@ -182,7 +183,7 @@ void BTree::createCiudades(){
                 skip++;
             }
         }
-        /*ofstream salida("indexCiudades.bin", ofstream::binary);
+        /*ofstream salida("indexCiudadArboles.bin", ofstream::binary);
         for (int i = 0; i < index.size(); i++){
             salida.write(reinterpret_cast<const char*> (&index.at(i)), sizeof(Indice));
         }
@@ -191,16 +192,16 @@ void BTree::createCiudades(){
     file.close();
 }
 
-void BTree::createClientes(){
+void BTree::createClienteArbols(){
     ifstream file;
-    file.open("clientes.bin");
+    file.open("cliente.bin");
     if(!file.is_open()){
         cerr << "Error al abrir el archivo." << endl;
     } else{
-        Header head;
+        HeaderArbol head;
 
         file.seekg(0);
-        file.read(reinterpret_cast<char*>(&head), sizeof(Header));
+        file.read(reinterpret_cast<char*>(&head), sizeof(HeaderArbol));
         int sizeRegistros = head.sizeRegistro; 
         int availList = head.availList;
 
@@ -210,26 +211,26 @@ void BTree::createClientes(){
         
         cout << "3 sizeRegistros = " << sizeRegistros << "\tAvail = " << availList  << "\tUltimo = " << head.sizeRegistro << endl;
         for (int i = 0; i < sizeRegistros; ++i){
-            Cliente cliente;
-            file.read(reinterpret_cast<char*>(&cliente), sizeof(Cliente));
+            ClienteArbol ClienteArbol;
+            file.read(reinterpret_cast<char*>(&ClienteArbol), sizeof(ClienteArbol));
 
             if(skip == 0)
                 RRN = i;
             else
                 RRN = i + skip;
-            strncpy(llave.llave, cliente.idCliente, 14);
+            strncpy(llave.llave, ClienteArbol.idCliente, 14);
             llave.RRN = RRN;
 
-            if(strncmp(cliente.idCliente, "-99", 14) != 0){
+            if(strncmp(ClienteArbol.idCliente, "-99", 14) != 0){
                 this->insert(llave);
             }
-            if(strncmp (cliente.idCliente, "-99", 9) == 0){
+            if(strncmp (ClienteArbol.idCliente, "-99", 9) == 0){
                 i--;
                 skip++;
             }
 
         }
-        /*ofstream salida("indexLineasXCliente.bin", ofstream::binary);
+        /*ofstream salida("indexLineasXClienteArbol.bin", ofstream::binary);
         for (int i = 0; i < index.size(); i++){
             salida.write(reinterpret_cast<const char*> (&index.at(i)), sizeof(IndiceLineas));
         }
@@ -241,14 +242,14 @@ void BTree::createClientes(){
 
 void BTree::createLineas(){
     ifstream file;
-    file.open("lineaxclientes.bin");
+    file.open("lineaxClienteArbols.bin");
     if(!file.is_open()){
         cerr << "Error al abrir el archivo." << endl;
     } else{
-        Header head;
+        HeaderArbol head;
 
         file.seekg(0);
-        file.read(reinterpret_cast<char*>(&head), sizeof(Header));
+        file.read(reinterpret_cast<char*>(&head), sizeof(HeaderArbol));
         int sizeRegistros = head.sizeRegistro; 
         int availList = head.availList;
 
@@ -258,8 +259,8 @@ void BTree::createLineas(){
         
         cout << "3 sizeRegistros = " << sizeRegistros << "\tAvail = " << availList  << "\tUltimo = " << head.sizeRegistro << endl;
         for (int i = 0; i < sizeRegistros; ++i){
-            LineaxCliente lineas;
-            file.read(reinterpret_cast<char*>(&lineas), sizeof(LineaxCliente));
+            LineaxClienteArbol lineas;
+            file.read(reinterpret_cast<char*>(&lineas), sizeof(LineaxClienteArbol));
 
             if(skip == 0)
                 RRN = i;
@@ -279,7 +280,7 @@ void BTree::createLineas(){
             }
 
         }
-        /*ofstream salida("indexLineasXCliente.bin", ofstream::binary);
+        /*ofstream salida("indexLineasXClienteArbol.bin", ofstream::binary);
         for (int i = 0; i < index.size(); i++){
             salida.write(reinterpret_cast<const char*> (&index.at(i)), sizeof(IndiceLineas));
         }

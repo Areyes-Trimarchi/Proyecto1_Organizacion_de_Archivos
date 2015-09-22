@@ -39,10 +39,10 @@ public:
 	bool insert(Key);
 	bool insert(KeyChar);
 	bool Remove(Key);
-	void Remove(KeyChar);
+	bool Remove(KeyChar);
 	void inorder(const char *);
 	void create(const char *);
-	void createCiudades();
-	void createClientes();
+	void createCiudadArboles();
+	void createClienteArbols();
 	void createLineas();
 };

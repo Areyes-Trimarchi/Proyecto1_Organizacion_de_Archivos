@@ -6,12 +6,12 @@ using namespace std;
 
 //Esto es lo que se guarda en cada nodo
 struct Key{
-	int llave;	//Esto es la llave, que es diferente segun el tipo, en clientes seria el idCliente en ciudades el idCiudad y en lineas el numero
+	int llave;	//Esto es la llave, que es diferente segun el tipo, en ClienteArbols seria el idClienteArbol en CiudadArboles el idCiudadArbol y en lineas el numero
 	int RRN; 
 };
 
 struct KeyChar{
-	char llave[14];	//Esto es la llave, que es diferente segun el tipo, en clientes seria el idCliente en ciudades el idCiudad y en lineas el numero
+	char llave[14];	//Esto es la llave, que es diferente segun el tipo, en ClienteArbols seria el idClienteArbol en CiudadArboles el idCiudadArbol y en lineas el numero
 	int RRN; 
 };
 
@@ -36,7 +36,7 @@ public:
 	int LlaveExiste(Key);
 	int LlaveExiste(KeyChar);
 	bool Remove(Key);
-	void Remove(KeyChar);
+	bool Remove(KeyChar);
     Key getPrev(int);
     KeyChar GetPrev(int);
     Key getNext(int);
@@ -55,6 +55,4 @@ friend class BTree;
 friend class crud_lineasxclienteArbol;
 
 friend class crud_ciudadesArbol;
-
-friend class crud_clientes;
 };
