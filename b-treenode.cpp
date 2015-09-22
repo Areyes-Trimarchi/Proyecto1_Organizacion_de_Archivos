@@ -119,154 +119,6 @@ BTreeNode* BTreeNode::busqueda(int llaveBusqueda){
     return hijos[posicion]->busqueda(llaveBusqueda);
 }
 
-int BTreeNode::LlaveExiste(Key llave){
-    int pos_key=0;
-    while (pos_key<tamano && llaves[pos_key] < llave){
-        ++pos_key;
-    }
-    return pos_key;
-}
-
-void BTreeNode::Remove(Key* llave){
-    int pos_key = LlaveExiste(llave);
-    if (pos_key < tamano && llaves[pos_key]== llave){
-        if (!hoja){//Remove cuando no es hoja
-        	Key* tmp_llave = llaves[pos_key];
-		    if (hijos[pos_key]->tamano >= minimo){
-		        Key *prev = getPrev(pos_key);
-		        llaves[pos_key]= prev;
-		        hijos[pos_key]->Remove(prev);
-		    }else if  (hijos[pos_key+1]->tamano >= minimo){
-		        Key *next = getNext(pos_key);
-		        llaves[pos_key] = next;
-		        hijos[pos_key+1]->Remove(next);
-		    }else
-		    {
-		        merge(pos_key);
-		        hijos[pos_key]->Remove(tmp_llave);
-		    }	
-        }else{//remove cuando es hoja
-        	for (int i=pos_key+1; i<tamano; ++i){
-		        llaves[i-1] = llaves[i];
-		 	}
-		    tamano--;
-        }    
-    }else{
-        if (hoja){
-            cout << "La llave "<< llave <<" que usted ingreso no existe :(\n";
-            return;
-        }
-        bool esta_noesta = ( (pos_key==tamano)? true : false );
-        if (hijos[pos_key]->tamano < minimo){
-            Llenar(pos_key);
-        }
-        if (esta_noesta && pos_key > tamano){
-            hijos[pos_key-1]->Remove(llave);
-        }
-        else{
-            hijos[pos_key]->Remove(llave);
-        }
-    }
-    return;
-}
-
-*Key BTreeNode::getPrev(int pos_key){
-    BTreeNode *move=hijos[pos_key];
-    while (!move->hoja){
-        move = move->hijos[move->tamano];
- 	}
-    return move->llaves[move->tamano-1];
-}
-
-*Key BTreeNode::getNext(int pos_key){
-    BTreeNode *move = hijos[pos_key+1];
-    while (!move->hoja){
-       move = move->hijos[0];
- 	}
-    return move->llaves[0];
-}
-
-void BTreeNode::Llenar(int pos_key){
-    if (pos_key!=0 && hijos[pos_key-1]->tamano>=minimo){
-        PrestadoPrev(pos_key);
-    }else if (pos_key!=tamano && hijos[pos_key+1]->tamano>=minimo){
-        PrestadoNext(pos_key);
- 	}else{
-        if (pos_key != tamano){
-            merge(pos_key);
-        }
-        else{
-            merge(pos_key-1);
-        }
-    }
-    return;
-}
-
-void BTreeNode::PrestadoPrev(int pos_key)
-{
-    BTreeNode *hijo=hijos[pos_key],*hermano=hijos[pos_key-1];
-    for (int i=hijo->tamano-1; i>=0; --i){
-        hijo->llaves[i+1] = hijo->llaves[i];
- 	}
- 	if (!hijo->hoja){
-        for(int i=hijo->tamano; i>=0; --i){
-            hijo->hijos[i+1] = hijo->hijos[i];
-        }
-    }
-    hijo->llaves[0]=llaves[pos_key-1];
-    if (!hoja){
-        hijo->hijos[0]=hermano->hijos[hermano->tamano];
- 	}
-    llaves[pos_key-1]=hermano->llaves[hermano->tamano-1];
- 	hijo->tamano+=1;
-    hermano->tamano-=1;
-    return;
-}
-
-void BTreeNode::PrestadoNext(int pos_key){
- 
-    BTreeNode *hijo=hijos[pos_key],*hermano=hijos[pos_key+1];
-    hijo->llaves[(hijo->tamano)] = llaves[pos_key];
-    if (!(hijo->hoja)){
-        hijo->hijos[(hijo->tamano)+1] = hermano->hijos[0];
- 	}
-    llaves[key] = hermano->llaves[0];
-    for (int i=1; i<hermano->tamano; ++i){
-        hermano->llaves[i-1] = heramno->llaves[i];
- 	}
-    if (!heramno->hoja){
-        for(int i=1; i<=hermano->tamano; ++i){
-            heramno->hijos[i-1]=hermano->hijos[i];
-        }
-    }
-    hijo->tamano+=1;
-    hermano->tamano-=1;
-    return;
-}
-
-void BTreeNode::Merge(int pos_key){
-    BTreeNode *hijo = hijos[pos_key],*hermano = hijos[pos_key+1];
-    hijo->llaves[minimo-1] = llaves[pos_key];
-    for (int i=0; i<hermano->tamano; ++i){
-        hijo->llaves[i+minimo] = hermano->llaves[i];
- 	}
-    if (!hijo->hoja){
-        for(int i=0; i<=hermano->tamano; ++i){
-            hijo->hijos[i+minimo] = hermano->hijos[i];
-        }
-    }
-    for (int i=pos_key+1; i<tamano; ++i){
-        llaves[i-1] = llaves[i];
- 	}
-    for (int i=pos_key+2; i<=tamano; ++i){
-        hijos[i-1] = hijos[i];
- 	}
-    hijo->tamano+=hermano->tamano+1;
-    n--;
-    delete(hermano);
-    return;
-}
-
 void BTreeNode::inorder(bool tipo) {
     int i;
     for (i = 0; i < tamano; i++){
@@ -282,4 +134,298 @@ void BTreeNode::inorder(bool tipo) {
  
     if (hoja == false)
         hijos[i]->inorder(tipo);
+}
+
+int BTreeNode::LlaveExiste(Key llave){
+    int pos_key=0;
+    while (pos_key<tamano && llaves[pos_key].llave < llave.llave){
+        ++pos_key;
+    }
+    return pos_key;
+}
+
+int BTreeNode::LlaveExiste(KeyChar llave){
+    int pos_key=0;
+    while (pos_key<tamano && strncmp(llavesChar[pos_key].llave,llave.llave,14)<0){
+        ++pos_key;
+    }
+    return pos_key;
+}
+
+void BTreeNode::Remove(Key llave){
+    int pos_key = LlaveExiste(llave);
+    if (pos_key < tamano && llaves[pos_key].llave== llave.llave){
+        if (!hoja){//Remove cuando no es hoja
+            Key tmp_llave = llaves[pos_key];
+            if (hijos[pos_key]->tamano >= minimo){
+                Key prev = getPrev(pos_key);
+                llaves[pos_key]= prev;
+                hijos[pos_key]->Remove(prev);
+            }else if  (hijos[pos_key+1]->tamano >= minimo){
+                Key next = getNext(pos_key);
+                llaves[pos_key] = next;
+                hijos[pos_key+1]->Remove(next);
+            }else
+            {
+                Merge(pos_key);
+                hijos[pos_key]->Remove(tmp_llave);
+            }   
+        }else{//remove cuando es hoja
+            for (int i=pos_key+1; i<tamano; ++i){
+                llaves[i-1] = llaves[i];
+            }
+            tamano--;
+        }    
+    }else{
+        if (hoja){
+            cout << "La llave "<< llave <<" que usted ingreso no existe :(\n";
+            return;
+        }
+        bool esta_noesta = ((pos_key==tamano)? true : false );
+        if (hijos[pos_key]->tamano < minimo){
+            Llenar(pos_key);
+        }
+        if (esta_noesta && pos_key > tamano){
+            hijos[pos_key-1]->Remove(llave);
+        }
+        else{
+            hijos[pos_key]->Remove(llave);
+        }
+    }
+    return;
+}
+
+void BTreeNode::Remove(KeyChar llave){
+    int pos_key = LlaveExiste(llave);
+    if (pos_key < tamano && strncmp(llavesChar[pos_key].llave,llave.llave,14)==0){
+        if (!hoja){//Remove cuando no es hoja
+            KeyChar tmp_llave = llavesChar[pos_key];
+            if (hijos[pos_key]->tamano >= minimo){
+                KeyChar prev = GetPrev(pos_key);
+                llavesChar[pos_key]= prev;
+                hijos[pos_key]->Remove(prev);
+            }else if  (hijos[pos_key+1]->tamano >= minimo){
+                KeyChar next = GetNext(pos_key);
+                llavesChar[pos_key] = next;
+                hijos[pos_key+1]->Remove(next);
+            }else
+            {
+                Merge(pos_key);
+                hijos[pos_key]->Remove(tmp_llave);
+            }   
+        }else{//remove cuando es hoja
+            for (int i=pos_key+1; i<tamano; ++i){
+                llavesChar[i-1] = llaves[i];
+            }
+            tamano--;
+        }    
+    }else{
+        if (hoja){
+            cout << "La llave "<< llave <<" que usted ingreso no existe :(\n";
+            return;
+        }
+        bool esta_noesta = ((pos_key==tamano)? true : false );
+        if (hijos[pos_key]->tamano < minimo){
+            Llenar(pos_key);
+        }
+        if (esta_noesta && pos_key > tamano){
+            hijos[pos_key-1]->Remove(llave);
+        }
+        else{
+            hijos[pos_key]->Remove(llave);
+        }
+    }
+    return;
+}
+
+Key BTreeNode::getPrev(int pos_key){
+    BTreeNode *move=hijos[pos_key];
+    while (!move->hoja){
+        move = move->hijos[move->tamano];
+    }
+    return move->llaves[move->tamano-1];
+}
+
+KeyChar BTreeNode::GetPrev(int pos_key){
+    BTreeNode *move=hijos[pos_key];
+    while (!move->hoja){
+        move = move->hijos[move->tamano];
+    }
+    return move->llavesChar[move->tamano-1];
+}
+
+Key BTreeNode::getNext(int pos_key){
+    BTreeNode *move = hijos[pos_key+1];
+    while (!move->hoja){
+       move = move->hijos[0];
+    }
+    return move->llaves[0];
+}
+
+KeyChar BTreeNode::GetNext(int pos_key){
+    BTreeNode *move = hijos[pos_key+1];
+    while (!move->hoja){
+       move = move->hijos[0];
+    }
+    return move->llavesChar[0];
+}
+
+void BTreeNode::Llenar(int pos_key){
+    if (pos_key!=0 && hijos[pos_key-1]->tamano>=minimo){
+        PrestadoPrev(pos_key);
+    }else if (pos_key!=tamano && hijos[pos_key+1]->tamano>=minimo){
+        PrestadoNext(pos_key);
+    }else{
+        if (pos_key != tamano){
+            Merge(pos_key);
+        }
+        else{
+            Merge(pos_key-1);
+        }
+    }
+    return;
+}
+
+void BTreeNode::LlenarChar(int pos_key){
+    if (pos_key!=0 && hijos[pos_key-1]->tamano>=minimo){
+        PrestadoPrevChar(pos_key);
+    }else if (pos_key!=tamano && hijos[pos_key+1]->tamano>=minimo){
+        PrestadoNextChar(pos_key);
+    }else{
+        if (pos_key != tamano){
+            MergeChar(pos_key);
+        }
+        else{
+            MergeChar(pos_key-1);
+        }
+    }
+    return;
+}
+
+void BTreeNode::PrestadoPrev(int pos_key){
+    BTreeNode *hijo=hijos[pos_key],*hermano=hijos[pos_key-1];
+    for (int i=hijo->tamano-1; i>=0; --i){
+        hijo->llaves[i+1] = hijo->llaves[i];
+    }
+    if (!hijo->hoja){
+        for(int i=hijo->tamano; i>=0; --i){
+            hijo->hijos[i+1] = hijo->hijos[i];
+        }
+    }
+    hijo->llaves[0]=llaves[pos_key-1];
+    if (!hoja){
+        hijo->hijos[0]=hermano->hijos[hermano->tamano];
+    }
+    llaves[pos_key-1]=hermano->llaves[hermano->tamano-1];
+    hijo->tamano+=1;
+    hermano->tamano-=1;
+    return;
+}
+
+void BTreeNode::PrestadoPrevChar(int pos_key){
+    BTreeNode *hijo=hijos[pos_key],*hermano=hijos[pos_key-1];
+    for (int i=hijo->tamano-1; i>=0; --i){
+        hijo->llavesChar[i+1] = hijo->llavesChar[i];
+    }
+    if (!hijo->hoja){
+        for(int i=hijo->tamano; i>=0; --i){
+            hijo->hijos[i+1] = hijo->hijos[i];
+        }
+    }
+    hijo->llavesChar[0]=llavesChar[pos_key-1];
+    if (!hoja){
+        hijo->hijos[0]=hermano->hijos[hermano->tamano];
+    }
+    llavesChar[pos_key-1]=hermano->llavesChar[hermano->tamano-1];
+    hijo->tamano+=1;
+    hermano->tamano-=1;
+    return;
+}
+
+void BTreeNode::PrestadoNext(int pos_key){
+ 
+    BTreeNode *hijo=hijos[pos_key],*hermano=hijos[pos_key+1];
+    hijo->llaves[(hijo->tamano)] = llaves[pos_key];
+    if (!(hijo->hoja)){
+        hijo->hijos[(hijo->tamano)+1] = hermano->hijos[0];
+    }
+    llaves[pos_key] = hermano->llaves[0];
+    for (int i=1; i<hermano->tamano; ++i){
+        hermano->llaves[i-1] = hermano->llaves[i];
+    }
+    if (!hermano->hoja){
+        for(int i=1; i<=hermano->tamano; ++i){
+            hermano->hijos[i-1]=hermano->hijos[i];
+        }
+    }
+    hijo->tamano+=1;
+    hermano->tamano-=1;
+    return;
+}
+
+void BTreeNode::PrestadoNextChar(int pos_key){
+ 
+    BTreeNode *hijo=hijos[pos_key],*hermano=hijos[pos_key+1];
+    hijo->llavesChar[(hijo->tamano)] = llavesChar[pos_key];
+    if (!(hijo->hoja)){
+        hijo->hijos[(hijo->tamano)+1] = hermano->hijos[0];
+    }
+    llavesChar[pos_key] = hermano->llavesChar[0];
+    for (int i=1; i<hermano->tamano; ++i){
+        hermano->llavesChar[i-1] = hermano->llavesChar[i];
+    }
+    if (!hermano->hoja){
+        for(int i=1; i<=hermano->tamano; ++i){
+            hermano->hijos[i-1]=hermano->hijos[i];
+        }
+    }
+    hijo->tamano+=1;
+    hermano->tamano-=1;
+    return;
+}
+
+void BTreeNode::Merge(int pos_key){
+    BTreeNode *hijo = hijos[pos_key],*hermano = hijos[pos_key+1];
+    hijo->llaves[minimo-1] = llaves[pos_key];
+    for (int i=0; i<hermano->tamano; ++i){
+        hijo->llaves[i+minimo] = hermano->llaves[i];
+    }
+    if (!hijo->hoja){
+        for(int i=0; i<=hermano->tamano; ++i){
+            hijo->hijos[i+minimo] = hermano->hijos[i];
+        }
+    }
+    for (int i=pos_key+1; i<tamano; ++i){
+        llaves[i-1] = llaves[i];
+    }
+    for (int i=pos_key+2; i<=tamano; ++i){
+        hijos[i-1] = hijos[i];
+    }
+    hijo->tamano+=hermano->tamano+1;
+    tamano--;
+    delete(hermano);
+    return;
+}
+
+void BTreeNode::MergeChar(int pos_key){
+    BTreeNode *hijo = hijos[pos_key],*hermano = hijos[pos_key+1];
+    hijo->llavesChar[minimo-1] = llavesChar[pos_key];
+    for (int i=0; i<hermano->tamano; ++i){
+        hijo->llavesChar[i+minimo] = hermano->llavesChar[i];
+    }
+    if (!hijo->hoja){
+        for(int i=0; i<=hermano->tamano; ++i){
+            hijo->hijos[i+minimo] = hermano->hijos[i];
+        }
+    }
+    for (int i=pos_key+1; i<tamano; ++i){
+        llavesChar[i-1] = llavesChar[i];
+    }
+    for (int i=pos_key+2; i<=tamano; ++i){
+        hijos[i-1] = hijos[i];
+    }
+    hijo->tamano+=hermano->tamano+1;
+    tamano--;
+    delete(hermano);
+    return;
 }

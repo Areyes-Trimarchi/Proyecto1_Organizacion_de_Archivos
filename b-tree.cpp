@@ -77,8 +77,40 @@ bool BTree::insert(KeyChar llave){
     return true;
 }
 
-void BTree::Remove(Key* llave){
+void BTree::Remove(Key llave){
+    if (!root){
+        cout << "El árbol esta vacío\n";
+        return;
+    }
+    root->Remove(llave);
+    if (root->tamano==0){
+        BTreeNode *tmp = root;
+        if (root->hoja){
+            root = NULL;
+        }else{
+            root = root->hijos[0];
+        }
+        delete tmp;
+    }
+    return;
+}
 
+void BTree::Remove(KeyChar llave){
+    if (!root){
+        cout << "El árbol esta vacío\n";
+        return;
+    }
+    root->Remove(llave);
+    if (root->tamano==0){
+        BTreeNode *tmp = root;
+        if (root->hoja){
+            root = NULL;
+        }else{
+            root = root->hijos[0];
+        }
+        delete tmp;
+    }
+    return;
 }
 
 void BTree::inorder(const char * nombre){
@@ -96,14 +128,14 @@ void BTree::inorder(const char * nombre){
 
 void BTree::create(const char * nombre){
     if(strncmp(nombre, "indexCiudades.bin", 14) == 0 )
-        createCiudades(nombre);
+        createCiudades();
     else if(strncmp(nombre, "indexClientes.bin", 14) == 0 )
-        createClientes( nombre );
+        createClientes();
     else
-        createLineas(nombre);
+        createLineas();
 }
 
-void BTree::createCiudades(const char * nombre){
+void BTree::createCiudades(){
     ifstream file;
     file.open("ciudades.bin");
     if(!file.is_open()){
@@ -148,11 +180,55 @@ void BTree::createCiudades(const char * nombre){
     file.close();
 }
 
-void BTree::createClientes(const char * nombre){
+void BTree::createClientes(){
+    ifstream file;
+    file.open("clientes.bin");
+    if(!file.is_open()){
+        cerr << "Error al abrir el archivo." << endl;
+    } else{
+        Header head;
 
+        file.seekg(0);
+        file.read(reinterpret_cast<char*>(&head), sizeof(Header));
+        int sizeRegistros = head.sizeRegistro; 
+        int availList = head.availList;
+
+        int RRN;
+        int skip = 0;
+        KeyChar llave;
+        
+        cout << "3 sizeRegistros = " << sizeRegistros << "\tAvail = " << availList  << "\tUltimo = " << head.sizeRegistro << endl;
+        for (int i = 0; i < sizeRegistros; ++i){
+            Cliente cliente;
+            file.read(reinterpret_cast<char*>(&cliente), sizeof(Cliente));
+
+            if(skip == 0)
+                RRN = i;
+            else
+                RRN = i + skip;
+            strncpy(llave.llave, cliente.idCliente, 14);
+            llave.RRN = RRN;
+
+            if(strncmp(cliente.idCliente, "-99", 14) != 0){
+                this->insert(llave);
+            }
+            if(strncmp (cliente.idCliente, "-99", 9) == 0){
+                i--;
+                skip++;
+            }
+
+        }
+        /*ofstream salida("indexLineasXCliente.bin", ofstream::binary);
+        for (int i = 0; i < index.size(); i++){
+            salida.write(reinterpret_cast<const char*> (&index.at(i)), sizeof(IndiceLineas));
+        }
+        salida.close();
+        */
+    }
+    file.close();
 }
 
-void BTree::createLineas(const char * nombre){
+void BTree::createLineas(){
     ifstream file;
     file.open("lineaxclientes.bin");
     if(!file.is_open()){

@@ -32,14 +32,22 @@ public:
 	bool insert(KeyChar);
 	BTreeNode* busqueda(int);
 	void inorder(bool);
-	int LlaveExiste(int);
+	int LlaveExiste(Key);
+	int LlaveExiste(KeyChar);
 	void Remove(Key);
-    Key* getPrev(int);
-    Key* getNext(int);
+	void Remove(KeyChar);
+    Key getPrev(int);
+    KeyChar GetPrev(int);
+    Key getNext(int);
+    KeyChar GetNext(int);
     void Llenar(int);
+    void LlenarChar(int);
     void PrestadoPrev(int);
+    void PrestadoPrevChar(int);
     void PrestadoNext(int);
+    void PrestadoNextChar(int);
     void Merge(int);
+    void MergeChar(int);
 
 friend class BTree;
 };

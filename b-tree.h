@@ -37,10 +37,11 @@ public:
 	BTreeNode* busqueda(int);
 	bool insert(Key);
 	bool insert(KeyChar);
-	void Remove(Key*);
+	void Remove(Key);
+	void Remove(KeyChar);
 	void inorder(const char *);
 	void create(const char *);
-	void createCiudades(const char *);
-	void createClientes(const char *);
-	void createLineas(const char *);
+	void createCiudades();
+	void createClientes();
+	void createLineas();
 };
