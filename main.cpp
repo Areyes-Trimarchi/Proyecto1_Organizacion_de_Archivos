@@ -3,6 +3,9 @@
 #include "crud_clientes.h"
 #include "crud_Ciudades.h"
 #include "crud_LineasXCliente.h"
+#include "b-tree.h"
+#include "crud_CiudadesArbol.h"
+#include "crud_LineasXClienteArbol.h"
 #include <cstring>
 #include <cstdlib>
 #include <fstream>
@@ -97,6 +100,18 @@ int main(int argc, char* argv[]){//inicio main
 				crud_lineasxcliente.correr();
 				break;
 			}//fin case 3 Archivo de Lineas por Cliente
+			case 4:{//case 4 Archivo de Ciudades con el Arbol-B
+				cout<<"Archivo de Ciudades"<<endl;
+				crud_ciudadesArbol crud_ciudadesArbol;
+				crud_ciudadesArbol.correr();
+			}//fin case 4 Archivo de Ciudades con el Arbol-B
+			break;
+			case 5:{//case 5 Archivo de Lineas por Cliente con el Arbol-B
+				cout<<"Archivo de Lineas por Cliente"<<endl;
+				crud_lineasxclienteArbol crud_lineasxclienteArbol;
+				crud_lineasxclienteArbol.correr();
+			}//fin case 5 Archivo de Lineas por Cliente con el Arbol-B
+			break;
 
 		}//fin switch principal (menu)
 		cout<<"Desea volver a ingresar al programa?(S/N)";
@@ -109,7 +124,8 @@ int main(int argc, char* argv[]){//inicio main
 int menu(){
 	int opcion;
 	cout<<"Menu Principal"<<endl;
-	cout<<"Elija una opcion:\n1. Archivo de Clientes\n2. Archivo de Ciudades\n3. Archivo de Lineas por Cliente\n4. Salir\nIgrese su opcion: ";
+	cout<<"Elija una opcion:\n1. Archivo de Clientes\n2. Archivo de Ciudades\n3. Archivo de Lineas por Cliente\n";
+	cout << "4. Archivo de Ciudades con Arbol-B\n5. Archivo de Lineas por Cliente con Arbol-B\n6. Salir\nIgrese su opcion: ";
 	cin>>opcion;
 	return opcion;
 }

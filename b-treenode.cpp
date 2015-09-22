@@ -3,6 +3,16 @@
 
 using namespace std;
 
+ostream& operator<<(ostream& output, const Key& key){
+    output << key.llave;
+    return output;
+}
+
+ostream& operator<<(ostream& output, const KeyChar& key){
+    output << key.llave;
+    return output;
+}
+
 BTreeNode::BTreeNode(bool hoja, int ordenArbol){
 	this->hoja = hoja;
 
@@ -10,6 +20,7 @@ BTreeNode::BTreeNode(bool hoja, int ordenArbol){
 	this->minimo = (ordenArbol/2)-1;
 	this->maximo = ordenArbol - 1;
 	this->llaves =  new Key[ordenArbol-1];
+    this->llavesChar =  new KeyChar[ordenArbol-1];
 	this->hijos = new BTreeNode *[ordenArbol];
 }
 
@@ -17,22 +28,95 @@ BTreeNode::~BTreeNode(){
 
 }
 
-void BTreeNode::split(){
-
+bool BTreeNode::insert(Key llave){
+    int i = this->tamano - 1;
+ 
+    if (hoja == true){                                      //Si es hoja solo se busca la posicion a insertar
+        while (i >= 0 && llaves[i].llave > llave.llave) {
+            llaves[i+1] = llaves[i];                        //Por mientras se busca la posicion exacta se mueven las llaves
+            i--;
+        }
+        if (llaves[i+1].llave == llave.llave)
+            return false;
+        llaves[i+1] = llave;                                //Se inserta en la posicion exacta ya que i termina en el ciclo en la posicion antes
+        tamano = tamano+1;
+    } else {                                                //Si no es hoja
+        while (i >= 0 && llaves[i].llave > llave.llave)     //Busca la posicion del hijo que tendra la llave
+            i--;
+ 
+        if (hijos[i+1]->tamano == hijos[i+1]->maximo) {     //Comprueba si el hijo no tiene el tamano maximo
+            split(i+1, hijos[i+1]); 
+ 
+            if (llaves[i+1].llave < llave.llave)            //Busca cual de las dos hojas que se acaban de splitear tendran al hijo
+                i++;
+        }
+        hijos[i+1]->insert(llave);
+    }
+    return true;
 }
 
-*BTreeNode BTreeNode::busqueda(int llaveBusqueda){
-	int posicion = 0;
-	for (int i = 0; i < tamano; i++){
-		if(llaveBusqueda < llaves[i]->llave)
-			posicion++;
-	}
+bool BTreeNode::insert(KeyChar llave){
+    int i = this->tamano - 1;
+    if (hoja == true){                                      //Si es hoja solo se busca la posicion a insertar
+        while (i >= 0 && (strncmp(llavesChar[i].llave, llave.llave, 14) > 0) ) {
+            llavesChar[i+1] = llavesChar[i];                        //Por mientras se busca la posicion exacta se mueven las llaves
+            i--;
+        }
+        if (llavesChar[i+1].llave == llave.llave)
+            return false;
+        llavesChar[i+1] = llave;                                //Se inserta en la posicion exacta ya que i termina en el ciclo en la posicion antes
+        tamano = tamano+1;
+    } else {                                                //Si no es hoja
+        while (i >= 0 && (strncmp(llavesChar[i].llave, llave.llave, 14) > 0) )      //Busca la posicion del hijo que tendra la llave
+            i--;
+ 
+        if (hijos[i+1]->tamano == hijos[i+1]->maximo) {     //Comprueba si el hijo no tiene el tamano maximo
+            split(i+1, hijos[i+1]); 
+ 
+            if (strncmp(llavesChar[i+1].llave, llave.llave, 14) < 0)            //Busca cual de las dos hojas que se acaban de splitear tendran al hijo
+                i++;
+        }
+        hijos[i+1]->insert(llave);
+    }
+    return true;
+}
 
-    if (keys[posicion] == k)
-        return keys[posicion];
-    if (leaf == true)
+void BTreeNode::split(int pos, BTreeNode* node){
+    BTreeNode* neo = new BTreeNode(node->hoja, node->maximo+1); //creacion del nuevo nodo
+    neo->tamano = minimo;                                       //
+ 
+    for (int i = 0; i < minimo; i++)
+        neo->llaves[i] = node->llaves[i+minimo+1];              //Copiando las ultimas llaves del nodo mayores de la mitad
+ 
+    if (node->hoja == false){
+        for (int i = 0; i < minimo+1; i++)
+            neo->hijos[i] = node->hijos[i+minimo+1];            //Copiando los ultimos hijos del nodo mayores de la mitad
+    }
+    node->tamano = minimo;                                      //se le asigna el tamano minimo al nodo a splitear
+ 
+    for (int i = tamano; i >= pos+1; i--)
+        hijos[i+1] = hijos[i];                                  //Copiando los primeros hijos del nodo menores de la mitad
+ 
+    hijos[pos+1] = neo;                                         //Poniendo el nuevo nodo que contiene los mayores de ultimo lugar de hijos del nodo padre
+ 
+    for (int j = tamano-1; j >= pos; j--)
+        llaves[j+1] = llaves[j];                                //Moviendo las posiciones de las llaves para hacer espacio para la llave que sera promovida
+ 
+    llaves[pos] = node->llaves[minimo];                         //Poniendo la llave promovida en la posicion necesaria
+ 
+    tamano = tamano + 1;        
+}
+
+BTreeNode* BTreeNode::busqueda(int llaveBusqueda){
+    int posicion = 0;
+    while (posicion < tamano && llaveBusqueda > llaves[posicion].llave)
+        posicion++;
+
+    if (llaves[posicion].llave == llaveBusqueda)
+        return this;
+    if (hoja == true)
         return NULL;
-    return C[posicion]->busqueda(llaveBusqueda);
+    return hijos[posicion]->busqueda(llaveBusqueda);
 }
 
 int BTreeNode::LlaveExiste(Key llave){
@@ -181,4 +265,21 @@ void BTreeNode::Merge(int pos_key){
     n--;
     delete(hermano);
     return;
+}
+
+void BTreeNode::inorder(bool tipo) {
+    int i;
+    for (i = 0; i < tamano; i++){
+        if (hoja == false){
+            cout << "Hijo " << i << " ";
+            hijos[i]->inorder(tipo);
+        }
+        if(tipo)
+            cout << " " << llaves[i];
+        else
+            cout << " " << llavesChar[i];
+    }
+ 
+    if (hoja == false)
+        hijos[i]->inorder(tipo);
 }
