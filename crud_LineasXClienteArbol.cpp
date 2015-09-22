@@ -1,5 +1,6 @@
 #include "b-tree.h"
 #include "crud_LineasXClienteArbol.h"
+#include "b-treenode.h"
 #include <iostream>
 #include <stdlib.h>
 #include <fstream>
@@ -75,14 +76,13 @@ void crud_lineasxclienteArbol::correr(){
 			KeyChar llave;
 			//unsigned long num = atoi(lineaNueva.numero);
 			//llave.llave = num;
-			strcpy(llave.llave, "55555555");
+			strcpy(llave.llave, lineaNueva.numero);
 			bool continuarGuardando;
 			if (availList == -1)
 				llave.RRN = sizeRegistros;
 			else
 				llave.RRN = availList;
 			continuarGuardando = tree.insert(llave);
-			//cout << "Pos 1 = " << file.tellp() << endl;
 			if (continuarGuardando){																
 				if (availList == -1)
 					file.seekp (0, file.end);
@@ -98,15 +98,11 @@ void crud_lineasxclienteArbol::correr(){
 					file.seekp(0);
 					file.seekp(ecuacion);
 				}
-				//cout << "Pos 2 = " << file.tellp() << endl;
 				file.write(reinterpret_cast<char*>(&lineaNueva), sizeof(LineaxClienteArbol));
-				//cout << "Pos 3 = " << file.tellp() << endl;
 				file.seekp (0, file.beg);
-				//cout << "Pos 4 = " << file.tellp() << endl;
 				sizeRegistros++;
 				head.sizeRegistro = head.sizeRegistro + 1;
 				file.write(reinterpret_cast<char*>(&head), sizeof(HeaderArbol));
-				//cout << "Pos 5 = " << file.tellp() << endl;
 			}
 		}
 		break;
@@ -188,35 +184,47 @@ void crud_lineasxclienteArbol::correr(){
 			strcpy(lineaNueva.numero, numero);
 			strcpy(lineaNueva.idCliente, "NOM");
 			//IndiceLineas ind = indice.get(lineaNueva);
-			//availList =  ind.RRN_index;
+			char* num1 = numero;
 
-			/*bool borrar = indice.remove(lineaNueva);
-			if (borrar){
-				int rrn = ind.RRN_index;
-				int ecuacion = ( sizeof(HeaderArbol) + ( sizeof(LineaxClienteArbol) * rrn) );
-				file.seekp(0);
-				file.seekp(ecuacion);
-				LineaxClienteArbol lineaVieja;
+			BTreeNode* nodo = tree.busqueda(num1);
+			KeyChar llave;
+			if(nodo != NULL){
+				for (int i = 0; i < nodo->tamano; ++i) {
+					if(strncmp(nodo->llavesChar[i].llave, numero, 14) == 0)
+						llave.RRN = nodo->llavesChar[i].RRN;
+				}
+				strcpy(llave.llave, lineaNueva.numero);
 
-				strcpy(lineaVieja.numero, "-99");
-				stringstream ss;
-				ss<<availList;
+				bool borrar = tree.Remove(llave);
+				tree.inorder(nombre_archivo);
 
-				//strcpy(lineaVieja.numero, "-99");
-				string s = ss.str();
-				char const *pchar = s.c_str();
-				strcpy(lineaVieja.idCliente, pchar);
+				if (borrar){
+					int rrn = llave.RRN;
+					int ecuacion = ( sizeof(HeaderArbol) + ( sizeof(LineaxClienteArbol) * rrn) );
+					file.seekp(0);
+					file.seekp(ecuacion);
+					LineaxClienteArbol lineaVieja;
+
+					strcpy(lineaVieja.numero, "-99");
+					stringstream ss;
+					ss<<availList;
+
+					string s = ss.str();
+					char const *pchar = s.c_str();
+					strcpy(lineaVieja.idCliente, pchar);
 
 
-				file.write(reinterpret_cast<char*>(&lineaVieja), sizeof(LineaxClienteArbol));
-				sizeRegistros--;
-				head.sizeRegistro = sizeRegistros;
-				availList =  ind.RRN_index;
-				head.availList = availList;
-				file.seekp (0, file.beg);
-				file.write(reinterpret_cast<char*>(&head), sizeof(HeaderArbol));
-			}
-			*/
+					file.write(reinterpret_cast<char*>(&lineaVieja), sizeof(LineaxClienteArbol));
+					sizeRegistros--;
+					head.sizeRegistro = sizeRegistros;
+					availList =  llave.RRN;
+					head.availList = availList;
+					file.seekp (0, file.beg);
+					file.write(reinterpret_cast<char*>(&head), sizeof(HeaderArbol));
+					cout << "Borro con exito." << endl;
+				}
+			} else
+				cout << "El id no fue encotrado" << endl;
 		}
 		break;
 		case 5:{

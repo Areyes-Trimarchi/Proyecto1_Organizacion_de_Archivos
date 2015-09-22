@@ -35,9 +35,10 @@ public:
 	BTree(int, const char *);
 	~BTree();
 	BTreeNode* busqueda(int);
+	BTreeNode* busqueda(char *);
 	bool insert(Key);
 	bool insert(KeyChar);
-	void Remove(Key);
+	bool Remove(Key);
 	void Remove(KeyChar);
 	void inorder(const char *);
 	void create(const char *);

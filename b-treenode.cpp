@@ -121,6 +121,18 @@ BTreeNode* BTreeNode::busqueda(int llaveBusqueda){
     return hijos[posicion]->busqueda(llaveBusqueda);
 }
 
+BTreeNode* BTreeNode::busqueda(char * llaveBusqueda){
+    int posicion = 0;
+    while (posicion < tamano && (strncmp(llaveBusqueda,llavesChar[posicion].llave, 14) > 0 ) )
+        posicion++;
+
+    if (strncmp(llavesChar[posicion].llave, llaveBusqueda, 14) == 0 )
+        return this;
+    if (hoja == true)
+        return NULL;
+    return hijos[posicion]->busqueda(llaveBusqueda);
+}
+
 void BTreeNode::inorder(bool tipo) {
     int i;
     for (i = 0; i < tamano; i++){
@@ -154,8 +166,10 @@ int BTreeNode::LlaveExiste(KeyChar llave){
     return pos_key;
 }
 
-void BTreeNode::Remove(Key llave){
+bool BTreeNode::Remove(Key llave){
+    cout<<"LLAVE ANTES de existrir";
     int pos_key = LlaveExiste(llave);
+    cout<<"LLAVE Despues de existrir";
     if (pos_key < tamano && llaves[pos_key].llave== llave.llave){
         if (!hoja){//Remove cuando no es hoja
             Key tmp_llave = llaves[pos_key];
@@ -181,7 +195,7 @@ void BTreeNode::Remove(Key llave){
     }else{
         if (hoja){
             cout << "La llave "<< llave <<" que usted ingreso no existe :(\n";
-            return;
+            return false;
         }
         bool esta_noesta = ((pos_key==tamano)? true : false );
         if (hijos[pos_key]->tamano < minimo){
@@ -194,7 +208,7 @@ void BTreeNode::Remove(Key llave){
             hijos[pos_key]->Remove(llave);
         }
     }
-    return;
+    return true;
 }
 
 void BTreeNode::Remove(KeyChar llave){

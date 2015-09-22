@@ -25,6 +25,12 @@ BTreeNode* BTree::busqueda(int llaveBusqueda){
 	return root->busqueda(llaveBusqueda);
 }
 
+BTreeNode* BTree::busqueda(char* llaveBusqueda){
+    if(root == NULL)
+        return NULL;
+    return root->busqueda(llaveBusqueda);
+}
+
 bool BTree::insert(Key llave){
 	 if (root == NULL){                                                            //Si no existe raiz
         root = new BTreeNode(tamano, true);                                     //Se crea la raiz
@@ -77,12 +83,15 @@ bool BTree::insert(KeyChar llave){
     return true;
 }
 
-void BTree::Remove(Key llave){
+bool BTree::Remove(Key llave){
     if (!root){
         cout << "El árbol esta vacío\n";
-        return;
+        return false;
     }
-    root->Remove(llave);
+    bool retornar;
+    cout<<"LLAMAR REMOVE";
+    retornar = root->Remove(llave);
+    cout<<"DESPUES LLAMAR REMOVE";
     if (root->tamano==0){
         BTreeNode *tmp = root;
         if (root->hoja){
@@ -92,7 +101,9 @@ void BTree::Remove(Key llave){
         }
         delete tmp;
     }
-    return;
+    if (retornar)
+        return true;
+    return false;
 }
 
 void BTree::Remove(KeyChar llave){

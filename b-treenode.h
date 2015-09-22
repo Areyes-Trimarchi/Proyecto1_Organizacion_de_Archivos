@@ -31,10 +31,11 @@ public:
 	bool insert(Key);
 	bool insert(KeyChar);
 	BTreeNode* busqueda(int);
+	BTreeNode* busqueda(char *);
 	void inorder(bool);
 	int LlaveExiste(Key);
 	int LlaveExiste(KeyChar);
-	void Remove(Key);
+	bool Remove(Key);
 	void Remove(KeyChar);
     Key getPrev(int);
     KeyChar GetPrev(int);
@@ -50,4 +51,8 @@ public:
     void MergeChar(int);
 
 friend class BTree;
+
+friend class crud_lineasxclienteArbol;
+
+friend class crud_ciudadesArbol;
 };

@@ -75,8 +75,6 @@ void crud_ciudadesArbol::correr(){
 					file.seekp (0, file.end);
 				else{
 					CiudadArbol city;
-					//int rrn = indice.ciudadRRN(availList, city).RRN_index;
-					//cout << "Avail = " << availList << "\tRRN = " << rrn << endl;
 					int ecuacion = ( sizeof(HeaderArbol) + ( sizeof(CiudadArbol) * availList) );	
 					file.seekg(0);
 					file.seekg(ecuacion);
@@ -87,15 +85,11 @@ void crud_ciudadesArbol::correr(){
 					file.seekp(0);
 					file.seekp(ecuacion);
 				}
-				//cout << "Pos 2 = " << file.tellp() << endl;
 				file.write(reinterpret_cast<char*>(&ciudadNueva), sizeof(CiudadArbol));
-				//cout << "Pos 3 = " << file.tellp() << endl;
 				file.seekp (0, file.beg);
-				//cout << "Pos 4 = " << file.tellp() << endl;
 				sizeRegistros++;
 				head.sizeRegistro = head.sizeRegistro + 1;
 				file.write(reinterpret_cast<char*>(&head), sizeof(HeaderArbol));
-				//cout << "Pos 5 = " << file.tellp() << endl;
 			}
 			tree.inorder(nombre_archivo);
 		}
@@ -178,31 +172,42 @@ void crud_ciudadesArbol::correr(){
 			CiudadArbol ciudadNueva;
 			ciudadNueva.idCiudad = ID;
 			strcpy(ciudadNueva.name, "NOM");
-			//Indice ind = indice.get(ciudadNueva);
-			//availList =  ind.RRN_index;
-			bool borrar = true;//indice.remove(ciudadNueva);
-			if(borrar){
-				//int rrn = ind.RRN_index;
-				//int ecuacion = ( sizeof(HeaderArbol) + ( sizeof(CiudadArbol) * rrn) );		
-				file.seekp(0);
-				//file.seekp(ecuacion);
-				CiudadArbol borrada;
+			
+			BTreeNode* nodo = tree.busqueda(ID);
+			Key llave;
+			if(nodo != NULL){
+				for (int i = 0; i < nodo->tamano; ++i) {
+					if(nodo->llaves[i].llave == ID)
+						llave.RRN = nodo->llaves[i].RRN;
+				}
+				llave.llave = ID;
+				bool borrar = tree.Remove(llave);
+				tree.inorder(nombre_archivo);
+				if(borrar){
+					int rrn = llave.RRN;
+					int ecuacion = ( sizeof(HeaderArbol) + ( sizeof(CiudadArbol) * rrn) );		
+					file.seekp(0);
+					file.seekp(ecuacion);
+					CiudadArbol borrada;
 
-				borrada.idCiudad = -99;
-				stringstream ss;
-				ss << availList;
-				string s = ss.str();
-				char const *pchar = s.c_str();
-				strcpy(borrada.name, pchar);
+					borrada.idCiudad = -99;
+					stringstream ss;
+					ss << availList;
+					string s = ss.str();
+					char const *pchar = s.c_str();
+					strcpy(borrada.name, pchar);
 
-				file.write(reinterpret_cast<char*>(&borrada), sizeof(CiudadArbol));
-				sizeRegistros--;
-				head.sizeRegistro = head.sizeRegistro - 1;
-				//availList =  ind.RRN_index;
-				head.availList = availList;
-				file.seekp (0, file.beg);
-				file.write(reinterpret_cast<char*>(&head), sizeof(HeaderArbol));
-			}
+					file.write(reinterpret_cast<char*>(&borrada), sizeof(CiudadArbol));
+					sizeRegistros--;
+					head.sizeRegistro = head.sizeRegistro - 1;
+					availList =  llave.RRN;
+					head.availList = availList;
+					file.seekp (0, file.beg);
+					file.write(reinterpret_cast<char*>(&head), sizeof(HeaderArbol));
+					cout << "Borro con exito." << endl;
+				}
+			} else
+				cout << "El id no fue encotrado" << endl;
 		}
 		break;
 		case 5:{
