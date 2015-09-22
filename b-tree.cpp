@@ -21,6 +21,7 @@ BTree::~BTree(){
 BTreeNode* BTree::busqueda(int llaveBusqueda){
 	if(root == NULL)
 		return NULL;
+    cout << "llaveBusqueda = " << llaveBusqueda << endl;
 	return root->busqueda(llaveBusqueda);
 }
 
@@ -128,9 +129,9 @@ bool BTree::Remove(KeyChar llave){
 void BTree::inorder(const char * nombre){
     bool tipo;
     bool tipo2 = false;
-    if(strncmp(nombre, "indexCiudadArboles.bin", 14) == 0 )
+    if(strncmp(nombre, "indexCiudadA.bin", 14) == 0 )
         tipo = true;
-    else if(strncmp(nombre, "indexClienteArbols.bin", 14) == 0 )
+    else if(strncmp(nombre, "indexCliente.bin", 14) == 0 )
         tipo = false;
     else
         tipo2 = true;
@@ -139,9 +140,9 @@ void BTree::inorder(const char * nombre){
 }
 
 void BTree::create(const char * nombre){
-    if(strncmp(nombre, "indexCiudadArboles.bin", 14) == 0 )
+    if(strncmp(nombre, "indexCiudades.bin", 14) == 0 )
         createCiudadArboles();
-    else if(strncmp(nombre, "indexClienteArbols.bin", 14) == 0 )
+    else if(strncmp(nombre, "indexCliente.bin", 14) == 0 )
         createClienteArbols();
     else
         createLineas();
@@ -149,6 +150,7 @@ void BTree::create(const char * nombre){
 
 void BTree::createCiudadArboles(){
     ifstream file;
+    cout << "Alvaro" << endl;
     file.open("ciudades.bin");
     if(!file.is_open()){
         cerr << "Error al abrir el archivo. Aqui es el error" << endl;

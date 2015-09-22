@@ -69,7 +69,6 @@ void crud_ciudadesArbol::correr(){
 			llave.llave = ciudadNueva.idCiudad;
 			llave.RRN = sizeRegistros;
 			bool continuarGuardando = tree.insert(llave);
-			cout << "guardar? " << continuarGuardando << endl;  
 			if(continuarGuardando){								
 				if (availList == -1)
 					file.seekp (0, file.end);
@@ -115,20 +114,43 @@ void crud_ciudadesArbol::correr(){
 			ciudadVieja.idCiudad = ID;
 			strcpy(ciudadVieja.name, "NOM");
 
-			//Indice ind = indice.get(ciudadVieja);
-			/*bool borrar = indice.remove(ciudadVieja);
-			if (borrar){
-				int meter = indice.ciudadRRN(ind.RRN_index, ciudadVieja).RRN_index;
-				
-				int rrn = ind.RRN_index;
-				int ecuacion = ( sizeof(HeaderArbol) + ( sizeof(CiudadArbol) * rrn) );
-				//indice.add(ciudadNueva, meter);
+			cout << "ID = " << ID << endl;
+			BTreeNode* nodo = tree.busqueda(ID);
+			Key llave;
+			if(nodo != NULL){
+				for (int i = 0; i < nodo->tamano; ++i) {
+					if(nodo->llaves[i].llave == ID)
+						llave.RRN = nodo->llaves[i].RRN;
+				}
+				llave.llave = ID;
+				bool borrar = tree.Remove(llave);
+				tree.inorder(nombre_archivo);
+				if(borrar){
+					bool continuarGuardando = tree.insert(llave);
+					if(continuarGuardando){							
+						if (availList == -1)
+							file.seekp (0, file.end);
+						else{
+							int ecuacion = ( sizeof(HeaderArbol) + ( sizeof(CiudadArbol) * availList) );	
+							file.seekg(0);
+							file.seekg(ecuacion);
+							file.read(reinterpret_cast<char*>(&ciudadVieja), sizeof(CiudadArbol));
+							availList = atoi(ciudadVieja.name);
+							head.availList = availList;
 
-				file.seekp(0);
-				file.seekp(ecuacion);
-				file.write(reinterpret_cast<char*>(&ciudadNueva), sizeof(CiudadArbol));
-			}*/
-
+							file.seekp(0);
+							file.seekp(ecuacion);
+						}
+						file.write(reinterpret_cast<char*>(&ciudadNueva), sizeof(CiudadArbol));
+						file.seekp (0, file.beg);
+						sizeRegistros++;
+						head.sizeRegistro = head.sizeRegistro + 1;
+						file.write(reinterpret_cast<char*>(&head), sizeof(HeaderArbol));
+					} else
+						cout << "El id ya existe" << endl;
+				}
+			} else
+				cout << "El id no fue encotrado" << endl;
 		}
 		break;
 		case 3:{
