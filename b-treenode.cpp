@@ -111,7 +111,6 @@ void BTreeNode::split(int pos, BTreeNode* node){
 
 BTreeNode* BTreeNode::busqueda(int llaveBusqueda){
     int posicion = 0;
-    cout << "llaveBusqueda = " << llaveBusqueda << endl;
     while (posicion < tamano && llaveBusqueda > llaves[posicion].llave)
         posicion++;
 
@@ -124,6 +123,7 @@ BTreeNode* BTreeNode::busqueda(int llaveBusqueda){
 
 BTreeNode* BTreeNode::busqueda(char * llaveBusqueda){
     int posicion = 0;
+    cout << "llaveBusqueda = " << llaveBusqueda << "\tkey = " << llavesChar[posicion].llave << endl;
     while (posicion < tamano && (strncmp(llaveBusqueda,llavesChar[posicion].llave, 14) > 0 ) )
         posicion++;
 

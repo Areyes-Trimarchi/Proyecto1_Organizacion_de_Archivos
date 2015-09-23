@@ -123,23 +123,33 @@ void crud_lineasxclienteArbol::correr(){
 			strcpy(lineaNueva.numero, numeroNUEVO);
 			strcpy(lineaNueva.idCliente, idCliente);
 
-			LineaxClienteArbol lineaVieja;
-			strcpy(lineaVieja.numero, numero);
-			strcpy(lineaVieja.idCliente, "NOM");
-			//IndiceLineas ind = indice.get(lineaVieja);
-			/*bool borrar = indice.remove(lineaVieja);
-			if(borrar){
-				int meter = indice.lineaRRN(ind.RRN_index, lineaVieja).RRN_index;
-				
-				int rrn = ind.RRN_index;
-				int ecuacion = ( sizeof(HeaderArbol) + ( sizeof(LineaxClienteArbol) * rrn) );
-				indice.add(lineaNueva, meter);
+			BTreeNode* nodo = tree.busqueda(numero);
+			KeyChar llave;
+			if(nodo != NULL){
+				for (int i = 0; i < nodo->tamano; ++i) {
+					if( strncmp(nodo->llavesChar[i].llave, numero, 14) == 0 )
+						llave.RRN = nodo->llavesChar[i].RRN;
+				}
+				strcpy(llave.llave, numero);
+				bool borrar = tree.Remove(llave);
+				tree.inorder(nombre_archivo);
+				if(borrar){
+					strcpy(llave.llave, numeroNUEVO);
+					bool continuarGuardando = tree.insert(llave);
+					if(continuarGuardando){							
 
-				file.seekp(0);
-				file.seekp(ecuacion);
-				file.write(reinterpret_cast<char*>(&lineaNueva), sizeof(LineaxClienteArbol));
-			}
-			*/
+						int rrn = llave.RRN;
+						int ecuacion = ( sizeof(HeaderArbol) + ( sizeof(LineaxClienteArbol) * rrn) );
+
+						file.seekp(0);
+						file.seekp(ecuacion);
+						file.write(reinterpret_cast<char*>(&lineaNueva), sizeof(LineaxClienteArbol));
+						file.seekp (0, file.beg);
+					} else
+						cout << "El numero del cliente ya existe" << endl;
+				}
+			} else
+				cout << "El numero no fue encotrado" << endl;
 		}
 		break;
 		case 3:{

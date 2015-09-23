@@ -112,6 +112,12 @@ int main(int argc, char* argv[]){//inicio main
 				crud_lineasxclienteArbol.correr();
 			}//fin case 5 Archivo de Lineas por Cliente con el Arbol-B
 			break;
+			case 7:{//case 5 Para hacer facturas
+				cout<<"Facturas"<<endl;
+				crud_lineasxclienteArbol crud_lineasxclienteArbol;
+				crud_lineasxclienteArbol.correr();
+			}//fin case 5 Para hacer facturas
+			break;
 
 		}//fin switch principal (menu)
 		cout<<"Desea volver a ingresar al programa?(S/N)";
