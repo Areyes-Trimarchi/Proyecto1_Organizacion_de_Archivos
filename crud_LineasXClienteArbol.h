@@ -6,8 +6,8 @@
 
 using namespace std;
 
-class crud_lineasxclienteArbol{
-public:
+ class crud_lineasxclienteArbol{
+ public:
  	crud_lineasxclienteArbol();
  	void correr();
-};
+ };

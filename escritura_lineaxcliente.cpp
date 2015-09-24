@@ -62,10 +62,12 @@ int main(int argc, char* argv[]){
 		idCliente[13]='\0';
 		strncpy(linea.numero,numero,9);
 		strncpy(linea.idCliente,idCliente,14);
+        cout << "NUMERO = " << linea.numero << "\tIDCLIENTE = " << linea.idCliente << endl;
 		file.write(reinterpret_cast<char*>(&linea), sizeof(LineaxCliente));
 		sizeRegistro++;
 		cont = lineaxcliente.tellg();
 	}
+    cout << "Size = " << sizeRegistro << endl;
 	head.sizeRegistro = sizeRegistro;
 	file.seekp(0);
 	file.write(reinterpret_cast<char*>(&head), sizeof(Header));

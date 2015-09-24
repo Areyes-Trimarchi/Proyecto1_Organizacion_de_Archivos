@@ -88,6 +88,5 @@ public:
 	Indice ciudadRRN(int, Ciudad);
 	IndiceClien clienteRRN(int, Cliente);
 	IndiceLineas lineaRRN(int, LineaxCliente);
-	void imprimirIndexLineas();
 	bool fexists(const char *);
 };

@@ -11,7 +11,7 @@
 using namespace std;
 
 
-ostream& operator<<(ostream& output, const IndiceLineas& city){
+/*ostream& operator<<(ostream& output, const IndiceLineas& city){
 	output << " idCliente = " << city.numero << "\t" << "\tRRN = " << city.RRN_index << endl;
 	return output;  
 }
@@ -429,7 +429,6 @@ bool Index::orderIndexLineaxCliente(vector<IndiceLineas>& indexC, LineaxCliente 
 	    {
 	    	centro = (ultimoIndice + primerIndice)/2;
 		    if ( strncmp(indexC.at(centro).numero, line.numero, 9) == 0 ){
-		    	cout << line.numero << endl;
 				cerr<<"Ya existe ese id"<<endl;
 				return false;
 			}
@@ -558,7 +557,7 @@ void Index::cargarClientes(){
 	ifstream file;
 	file.open("indexClientes.bin");
 	if(file.fail()){
-		cerr << "Error al abrir el archivo. DOG" << endl;
+		cerr << "Error al abrir el archivo." << endl;
 	} else{
 		IndiceClien indi;
 		indexClientes.clear();
@@ -625,12 +624,6 @@ IndiceLineas Index::lineaRRN(int rrn, LineaxCliente linea){
 		if(rrn == indexLineas.at(i).RRN_index)
 			return indexLineas.at(i);
 	return c;
-}
-
-void Index::imprimirIndexLineas(){
-	for (int i = 0; i < indexLineas.size(); ++i){
-		cout << i << ": " << indexLineas.at(i);
-	}
 }
 
 bool Index::fexists(const char *filename) {

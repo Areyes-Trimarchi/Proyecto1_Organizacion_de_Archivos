@@ -11,7 +11,6 @@ BTree::BTree(int tamano, char nombre[25]){
     this->tamano = tamano;
     this->root = NULL;
     create(nombre);
-    inorder(nombre);
 }
 
 BTree::~BTree(){
@@ -21,14 +20,12 @@ BTree::~BTree(){
 BTreeNode* BTree::busqueda(int llaveBusqueda){
     if(root == NULL)
         return NULL;
-    cout << "llaveBusqueda = " << llaveBusqueda << endl;
     return root->busqueda(llaveBusqueda);
 }
 
 BTreeNode* BTree::busqueda(char* llaveBusqueda){
     if(root == NULL)
         return NULL;
-    cout << "llaveBusqueda = " << llaveBusqueda << endl;
     return root->busqueda(llaveBusqueda);
 }
 
@@ -130,9 +127,9 @@ bool BTree::Remove(KeyChar llave){
 void BTree::inorder(char nombre[25]){
     bool tipo;
     bool tipo2 = false;
-    if(strncmp(nombre, "indexCiudad.bin", 25) == 0 )
+    if(strncmp(nombre, "indexCiudades.bin", 25) == 0 )
         tipo = true;
-    else if(strncmp(nombre, "indexCliente.bin", 25) == 0 )
+    else if(strncmp(nombre, "indexClientes.bin", 25) == 0 )
         tipo = false;
     else
         tipo2 = true;
@@ -185,6 +182,7 @@ void BTree::createCiudadArboles(){
                 i--;
                 skip++;
             }
+            cout << llave.llave << endl;
         }
         /*ofstream salida("indexCiudadArboles.bin", ofstream::binary);
         for (int i = 0; i < index.size(); i++){
@@ -223,9 +221,7 @@ void BTree::createClienteArbols(){
 
             strncpy(llave.llave, clienteArbol.idCliente, 14);
             llave.RRN = RRN;
-            //cout<<llave.llave<<"\t";
             if(strncmp(clienteArbol.idCliente, "*", 1) != 0){
-                cout<<"IF != 0"<<endl;
                 this->insert(llave);
             }
             if(strncmp (clienteArbol.idCliente, "*", 1) == 0){

@@ -25,8 +25,8 @@ crud_lineasxclienteArbol::crud_lineasxclienteArbol(){
 
 void crud_lineasxclienteArbol::correr(){
 
-	char nombre_archivo[14];
-	strncpy(nombre_archivo,"indexLineasXCliente.bin",14);
+	char nombre_archivo[25];
+	strncpy(nombre_archivo,"indexLineasXCliente.bin",25);
  
 	fstream file("lineaxclientes.bin", fstream::binary);
 	file.open("lineaxclientes.bin");
@@ -282,8 +282,8 @@ void crud_lineasxclienteArbol::correr(){
 		}
 		break;
 		case 6:{
-			char nombre_archivo[14];
-			strncpy(nombre_archivo,"indexLineasXCliente.bin",14);
+			char nombre_archivo[25];
+			strncpy(nombre_archivo,"indexLineasXCliente.bin",25);
 			cout << "\tReindexar" << endl;
 			tree.create(nombre_archivo);
 			cout << "Reindexado con exito." << endl;

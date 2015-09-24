@@ -83,7 +83,6 @@ void FacturaA::corre(){
             }
         }
         file_Llamadas.close();
-        cout << "Size = " << llamadas_cliente.size() << endl;
         vector<double> costos;
         for (int i = 0; i < llamadas_cliente.size(); ++i){
             string anio_inicio;
@@ -157,8 +156,6 @@ void FacturaA::corre(){
             strncpy(fac.ciudadNombre, ciudadNombre, 40);
             fac.numeros_cliente = numeros_cliente;
             fac.llamadas_cliente = llamadas_cliente;
-            cout << "costo = " << precio << endl;
-            cout << "cliente = " << name << "\t ciudadNombre = " << ciudadNombre << "\t numero = " << llamadas_cliente.at(i).numero << endl;
             costos.push_back(precio + 0.000000001);
             fac.costo = costos;
             
@@ -177,7 +174,7 @@ void FacturaA::corre(){
                 if( strncmp(facturas.at(i).numeros_cliente.at(j).c_str(), facturas.at(i).llamadas_cliente.at(k).numero, 9) == 0){
                     cout << "\t\t\t" << facturas.at(i).llamadas_cliente.at(k).numero << "\t" << facturas.at(i).llamadas_cliente.at(k).destino;
                     cout << "\t" << facturas.at(i).llamadas_cliente.at(k).inicio << "\t" << facturas.at(i).llamadas_cliente.at(k).final;
-                    cout << "\t" << facturas.at(i).costo.at(j) << "\t i = " << k <<endl;
+                    cout << "\t" << facturas.at(i).costo.at(j) <<endl;
                 }
             }
         }

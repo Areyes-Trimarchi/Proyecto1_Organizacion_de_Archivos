@@ -29,8 +29,8 @@ crud_ciudadesArbol::crud_ciudadesArbol(){
 
 void crud_ciudadesArbol::correr(){
 
-	char nombre_archivo[14];
-	strncpy(nombre_archivo,"indexCiudades.bin",14);
+	char nombre_archivo[25];
+	strncpy(nombre_archivo,"indexCiudades.bin",25);
 	fstream file("ciudades.bin", fstream::binary);
 	file.open("ciudades.bin");
 
@@ -279,8 +279,8 @@ void crud_ciudadesArbol::correr(){
 		}
 		break;
 		case 6:{
-			char nombre_archivo[14];
-			strncpy(nombre_archivo,"indexCiudades.bin",14);
+			char nombre_archivo[25];
+			strncpy(nombre_archivo,"indexCiudades.bin",25);
 			cout << "\tReindexar" << endl;
 			tree.create(nombre_archivo);
 			cout << "Reindexado con exito." << endl;

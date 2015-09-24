@@ -5,7 +5,7 @@
 using namespace std;
 
 class crud_ciudadesArbol{
-public:
+ public:
  	crud_ciudadesArbol();
  	void correr();
-};
+ };

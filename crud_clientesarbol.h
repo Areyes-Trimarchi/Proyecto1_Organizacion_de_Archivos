@@ -6,8 +6,8 @@
 
 using namespace std;
 
-class crud_ClientesArbol{
-public:
-	crud_ClientesArbol();
+ class crud_ClientesArbol{
+ public:
+ 	crud_ClientesArbol();
  	void correr();
-};
+ };
