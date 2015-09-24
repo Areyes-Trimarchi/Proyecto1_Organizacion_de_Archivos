@@ -269,19 +269,25 @@ void crud_lineasxclienteArbol::correr(){
 					LineaxClienteArbol linea;
 					strcpy(linea.numero, numero);
 					strcpy(linea.idCliente, "NOM");
-					//IndiceLineas ind = indice.get(linea);
-					//int rrn = ind.RRN_index;
+
 					file.seekg(0, file.beg);
 					file.read(reinterpret_cast<char*>(&head), sizeof(HeaderArbol));
-					/*if(rrn != -99){
-						//int ecuacion = ( sizeof(Header) + ( sizeof(LineaxClienteArbol) * rrn) );
+					BTreeNode* nodo = tree.busqueda(numero);
+					KeyChar llave;
+					if(nodo != NULL){
+						for (int i = 0; i < nodo->tamano; ++i) {
+							if( strncmp(nodo->llavesChar[i].llave, numero, 14) == 0 )
+								llave.RRN = nodo->llavesChar[i].RRN;
+						}
+						int rrn = llave.RRN;
+						int ecuacion = ( sizeof(HeaderArbol) + ( sizeof(LineaxClienteArbol) * rrn) );
 						file.seekg(0);
-						//file.seekg(ecuacion);
+						file.seekg(ecuacion);
 						file.read(reinterpret_cast<char*>(&linea), sizeof(LineaxClienteArbol));
 						cout << "Busqueda realizada con exito.\nLa linea telefonica que busca es: " << linea; 
+					
 					} else
 						cout << "La linea telefonica no existe en la base de datos." << endl;
-					*/	
 				}
 				break;
 			}
