@@ -75,9 +75,9 @@ int main(int argc, char const *argv[]){
 
 				llamada call;
 				
-				strncpy(a1, NOMinicio, 25);
-				strncpy(a2, NOMfinal, 25);
-				strncpy(a3, NOMnumeros, 25);
+				strncpy(a1, NOMinicio.c_str(), 25);
+				strncpy(a2, NOMfinal.c_str(), 25);
+				strncpy(a3, NOMnumeros.c_str(), 25);
 				ifstream fileINICIO (a1);
 				int pos = 0;
 				if (fileINICIO.is_open()){
