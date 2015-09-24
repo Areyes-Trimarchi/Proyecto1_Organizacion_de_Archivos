@@ -3,6 +3,7 @@
 #include "factura.h"
 #include <cstring>
 #include <string>
+#include <sstream>
 #include <cstdlib>
 #include <fstream>
 #include <vector>
@@ -135,13 +136,12 @@ void FacturaA::corre(){
             long total_inicio = year_inicio + month_inicio + day_inicio + hour_inicio + minutes_inicio + seconds_inicio;
             long total_final = year_final + month_final + day_final + hour_final + minutes_final + seconds_final;
             long total = total_final - total_inicio;
-
-            long tarifa_AM1 = hours_to_seconds(to_string(8) );
-            long tarifa_AM2 = hours_to_seconds(to_string(15) ) + minutes_to_seconds(to_string(59) ) + 59;
-            long tarifa_1 = hours_to_seconds(to_string(16) );
-            long tarifa_2 = hours_to_seconds(to_string(23) ) + minutes_to_seconds(to_string(59) ) + 59;
-            long tarifa_PM1 = hours_to_seconds(to_string(0) );
-            long tarifa_PM2 = hours_to_seconds(to_string(7) ) + minutes_to_seconds(to_string(59) ) + 59;
+            long tarifa_AM1 = hours_to_seconds("8");
+            long tarifa_AM2 = hours_to_seconds("15") + minutes_to_seconds("59") + 59 ;
+            long tarifa_1 = hours_to_seconds("16");
+            long tarifa_2 = hours_to_seconds("23") + minutes_to_seconds("59") + 59 ;
+            long tarifa_PM1 = hours_to_seconds("0");
+            long tarifa_PM2 = hours_to_seconds("7") + minutes_to_seconds("59") + 59 ;
 
             long horas = hour_inicio + minutes_inicio + seconds_inicio;
             double precio;
