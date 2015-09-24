@@ -1,5 +1,5 @@
-#include "index.h"
-#include "crud_Ciudades.h"
+#include "b-tree.h"
+#include "crud_CiudadesArbol.h"
 #include <iostream>
 #include <stdlib.h>
 #include <fstream>
@@ -9,11 +9,11 @@
 
 using namespace std;
 
-ostream& operator<<(ostream& output, const Ciudad& city){
+ostream& operator<<(ostream& output, const CiudadArbol& city){
 	output << "IDCIUDAD = " << city.idCiudad << "\tNOMBRE = " << city.name << endl;
 	return output;  
 }
-istream& operator>>(istream& input, Ciudad& city){
+istream& operator>>(istream& input, CiudadArbol& city){
 	 input >> city.idCiudad >> city.name;
 	 return input;
 }
@@ -23,22 +23,22 @@ istream& operator>>(istream& input, Ciudad& city){
 }*/
 
 
-crud_ciudades::crud_ciudades(){
+crud_ciudadesArbol::crud_ciudadesArbol(){
 
 }
 
-void crud_ciudades::correr(){
+void crud_ciudadesArbol::correr(){
 
 	char nombre_archivo[14];
 	strncpy(nombre_archivo,"indexCiudades.bin",14);
 	fstream file("ciudades.bin", fstream::binary);
 	file.open("ciudades.bin");
 
-	Index indice(nombre_archivo);
+	BTree tree(5, nombre_archivo);
 
-	Header head;
+	HeaderArbol head;
 	file.seekg(0);
-	file.read(reinterpret_cast<char*>(&head), sizeof(Header));
+	file.read(reinterpret_cast<char*>(&head), sizeof(HeaderArbol));
 	int sizeRegistros = head.sizeRegistro;
 	int availList =  head.availList;
 
@@ -61,35 +61,36 @@ void crud_ciudades::correr(){
 			cin >> ID;
 			cout << "Ingrese el nombre de la ciudad: " << endl;
 			cin >> NOM;
-			Ciudad ciudadNueva;
+			CiudadArbol ciudadNueva;
 			ciudadNueva.idCiudad = ID;
 			strcpy(ciudadNueva.name, NOM);
-			bool continuarGuardando = indice.add(ciudadNueva, sizeRegistros /*+ elementoBorrado(sizeRegistros)*/);
+
+			Key llave;
+			llave.llave = ciudadNueva.idCiudad;
+			llave.RRN = sizeRegistros;
+			bool continuarGuardando = tree.insert(llave);
 			if(continuarGuardando){								
 				if (availList == -1)
 					file.seekp (0, file.end);
 				else{
-					Ciudad city;
-					int ecuacion = ( sizeof(Header) + ( sizeof(Ciudad) * availList) );	
+					CiudadArbol city;
+					int ecuacion = ( sizeof(HeaderArbol) + ( sizeof(CiudadArbol) * availList) );	
 					file.seekg(0);
 					file.seekg(ecuacion);
-					file.read(reinterpret_cast<char*>(&city), sizeof(Ciudad));
+					file.read(reinterpret_cast<char*>(&city), sizeof(CiudadArbol));
 					availList = atoi(city.name);
 					head.availList = availList;
 
 					file.seekp(0);
 					file.seekp(ecuacion);
 				}
-				//cout << "Pos 2 = " << file.tellp() << endl;
-				file.write(reinterpret_cast<char*>(&ciudadNueva), sizeof(Ciudad));
-				//cout << "Pos 3 = " << file.tellp() << endl;
+				file.write(reinterpret_cast<char*>(&ciudadNueva), sizeof(CiudadArbol));
 				file.seekp (0, file.beg);
-				//cout << "Pos 4 = " << file.tellp() << endl;
 				sizeRegistros++;
 				head.sizeRegistro = head.sizeRegistro + 1;
-				file.write(reinterpret_cast<char*>(&head), sizeof(Header));
-				//cout << "Pos 5 = " << file.tellp() << endl;
+				file.write(reinterpret_cast<char*>(&head), sizeof(HeaderArbol));
 			}
+			tree.inorder(nombre_archivo);
 		}
 		break;
 		case 2:{
@@ -105,28 +106,41 @@ void crud_ciudades::correr(){
 			cout << "Ingrese el NUEVO nombre de la ciudad: " << endl;
 			cin >> NOM;
 
-			Ciudad ciudadNueva;
+			CiudadArbol ciudadNueva;
 			ciudadNueva.idCiudad = IDNUEVO;
 			strcpy(ciudadNueva.name, NOM);
 
-			Ciudad ciudadVieja;
+			CiudadArbol ciudadVieja;
 			ciudadVieja.idCiudad = ID;
 			strcpy(ciudadVieja.name, "NOM");
 
-			Indice ind = indice.get(ciudadVieja);
-			bool borrar = indice.remove(ciudadVieja);
-			if (borrar){
-				int meter = indice.ciudadRRN(ind.RRN_index, ciudadVieja).RRN_index;
-				
-				int rrn = ind.RRN_index;
-				int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * rrn) );
-				indice.add(ciudadNueva, meter);
+			BTreeNode* nodo = tree.busqueda(ID);
+			Key llave;
+			if(nodo != NULL){
+				for (int i = 0; i < nodo->tamano; ++i) {
+					if(nodo->llaves[i].llave == ID)
+						llave.RRN = nodo->llaves[i].RRN;
+				}
+				llave.llave = ID;
+				bool borrar = tree.Remove(llave);
+				tree.inorder(nombre_archivo);
+				if(borrar){
+					llave.llave = IDNUEVO; 
+					bool continuarGuardando = tree.insert(llave);
+					if(continuarGuardando){							
 
-				file.seekp(0);
-				file.seekp(ecuacion);
-				file.write(reinterpret_cast<char*>(&ciudadNueva), sizeof(Ciudad));
-			}
+						int rrn = llave.RRN;
+						int ecuacion = ( sizeof(HeaderArbol) + ( sizeof(CiudadArbol) * rrn) );
 
+						file.seekp(0);
+						file.seekp(ecuacion);
+						file.write(reinterpret_cast<char*>(&ciudadNueva), sizeof(CiudadArbol));
+						file.seekp (0, file.beg);
+					} else
+						cout << "El id ya existe" << endl;
+				}
+			} else
+				cout << "El id no fue encotrado" << endl;
 		}
 		break;
 		case 3:{
@@ -138,29 +152,21 @@ void crud_ciudades::correr(){
 			//indice.create("indexCiudades.bin");		<-----------
 			switch(opcionListar){
 				case 1:{
-					Ciudad city;
+					CiudadArbol city;
 					int rrn;
 					for (int i = 0; i < sizeRegistros ; ++i){
-						rrn = indice.at(i, city).RRN_index;
-<<<<<<< HEAD
-						int ecuacion = ( sizeof(Header) + ( sizeof(Ciudad) * rrn) );	
-=======
-<<<<<<< HEAD
-						int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * rrn) );	
-=======
-						int ecuacion = ( sizeof(Header) + ( sizeof(Ciudad) * rrn) );	
->>>>>>> Arbol-B
->>>>>>> 903f28318ceddd1ac28baae7482b66b41953203a
+						//rrn = indice.at(i, city).RRN_index;
+						int ecuacion = ( sizeof(HeaderArbol) + ( sizeof(CiudadArbol) * rrn) );	
 						file.seekg(0);
 						file.seekg(ecuacion);
-						file.read(reinterpret_cast<char*>(&city), sizeof(Ciudad));
+						file.read(reinterpret_cast<char*>(&city), sizeof(CiudadArbol));
 						cout << city;
 					}
 				}
 				break;
 				case 2:{
-					Ciudad city;
-					while(file.read(reinterpret_cast<char*>(&city), sizeof(Ciudad))){
+					CiudadArbol city;
+					while(file.read(reinterpret_cast<char*>(&city), sizeof(CiudadArbol))){
 						cout << city;
 					}
 				}
@@ -175,34 +181,46 @@ void crud_ciudades::correr(){
 			int ID;
 			cout << "Ingrese el id de la ciudad a eliminar: " << endl;
 			cin >> ID;
-			Ciudad ciudadNueva;
+			CiudadArbol ciudadNueva;
 			ciudadNueva.idCiudad = ID;
 			strcpy(ciudadNueva.name, "NOM");
-			Indice ind = indice.get(ciudadNueva);
-			//availList =  ind.RRN_index;
-			bool borrar = indice.remove(ciudadNueva);
-			if(borrar){
-				int rrn = ind.RRN_index;
-				int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * rrn) );		
-				file.seekp(0);
-				file.seekp(ecuacion);
-				Ciudad borrada;
+			
+			BTreeNode* nodo = tree.busqueda(ID);
+			Key llave;
+			if(nodo != NULL){
+				for (int i = 0; i < nodo->tamano; ++i) {
+					if(nodo->llaves[i].llave == ID)
+						llave.RRN = nodo->llaves[i].RRN;
+				}
+				llave.llave = ID;
+				bool borrar = tree.Remove(llave);
+				tree.inorder(nombre_archivo);
+				if(borrar){
+					int rrn = llave.RRN;
+					int ecuacion = ( sizeof(HeaderArbol) + ( sizeof(CiudadArbol) * rrn) );		
+					file.seekp(0);
+					file.seekp(ecuacion);
+					CiudadArbol borrada;
 
-				borrada.idCiudad = -99;
-				stringstream ss;
-				ss<<availList;
-				string s = ss.str();
-				char const *pchar = s.c_str();
-				strcpy(borrada.name, pchar);
+					borrada.idCiudad = -99;
+					stringstream ss;
+					ss << availList;
+					string s = ss.str();
+					char const *pchar = s.c_str();
+					strcpy(borrada.name, pchar);
 
-				file.write(reinterpret_cast<char*>(&borrada), sizeof(Ciudad));
-				sizeRegistros--;
-				head.sizeRegistro = head.sizeRegistro - 1;
-				availList =  ind.RRN_index;
-				head.availList = availList;
-				file.seekp (0, file.beg);
-				file.write(reinterpret_cast<char*>(&head), sizeof(Header));
-			}
+					file.write(reinterpret_cast<char*>(&borrada), sizeof(CiudadArbol));
+					sizeRegistros--;
+					head.sizeRegistro = head.sizeRegistro - 1;
+					availList =  llave.RRN;
+					head.availList = availList;
+					file.seekp (0, file.beg);
+					file.seekp (0);
+					file.write(reinterpret_cast<char*>(&head), sizeof(HeaderArbol));
+					cout << "Borro con exito." << endl;
+				}
+			} else
+				cout << "El id no fue encotrado" << endl;
 		}
 		break;
 		case 5:{
@@ -214,18 +232,18 @@ void crud_ciudades::correr(){
 					int idBuscar;
 					cout << "Ingrese el ID de la Ciudad que desea encontrar: " << endl;
 					cin >> idBuscar;
-					Ciudad city;
+					CiudadArbol city;
 					file.seekg(0, file.beg);
-					file.read(reinterpret_cast<char*>(&head), sizeof(Header));
+					file.read(reinterpret_cast<char*>(&head), sizeof(HeaderArbol));
 					bool encontro = false;
-					while(file.read(reinterpret_cast<char*>(&city), sizeof(Ciudad))){
+					while(file.read(reinterpret_cast<char*>(&city), sizeof(CiudadArbol))){
 						if(idBuscar == city.idCiudad){
 							encontro = true;
 							break;
 						}
 					}
 					if(encontro)
-						cout << "Busqueda realizada con exito.\nLa ciudad que busca es: " << city;
+						cout << "Busqueda realizada con exito.\nLa ciudad que busca es: ";// << city;
 					else
 						cout << "La ciudad no existe en la base de datos." << endl;
 				}
@@ -234,18 +252,24 @@ void crud_ciudades::correr(){
 					int idBuscar;
 					cout << "Ingrese el ID de la Ciudad que desea encontrar: " << endl;
 					cin >> idBuscar;
-					Ciudad city;
+					CiudadArbol city;
 					city.idCiudad = idBuscar;
 					strcpy(city.name, "NOM");
-					Indice ind = indice.get(city);
-					int rrn = ind.RRN_index;
-					file.seekg(0, file.beg);
-					file.read(reinterpret_cast<char*>(&head), sizeof(Header));
-					if(rrn != -99){
-						int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * rrn) );	
+
+					BTreeNode* nodo = tree.busqueda(idBuscar);
+					Key llave;
+					if(nodo != NULL){
+						for (int i = 0; i < nodo->tamano; ++i) {
+							if(nodo->llaves[i].llave == idBuscar)
+								llave.RRN = nodo->llaves[i].RRN;
+						}
+						int rrn = llave.RRN;
+
+					
+						int ecuacion = ( sizeof(HeaderArbol) + ( sizeof(CiudadArbol) * rrn) );	
 						file.seekg(0);
 						file.seekg(ecuacion);
-						file.read(reinterpret_cast<char*>(&city), sizeof(Ciudad));
+						file.read(reinterpret_cast<char*>(&city), sizeof(CiudadArbol));
 						cout << "Busqueda realizada con exito.\nLa ciudad que busca es: " << city;
 					} else
 						cout << "La ciudad no existe en la base de datos." << endl;
@@ -258,7 +282,7 @@ void crud_ciudades::correr(){
 			char nombre_archivo[14];
 			strncpy(nombre_archivo,"indexCiudades.bin",14);
 			cout << "\tReindexar" << endl;
-			indice.create(nombre_archivo);
+			tree.create(nombre_archivo);
 			cout << "Reindexado con exito." << endl;
 		}
 		break;

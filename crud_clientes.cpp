@@ -1,5 +1,6 @@
 #include "crud_clientes.h"
 #include "index.h"
+#include "b-tree.h"
 #include <iostream>
 #include <string>
 #include <cstring>
@@ -18,7 +19,11 @@ ostream& operator<<(ostream& output, const Cliente& cliente){
 
 Crud_Clientes::Crud_Clientes(){
 	ifstream file_index;
-	file_index.open("indexClientes.bin");
+	char nombre[25];
+	strncpy(nombre,"indexClientes.bin",25);
+	file_index.open(nombre);
+	//arbol=new BTree(5,nombre);
+	cout<<"PASo DEL ARBOL"<<endl;
 	if(file_index.fail()){
 		Indexar();
 	}else{
@@ -38,7 +43,6 @@ Crud_Clientes::Crud_Clientes(){
 }
 
 Crud_Clientes::~Crud_Clientes(){
-
 }
 
 bool Crud_Clientes::Indexar(){
@@ -245,7 +249,6 @@ bool Crud_Clientes::Modificar(){
 
 bool Crud_Clientes::Listar(){
 	cout<<"Lista de Clientes"<<endl;
-	CargarVectorIndice();
 	Cliente client;
 	ifstream file_cliente;
 	file_cliente.open("clientes.bin");
@@ -476,14 +479,4 @@ void Crud_Clientes::CargarVectorClientes(Cliente cliente,int RRN){
 	if(entro==0){
 		clientes.push_back(cliente);
 	}
-}
-
-void Crud_Clientes::CargarVectorIndice(){
-	indice_clientes.clear();
-	IndiceClien indice_clien;
-	ifstream file("indexClientes.bin", ifstream::binary);
-	while (file.read(reinterpret_cast<char*>(&indice_clien), sizeof(IndiceClien))){
-		indice_clientes.push_back(indice_clien);
-	}
-	file.close();
 }
