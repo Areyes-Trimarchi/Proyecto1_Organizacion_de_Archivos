@@ -12,7 +12,7 @@ struct Factura {
     char ciudadNombre[40];
     vector<string> numeros_cliente;
     vector<Llamada> llamadas_cliente;
-    double costo;
+    vector<double> costo;
 };
 
 class FacturaA{
