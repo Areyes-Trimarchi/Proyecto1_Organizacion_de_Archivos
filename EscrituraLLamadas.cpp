@@ -3,20 +3,21 @@
 #include <stdlib.h>
 #include <fstream>
 #include <vector>  
+#include <cstring> 
 #include <string> 
 using namespace std;
 
 int menu();
 
 struct llamada{
-	int numero;
+	char numero[9];
 	string inicio;
 	string final;
-	string destino;
+	char destino[9];
 };
 
 ostream& operator<<(ostream& output, const llamada& llamada){
-	output << llamada.numero << "\t" << llamada.inicio << "\t" << llamada.final << "\t" << llamada.destino << endl;
+	output << "Numero = " << llamada.numero << "\tInicio = " << llamada.inicio << "\tFinal = " << llamada.final << "\tDestino = " << llamada.destino << endl;
 	return output;  
 }
 istream& operator>>(istream& input, llamada& llamada){
@@ -35,22 +36,18 @@ int main(int argc, char const *argv[]){
 		switch(opcionMenu){
 			case 1:{
 				llamada call;
-				ifstream file("data.bin", ifstream::binary);
-				int cont = 0 ;
-				while(file.read(reinterpret_cast<char*>(&call), sizeof(call))){
+				ifstream file("llamadas.bin", ifstream::binary);
+				while(file.read(reinterpret_cast<char*>(&call), sizeof(llamada))){
 					cout << call << endl;
-					cout << cont << endl;
-					cont++;
 				}
+				file.close();
 			}
 			break;
 			case 2:{
-				ofstream file("data.bin", ofstream::binary);
-				int cont = 0 ;
+				ofstream file("llamadas.bin", ofstream::binary);
 				for (int i = 0; i < llamadas.size(); ++i){
-					file.write(reinterpret_cast<const char*> (&llamadas.at(i)), sizeof(llamadas.at(i)));
-					cout << "Funciones +++++++" << cont << endl;
-					cont++;
+					cout << "Numero = " << llamadas.at(i).numero << "\tInicio = " << llamadas.at(i).inicio << "\tFinal = " << llamadas.at(i).final << "\tDestino = " << llamadas.at(i).destino << endl;
+					file.write(reinterpret_cast<const char*> (&llamadas.at(i)), sizeof(llamada));
 				}
 				cout << "Exito en la operacion" << endl;
 				file.close();
@@ -61,22 +58,17 @@ int main(int argc, char const *argv[]){
 
 				vector<string> inicio;
 				vector<string> final;
-				vector<string> numeros;
-				vector<string> ciudades;
+				vector<char*> numeros;
+				vector<char*> destino;
 				string NOMinicio;
 				string NOMfinal;
 				string NOMnumeros;
-				string NOMciudades;
 				cout << "Ingrese el nombre del archivo de llamads de inicio: " << endl;
 				cin >> NOMinicio;
 				cout << "Ingrese el nombre del archivo de llamads final: " << endl;
 				cin >> NOMfinal;
 				cout << "Ingrese el nombre del archivo de numeros telefonicos: " << endl;
 				cin >> NOMnumeros;
-				cout << "Ingrese el nombre del archivo de ciudades: " << endl;
-				cin >> NOMciudades;
-				ifstream numerosFILE;
-				ifstream ciudadesFILE;
 
 				llamada call;
 				
@@ -85,7 +77,7 @@ int main(int argc, char const *argv[]){
 				if (fileINICIO.is_open()){
 					while ( getline (fileINICIO,line) ){
 						llamadas.push_back(call);
-						cout << line << '\n';
+						//cout << line << '\n';
 						inicio.push_back(line);
 						llamadas.at(pos).inicio = line;
 						pos++;
@@ -97,7 +89,7 @@ int main(int argc, char const *argv[]){
 				ifstream fileFINAL (NOMfinal);
 				if (fileFINAL.is_open()){
 					while ( getline (fileFINAL,line) ){
-						cout << line << '\n';
+						//cout << line << '\n';
 						final.push_back(line);
 						llamadas.at(pos).final = line;
 						pos++;
@@ -107,31 +99,49 @@ int main(int argc, char const *argv[]){
 				
 				pos = 0;
 				ifstream fileNUMEROS (NOMnumeros);
-				if (numerosFILE.is_open()){
-					while ( getline (numerosFILE,line) ){
-						cout << line << '\n';
-						numeros.push_back(line);
-						llamadas.at(pos).numero = stoi (line,nullptr,16);
+				if (fileNUMEROS.is_open()){
+					while ( getline (fileNUMEROS,line) ){
+						//cout << line << '\n';
+						char num[9];
+						strncpy(num, line.c_str(), 9);
+						numeros.push_back(num);
+						//llamadas.at(pos).numero = stoi (line,nullptr,16);
+						//strncpy(llamadas.at(pos).numero, numeros.at(pos), 9);
+						//cout << "LLamadas = " << llamadas.at(pos).numero << endl;
 						pos++;
 				    }
 				    fileNUMEROS.close();
 				}
-				
-				pos = 0;
-				ifstream fileCIUDADES (NOMciudades);
-				if (fileCIUDADES.is_open()){
-					while ( getline (fileCIUDADES,line) ){
-						cout << line << '\n';
-						ciudades.push_back(line);
-						call.destino = line;
-						llamadas.at(pos).destino = line;
-						pos++;
-				    }
-				    fileCIUDADES.close();
+				for (int i = 0; i < numeros.size(); ++i){
+					cout << "numero [" << i << "] = " << numeros.at(i) << endl;
 				}
-
+				int ran;
+				srand (time(0));
+				cout << " Size = " << numeros.size() << endl;
+				for (int i = 0; i < llamadas.size(); ++i){
+					
+					ran = rand() % numeros.size();
+					strncpy(llamadas.at(i).numero, numeros.at(ran), 9);
+					ran = rand() % numeros.size();
+					strncpy(llamadas.at(i).destino, numeros.at(ran), 9);
+				}
+				pos = 0;
 				
+				/*for (int i = 0; i < numeros.size(); ++i){
+					int ran = rand() % numeros.size();
+					destino.push_back(numeros.at(ran) );
+					strncpy(llamadas.at(pos).destino, destino.at(i), 9);
+					//cout << "LLamadas 2 = " << llamadas.at(pos).destino << endl;
+				}*/
 				
+				ofstream file("llamadas.bin", ofstream::binary);
+				for (int i = 0; i < llamadas.size(); ++i){
+					cout << "Numero = " << llamadas.at(i).numero << "\tInicio = " << llamadas.at(i).inicio << "\tFinal = " << llamadas.at(i).final << "\tDestino = " << llamadas.at(i).destino << endl;
+					file.write(reinterpret_cast<const char*> (&llamadas.at(i)), sizeof(llamada));
+				}
+				cout << "LLamada" << llamadas.at(0).numero << endl;
+				cout << "Exito en la operacion" << endl;
+				file.close();
 			}
 			break;
 			default: cout << "Opcion invalida" << endl;
