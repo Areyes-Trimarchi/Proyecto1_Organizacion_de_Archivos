@@ -2,6 +2,7 @@
 #define CRUD_CLIENTES_H
 
 #include "index.h"
+#include "b-tree.h"
 #include <string>
 #include <iostream>
 #include <vector>
@@ -19,6 +20,7 @@ public:
 	bool Borrar();
 	bool Modificar();
 	bool Listar();
+	bool ListarArbol();
 	bool BuscarIndex();
 	bool Buscar();
 	bool Reindexar();
@@ -27,7 +29,6 @@ public:
 	int ElementoBorrado(int);
 	void ReescribirArchivo(Header,Cliente,int);
 	void CargarVectorClientes(Cliente,int);
-	void CargarVectorIndice();
 };
 
 #endif

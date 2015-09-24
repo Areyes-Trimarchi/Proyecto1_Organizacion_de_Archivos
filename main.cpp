@@ -3,6 +3,11 @@
 #include "crud_clientes.h"
 #include "crud_Ciudades.h"
 #include "crud_LineasXCliente.h"
+#include "b-tree.h"
+#include "crud_CiudadesArbol.h"
+#include "crud_LineasXClienteArbol.h"
+#include "crud_clientesarbol.h"
+#include "factura.h"
 #include <cstring>
 #include <cstdlib>
 #include <fstream>
@@ -53,6 +58,16 @@ int main(int argc, char* argv[]){//inicio main
 						if(!crud_clientes.Listar()){
 							cerr<<"Ocurrio un error"<<endl;
 						}
+						/*char siNo;
+						cout<<"Desea Listar por arbol (S/N): ";
+						cin>>siNo;
+						if(siNo=='S'||siNo=='s'){
+							if(!crud_clientes.ListarArbol()){
+							cerr<<"Ocurrio un error"<<endl;
+							}
+						}else{
+							
+						}*/
 						break;
 					}//fin case 4 Listar (Archivo de Clientes)
 
@@ -97,6 +112,29 @@ int main(int argc, char* argv[]){//inicio main
 				crud_lineasxcliente.correr();
 				break;
 			}//fin case 3 Archivo de Lineas por Cliente
+			case 4:{//case 4 Archivo de Ciudades con el Arbol-B
+				cout<<"Archivo de Ciudades"<<endl;
+				crud_ciudadesArbol crud_ciudadesArbol;
+				crud_ciudadesArbol.correr();
+			}//fin case 4 Archivo de Ciudades con el Arbol-B
+			break;
+			case 5:{//case 5 Archivo de Lineas por Cliente con el Arbol-B
+				cout<<"Archivo de Lineas por Cliente"<<endl;
+				crud_lineasxclienteArbol crud_lineasxclienteArbol;
+				crud_lineasxclienteArbol.correr();
+			}//fin case 5 Archivo de Lineas por Cliente con el Arbol-B
+			break;
+			case 6:{
+				cout<<"Archivo de Clientes"<<endl;
+				crud_ClientesArbol crud_clientesarbol;
+				crud_clientesarbol.correr();
+			}
+			case 7:{//case 5 Para hacer facturas
+				cout<<"Facturas"<<endl;
+				FacturaA factura;
+				factura.corre();
+			}//fin case 5 Para hacer facturas
+			break;
 
 		}//fin switch principal (menu)
 		cout<<"Desea volver a ingresar al programa?(S/N)";
@@ -109,7 +147,9 @@ int main(int argc, char* argv[]){//inicio main
 int menu(){
 	int opcion;
 	cout<<"Menu Principal"<<endl;
-	cout<<"Elija una opcion:\n1. Archivo de Clientes\n2. Archivo de Ciudades\n3. Archivo de Lineas por Cliente\n4. Salir\nIgrese su opcion: ";
+	cout<<"Elija una opcion:\n1. Archivo de Clientes\n2. Archivo de Ciudades\n3. Archivo de Lineas por Cliente\n";
+	cout << "4. Archivo de Ciudades con Arbol-B\n5. Archivo de Lineas por Cliente con Arbol-B\n6. Archivo Cliente con Arbol-B\n7. Facturar";
+	cout << "\n8. Salir\nIngrese su opcion: ";
 	cin>>opcion;
 	return opcion;
 }
@@ -117,7 +157,7 @@ int menu(){
 int menu_cliente(){
 	int opcion;
 	cout<<"Menu Cliente"<<endl;
-	cout<<"Elija una opcion:\n1. Agregar\n2. Modificar\n3. Borrar\n4. Listar\n5. Buscar\n6. Salir\nIgrese su opcion: ";
+	cout<<"Elija una opcion:\n1. Agregar\n2. Modificar\n3. Borrar\n4. Listar\n5. Buscar\n6. Salir\nIngrese su opcion: ";
 	cin>>opcion;
 	return opcion;	
 }
@@ -125,7 +165,7 @@ int menu_cliente(){
 int menu_ciudad(){
 	int opcion;
 	cout<<"Menu Cliudad"<<endl;
-	cout<<"Elija una opcion:\n1. Agregar\n2. Modificar\n3. Borrar\n4. Listar\n5. Buscar\n6. Salir\nIgrese su opcion: ";
+	cout<<"Elija una opcion:\n1. Agregar\n2. Modificar\n3. Borrar\n4. Listar\n5. Buscar\n6. Salir\nIngrese su opcion: ";
 	cin>>opcion;
 	return opcion;
 }
@@ -133,7 +173,7 @@ int menu_ciudad(){
 int menu_lineaxcliente(){
 	int opcion;
 	cout<<"Menu Linea por Cliente"<<endl;
-	cout<<"Elija una opcion:\n1. Agregar\n2. Modificar\n3. Borrar\n4. Listar\n5. Buscar\n6. Salir\nIgrese su opcion: ";
+	cout<<"Elija una opcion:\n1. Agregar\n2. Modificar\n3. Borrar\n4. Listar\n5. Buscar\n6. Salir\nIngrese su opcion: ";
 	cin>>opcion;
 	return opcion;
 }
