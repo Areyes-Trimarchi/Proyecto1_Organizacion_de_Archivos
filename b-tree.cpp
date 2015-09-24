@@ -8,8 +8,8 @@
 using namespace std;
 
 BTree::BTree(int tamano, char nombre[25]){
-	this->tamano = tamano;
-	this->root = NULL;
+    this->tamano = tamano;
+    this->root = NULL;
     create(nombre);
     inorder(nombre);
 }
@@ -19,10 +19,10 @@ BTree::~BTree(){
 }
 
 BTreeNode* BTree::busqueda(int llaveBusqueda){
-	if(root == NULL)
-		return NULL;
+    if(root == NULL)
+        return NULL;
     cout << "llaveBusqueda = " << llaveBusqueda << endl;
-	return root->busqueda(llaveBusqueda);
+    return root->busqueda(llaveBusqueda);
 }
 
 BTreeNode* BTree::busqueda(char* llaveBusqueda){
@@ -33,7 +33,7 @@ BTreeNode* BTree::busqueda(char* llaveBusqueda){
 }
 
 bool BTree::insert(Key llave){
-	 if (root == NULL){                                                            //Si no existe raiz
+     if (root == NULL){                                                            //Si no existe raiz
         root = new BTreeNode(tamano, true);                                     //Se crea la raiz
         root->llaves[0] = llave;
         root->tamano = 1;
