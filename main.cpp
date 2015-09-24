@@ -7,6 +7,7 @@
 #include "crud_CiudadesArbol.h"
 #include "crud_LineasXClienteArbol.h"
 #include "crud_clientesarbol.h"
+#include "factura.h"
 #include <cstring>
 #include <cstdlib>
 #include <fstream>
@@ -130,8 +131,8 @@ int main(int argc, char* argv[]){//inicio main
 			}
 			case 7:{//case 5 Para hacer facturas
 				cout<<"Facturas"<<endl;
-				crud_lineasxclienteArbol crud_lineasxclienteArbol;
-				crud_lineasxclienteArbol.correr();
+				FacturaA factura;
+				factura.corre();
 			}//fin case 5 Para hacer facturas
 			break;
 
@@ -147,7 +148,8 @@ int menu(){
 	int opcion;
 	cout<<"Menu Principal"<<endl;
 	cout<<"Elija una opcion:\n1. Archivo de Clientes\n2. Archivo de Ciudades\n3. Archivo de Lineas por Cliente\n";
-	cout << "4. Archivo de Ciudades con Arbol-B\n5. Archivo de Lineas por Cliente con Arbol-B\n6. Archivo Cliente con Arbol-B\n7. Salir\nIgrese su opcion: ";
+	cout << "4. Archivo de Ciudades con Arbol-B\n5. Archivo de Lineas por Cliente con Arbol-B\n6. Archivo Cliente con Arbol-B\n7. Facturar";
+	cout << "\n8. Salir\nIngrese su opcion: ";
 	cin>>opcion;
 	return opcion;
 }
@@ -155,7 +157,7 @@ int menu(){
 int menu_cliente(){
 	int opcion;
 	cout<<"Menu Cliente"<<endl;
-	cout<<"Elija una opcion:\n1. Agregar\n2. Modificar\n3. Borrar\n4. Listar\n5. Buscar\n6. Salir\nIgrese su opcion: ";
+	cout<<"Elija una opcion:\n1. Agregar\n2. Modificar\n3. Borrar\n4. Listar\n5. Buscar\n6. Salir\nIngrese su opcion: ";
 	cin>>opcion;
 	return opcion;	
 }
@@ -163,7 +165,7 @@ int menu_cliente(){
 int menu_ciudad(){
 	int opcion;
 	cout<<"Menu Cliudad"<<endl;
-	cout<<"Elija una opcion:\n1. Agregar\n2. Modificar\n3. Borrar\n4. Listar\n5. Buscar\n6. Salir\nIgrese su opcion: ";
+	cout<<"Elija una opcion:\n1. Agregar\n2. Modificar\n3. Borrar\n4. Listar\n5. Buscar\n6. Salir\nIngrese su opcion: ";
 	cin>>opcion;
 	return opcion;
 }
@@ -171,7 +173,7 @@ int menu_ciudad(){
 int menu_lineaxcliente(){
 	int opcion;
 	cout<<"Menu Linea por Cliente"<<endl;
-	cout<<"Elija una opcion:\n1. Agregar\n2. Modificar\n3. Borrar\n4. Listar\n5. Buscar\n6. Salir\nIgrese su opcion: ";
+	cout<<"Elija una opcion:\n1. Agregar\n2. Modificar\n3. Borrar\n4. Listar\n5. Buscar\n6. Salir\nIngrese su opcion: ";
 	cin>>opcion;
 	return opcion;
 }

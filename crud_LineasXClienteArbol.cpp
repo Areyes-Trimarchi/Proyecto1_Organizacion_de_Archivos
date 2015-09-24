@@ -18,17 +18,6 @@ istream& operator>>(istream& input, LineaxClienteArbol& linea){
 	 input >> linea.idCliente >> linea.numero;
 	 return input;
 }
-/*ostream& operator<<(ostream& output, const Indice& city){
-	output << city.id_ciu_index << "\t" << city.RRN_index << endl;
-	return output;  
-}*/
-
-/*
-	struct LineaxCliente{
-	char numero[9];
-	char idCliente[14];
-};
-*/
 
 crud_lineasxclienteArbol::crud_lineasxclienteArbol(){
 
@@ -74,8 +63,7 @@ void crud_lineasxclienteArbol::correr(){
 			strcpy(lineaNueva.idCliente, idCliente);
 
 			KeyChar llave;
-			//unsigned long num = atoi(lineaNueva.numero);
-			//llave.llave = num;
+
 			strcpy(llave.llave, lineaNueva.numero);
 			bool continuarGuardando;
 			if (availList == -1)
@@ -297,7 +285,7 @@ void crud_lineasxclienteArbol::correr(){
 			char nombre_archivo[14];
 			strncpy(nombre_archivo,"indexLineasXCliente.bin",14);
 			cout << "\tReindexar" << endl;
-			//indice.create(nombre_archivo);
+			tree.create(nombre_archivo);
 			cout << "Reindexado con exito." << endl;
 		}
 		break;
