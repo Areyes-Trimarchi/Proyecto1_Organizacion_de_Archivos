@@ -7,7 +7,7 @@
 
 using namespace std;
 
-BTree::BTree(int tamano, const char * nombre){
+BTree::BTree(int tamano, char nombre[25]){
 	this->tamano = tamano;
 	this->root = NULL;
     create(nombre);
@@ -127,12 +127,12 @@ bool BTree::Remove(KeyChar llave){
     return false;
 }
 
-void BTree::inorder(const char * nombre){
+void BTree::inorder(char nombre[25]){
     bool tipo;
     bool tipo2 = false;
-    if(strncmp(nombre, "indexCiudad.bin", 14) == 0 )
+    if(strncmp(nombre, "indexCiudad.bin", 25) == 0 )
         tipo = true;
-    else if(strncmp(nombre, "indexCliente.bin", 14) == 0 )
+    else if(strncmp(nombre, "indexCliente.bin", 25) == 0 )
         tipo = false;
     else
         tipo2 = true;
@@ -140,10 +140,10 @@ void BTree::inorder(const char * nombre){
         root->inorder(tipo); 
 }
 
-void BTree::create(const char * nombre){
-    if(strncmp(nombre, "indexCiudades.bin", 14) == 0 )
+void BTree::create(char nombre[25]){
+    if(strncmp(nombre, "indexCiudades.bin", 25) == 0 )
         createCiudadArboles();
-    else if(strncmp(nombre, "indexCliente.bin", 14) == 0 )
+    else if(strncmp(nombre, "indexClientes.bin", 25) == 0 )
         createClienteArbols();
     else
         createLineas();
@@ -199,8 +199,9 @@ void BTree::createClienteArbols(){
     ifstream file;
     file.open("clientes.bin");
     if(!file.is_open()){
-        cerr << "Error al abrir el archivo." << endl;
+        cerr << "Error al abrir el archivo. DARIO" << endl;
     } else{
+        cout<<"ENTRO DONDE ES "<<endl;
         HeaderArbol head;
 
         file.seekg(0);
@@ -211,23 +212,23 @@ void BTree::createClienteArbols(){
         int RRN;
         int skip = 0;
         KeyChar llave;
-        
-        cout << "3 sizeRegistros = " << sizeRegistros << "\tAvail = " << availList  << "\tUltimo = " << head.sizeRegistro << endl;
         for (int i = 0; i < sizeRegistros; ++i){
-            ClienteArbol ClienteArbol;
-            file.read(reinterpret_cast<char*>(&ClienteArbol), sizeof(ClienteArbol));
+            ClienteArbol clienteArbol;
+            file.read(reinterpret_cast<char*>(&clienteArbol), sizeof(ClienteArbol));
 
             if(skip == 0)
                 RRN = i;
             else
                 RRN = i + skip;
-            strncpy(llave.llave, ClienteArbol.idCliente, 14);
-            llave.RRN = RRN;
 
-            if(strncmp(ClienteArbol.idCliente, "-99", 14) != 0){
+            strncpy(llave.llave, clienteArbol.idCliente, 14);
+            llave.RRN = RRN;
+            //cout<<llave.llave<<"\t";
+            if(strncmp(clienteArbol.idCliente, "*", 1) != 0){
+                cout<<"IF != 0"<<endl;
                 this->insert(llave);
             }
-            if(strncmp (ClienteArbol.idCliente, "-99", 9) == 0){
+            if(strncmp (clienteArbol.idCliente, "*", 1) == 0){
                 i--;
                 skip++;
             }

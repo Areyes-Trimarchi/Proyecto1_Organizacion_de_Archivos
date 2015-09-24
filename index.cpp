@@ -533,7 +533,7 @@ void Index::cargarClientes(){
 	ifstream file;
 	file.open("indexClientes.bin");
 	if(file.fail()){
-		cerr << "Error al abrir el archivo." << endl;
+		cerr << "Error al abrir el archivo. DOG" << endl;
 	} else{
 		IndiceClien indi;
 		indexClientes.clear();

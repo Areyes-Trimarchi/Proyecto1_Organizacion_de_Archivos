@@ -55,4 +55,6 @@ friend class BTree;
 friend class crud_lineasxclienteArbol;
 
 friend class crud_ciudadesArbol;
+
+friend class crud_ClientesArbol;
 };

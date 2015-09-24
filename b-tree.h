@@ -16,7 +16,7 @@ struct LineaxClienteArbol{
 };
 
 struct ClienteArbol{
-	char name[40];
+	char nombre[40];
 	char genero;
 	int idCiudad;
 	char idCliente[14];
@@ -39,7 +39,7 @@ private:
 	int tamano;	//Tamano del arbol
 	BTreeNode *root;
 public:
-	BTree(int, const char *);
+	BTree(int,char[25]);
 	~BTree();
 	BTreeNode* busqueda(int);
 	BTreeNode* busqueda(char *);
@@ -47,8 +47,8 @@ public:
 	bool insert(KeyChar);
 	bool Remove(Key);
 	bool Remove(KeyChar);
-	void inorder(const char *);
-	void create(const char *);
+	void inorder(char[25]);
+	void create(char[25]);
 	void createCiudadArboles();
 	void createClienteArbols();
 	void createLineas();
