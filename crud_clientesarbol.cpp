@@ -28,8 +28,8 @@ void crud_ClientesArbol::correr(){
 	char nombre_archivo[25];
 	strncpy(nombre_archivo,"indexClientes.bin",25);
  
-	fstream file("indexClientes.bin", fstream::binary);
-	file.open("indexClientes.bin");
+	fstream file("clientes.bin", fstream::binary);
+	file.open("clientes.bin");
 
 	BTree tree(5, nombre_archivo);
 
@@ -177,31 +177,13 @@ void crud_ClientesArbol::correr(){
 		break;
 		case 3:{
 			cout << "\tListar las Cliente" << endl << endl;
-
-			int opcionListar;
-			cout << "1)Sin Borrados\n2)Con Borrados" << endl << endl;
-			cin >> opcionListar;//11416   //499
-			switch(opcionListar){
-				case 1:{
-					ClienteArbol cliente;
-					int rrn;
-					for (int i = 0; i < sizeRegistros ; ++i){
-						//rrn = indice.at(i, linea).RRN_index;
-						//int ecuacion = ( sizeof(HeaderArbol) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(LineaxClienteArbol) * rrn) );
-						file.seekg(0);
-						//file.seekg(ecuacion);
-						file.read(reinterpret_cast<char*>(&cliente), sizeof(ClienteArbol));
-						cout << cliente;
-					}
-				}
-				break;
-				case 2:{
-					ClienteArbol cliente;
-					while(file.read(reinterpret_cast<char*>(&cliente), sizeof(ClienteArbol))){
-						cout << cliente;
-					}
-				}
-				break;
+			HeaderArbol head1;
+			file.seekg(0);
+			file.read(reinterpret_cast<char*>(&head1), sizeof(HeaderArbol));
+			ClienteArbol cliente;
+			while(file.read(reinterpret_cast<char*>(&cliente), sizeof(ClienteArbol))){
+				if(strncmp(cliente.idCliente, "*", 1) != 0)
+					cout << cliente;
 			}
 			
 		}

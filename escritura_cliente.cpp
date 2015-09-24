@@ -31,9 +31,14 @@ int main(int argc, char* argv[]){
 	head.sizeRegistro=0;
 	int sizeregist=0;
 
+	clientes.seekg(0, clientes.end);
+	int length = clientes.tellg();
+	clientes.seekg(0, clientes.beg);
+
 	file.write(reinterpret_cast<char*>(&head), sizeof(Header));
 	cout << "Antes = " << sizeregist << endl;
-	while (!clientes.eof()){
+	int cont=0;
+	while (cont!=length){
 		getline(clientes,texto);
 		Cliente cliente;
 		int coma=0;
@@ -78,8 +83,9 @@ int main(int argc, char* argv[]){
 		cliente.idCiudad=chartoidCiudad(info);
 		file.write(reinterpret_cast<char*>(&cliente), sizeof(Cliente));
 		sizeregist++;
+		cont = clientes.tellg();
 	}
-	sizeregist = sizeregist - 1;
+	sizeregist = sizeregist;
 	file.seekp(0);
 	cout << "Final = " << sizeregist << endl;
 	head.sizeRegistro=sizeregist;

@@ -145,32 +145,10 @@ void crud_ciudadesArbol::correr(){
 		break;
 		case 3:{
 			cout << "\tListar las Ciudades" << endl << endl;
-
-			int opcionListar;
-			cout << "1)Sin Borrados\n2)Con Borrados" << endl << endl;
-			cin >> opcionListar;
-			//indice.create("indexCiudades.bin");		<-----------
-			switch(opcionListar){
-				case 1:{
-					CiudadArbol city;
-					int rrn;
-					for (int i = 0; i < sizeRegistros ; ++i){
-						//rrn = indice.at(i, city).RRN_index;
-						int ecuacion = ( sizeof(HeaderArbol) + ( sizeof(CiudadArbol) * rrn) );	
-						file.seekg(0);
-						file.seekg(ecuacion);
-						file.read(reinterpret_cast<char*>(&city), sizeof(CiudadArbol));
-						cout << city;
-					}
-				}
-				break;
-				case 2:{
-					CiudadArbol city;
-					while(file.read(reinterpret_cast<char*>(&city), sizeof(CiudadArbol))){
-						cout << city;
-					}
-				}
-				break;
+			CiudadArbol city;
+			while(file.read(reinterpret_cast<char*>(&city), sizeof(CiudadArbol))){
+				if(city.idCiudad != -99)
+					cout << city;
 			}
 			
 		}

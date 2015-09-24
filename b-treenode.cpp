@@ -16,14 +16,14 @@ ostream& operator<<(ostream& output, const KeyChar& key){
 }
 
 BTreeNode::BTreeNode(bool hoja, int ordenArbol){
-    this->hoja = hoja;
+	this->hoja = hoja;
 
-    this->tamano = 0;
-    this->minimo = (ordenArbol/2)-1;
-    this->maximo = ordenArbol - 1;
-    this->llaves =  new Key[ordenArbol-1];
+	this->tamano = 0;
+	this->minimo = (ordenArbol/2)-1;
+	this->maximo = ordenArbol - 1;
+	this->llaves =  new Key[ordenArbol-1];
     this->llavesChar =  new KeyChar[ordenArbol-1];
-    this->hijos = new BTreeNode *[ordenArbol];
+	this->hijos = new BTreeNode *[ordenArbol];
 }
 
 BTreeNode::~BTreeNode(){

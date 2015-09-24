@@ -182,7 +182,6 @@ void BTree::createCiudadArboles(){
                 i--;
                 skip++;
             }
-            cout << llave.llave << endl;
         }
         /*ofstream salida("indexCiudadArboles.bin", ofstream::binary);
         for (int i = 0; i < index.size(); i++){
@@ -266,8 +265,7 @@ void BTree::createLineas(){
                 RRN = i;
             else
                 RRN = i + skip;
-            //unsigned long num = atoi(lineas.numero);
-            //llave.llave =  num;
+
             strncpy(llave.llave, lineas.numero, 14);
             llave.RRN = RRN;
 

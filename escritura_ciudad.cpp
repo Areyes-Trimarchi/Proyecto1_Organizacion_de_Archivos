@@ -117,4 +117,3 @@ int chartoidCiudad(char info[40]){
 	integ>>resp;
 	return resp;
 }
-

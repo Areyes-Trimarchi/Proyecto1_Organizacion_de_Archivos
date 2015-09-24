@@ -44,7 +44,9 @@ void FacturaA::corre(){
     file_Clientes.open("clientes.bin");
     file_Clientes.seekg(0);
     file_Clientes.read(reinterpret_cast<char*>(&header), sizeof(HeaderArbol));
+    int con_clientes = 0;
     while( file_Clientes.read(reinterpret_cast<char*>(&client), sizeof(ClienteArbol)) ){
+        con_clientes++;
         strncpy(name, client.nombre, 40);                             //Cargando datos iniciales
         idCiudad = client.idCiudad;
         strncpy(idCliente, client.idCliente, 14);
@@ -154,27 +156,29 @@ void FacturaA::corre(){
             strncpy(fac.idCliente, idCliente, 14);
             strncpy(fac.name, name, 40);
             strncpy(fac.ciudadNombre, ciudadNombre, 40);
-            fac.numeros_cliente = numeros_cliente;
-            fac.llamadas_cliente = llamadas_cliente;
+            
             costos.push_back(precio + 0.000000001);
-            fac.costo = costos;
             
         }
+        fac.numeros_cliente = numeros_cliente;
+        fac.llamadas_cliente = llamadas_cliente;
+        fac.costo = costos;
         facturas.push_back(fac);
-        
     }// Fin while
     file_Clientes.close();
 
     cout << "\tImpresion de Facturas" << endl;
     for (int i = 0; i < facturas.size(); ++i){
-        cout << "ID Cliente = "  << facturas.at(i).idCliente << "\tNombre = " << facturas.at(i).name << "\tCiudad = " << facturas.at(i).ciudadNombre << endl;
-        for (int j = 0; j < facturas.at(i).numeros_cliente.size(); ++j){
-            cout << "Numero = " << facturas.at(i).numeros_cliente.at(j) << ":\tNumero\t\tDestino\t\tInicio\t\t\tFinal\t\t\tPrecio" << endl;
-            for (int k = 0; k < facturas.at(i).llamadas_cliente.size(); ++k){
-                if( strncmp(facturas.at(i).numeros_cliente.at(j).c_str(), facturas.at(i).llamadas_cliente.at(k).numero, 9) == 0){
-                    cout << "\t\t\t" << facturas.at(i).llamadas_cliente.at(k).numero << "\t" << facturas.at(i).llamadas_cliente.at(k).destino;
-                    cout << "\t" << facturas.at(i).llamadas_cliente.at(k).inicio << "\t" << facturas.at(i).llamadas_cliente.at(k).final;
-                    cout << "\t" << facturas.at(i).costo.at(j) <<endl;
+        if (i != 498 && i != 499){
+            cout << "i = " << i << "\tID Cliente = "  << facturas.at(i).idCliente << "\tNombre = " << facturas.at(i).name << "\tCiudad = " << facturas.at(i).ciudadNombre << endl;
+            for (int j = 0; j < facturas.at(i).numeros_cliente.size(); ++j){
+                cout << "Numero = " << facturas.at(i).numeros_cliente.at(j) << ":\tNumero\t\tDestino\t\tInicio\t\t\tFinal\t\t\tPrecio" << endl;
+                for (int k = 0; k < facturas.at(i).llamadas_cliente.size(); ++k){
+                    if( strncmp(facturas.at(i).numeros_cliente.at(j).c_str(), facturas.at(i).llamadas_cliente.at(k).numero, 9) == 0){
+                        cout << "\t\t\t" << facturas.at(i).llamadas_cliente.at(k).numero << "\t" << facturas.at(i).llamadas_cliente.at(k).destino;
+                        cout << "\t" << facturas.at(i).llamadas_cliente.at(k).inicio << "\t" << facturas.at(i).llamadas_cliente.at(k).final;
+                        cout << "\t" << facturas.at(i).costo.at(k) <<endl;
+                    }
                 }
             }
         }

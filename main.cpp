@@ -129,6 +129,7 @@ int main(int argc, char* argv[]){//inicio main
 				crud_ClientesArbol crud_clientesarbol;
 				crud_clientesarbol.correr();
 			}
+			break;
 			case 7:{//case 5 Para hacer facturas
 				cout<<"Facturas"<<endl;
 				FacturaA factura;

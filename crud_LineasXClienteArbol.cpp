@@ -142,33 +142,11 @@ void crud_lineasxclienteArbol::correr(){
 		break;
 		case 3:{
 			cout << "\tListar las LineaxCliente" << endl << endl;
-
-			int opcionListar;
-			cout << "1)Sin Borrados\n2)Con Borrados" << endl << endl;
-			cin >> opcionListar;//11416   //499
-			switch(opcionListar){
-				case 1:{
-					LineaxClienteArbol linea;
-					int rrn;
-					for (int i = 0; i < sizeRegistros ; ++i){
-						//rrn = indice.at(i, linea).RRN_index;
-						//int ecuacion = ( sizeof(HeaderArbol) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(LineaxClienteArbol) * rrn) );
-						file.seekg(0);
-						//file.seekg(ecuacion);
-						file.read(reinterpret_cast<char*>(&linea), sizeof(LineaxClienteArbol));
-						cout << linea;
-					}
-				}
-				break;
-				case 2:{
-					LineaxClienteArbol linea;
-					while(file.read(reinterpret_cast<char*>(&linea), sizeof(LineaxClienteArbol))){
-						cout << linea;
-					}
-				}
-				break;
-			}
-			
+			LineaxClienteArbol linea;
+			while(file.read(reinterpret_cast<char*>(&linea), sizeof(LineaxClienteArbol))){
+				if(strncmp(linea.numero, "-99", 14) != 0)
+					cout << linea;
+			}			
 		}
 		break;
 		case 4:{
