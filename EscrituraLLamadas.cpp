@@ -63,6 +63,9 @@ int main(int argc, char const *argv[]){
 				string NOMinicio;
 				string NOMfinal;
 				string NOMnumeros;
+				char a1[25];
+				char a2[25];
+				char a3[25];
 				cout << "Ingrese el nombre del archivo de llamads de inicio: " << endl;
 				cin >> NOMinicio;
 				cout << "Ingrese el nombre del archivo de llamads final: " << endl;
@@ -72,7 +75,10 @@ int main(int argc, char const *argv[]){
 
 				llamada call;
 				
-				ifstream fileINICIO (NOMinicio);
+				strncpy(a1, NOMinicio, 25);
+				strncpy(a2, NOMfinal, 25);
+				strncpy(a3, NOMnumeros, 25);
+				ifstream fileINICIO (a1);
 				int pos = 0;
 				if (fileINICIO.is_open()){
 					while ( getline (fileINICIO,line) ){
@@ -86,7 +92,7 @@ int main(int argc, char const *argv[]){
 				}
 
 				pos = 0;
-				ifstream fileFINAL (NOMfinal);
+				ifstream fileFINAL (a2);
 				if (fileFINAL.is_open()){
 					while ( getline (fileFINAL,line) ){
 						//cout << line << '\n';
@@ -98,7 +104,7 @@ int main(int argc, char const *argv[]){
 				}
 				
 				pos = 0;
-				ifstream fileNUMEROS (NOMnumeros);
+				ifstream fileNUMEROS (a3);
 				if (fileNUMEROS.is_open()){
 					while ( getline (fileNUMEROS,line) ){
 						//cout << line << '\n';
@@ -146,7 +152,7 @@ int main(int argc, char const *argv[]){
 			break;
 			default: cout << "Opcion invalida" << endl;
 					cout << "MENU\n1)Leer Numeros\n2)Guardar Informacion" << endl;
-					cin << opcionMenu;
+					cin >> opcionMenu;
 			break;
 		}
 		cout << "Desea continural? [si/no]" << endl;
@@ -158,10 +164,10 @@ int main(int argc, char const *argv[]){
 int menu(){
 	int menu;
 	cout << "MENU\n1)Leer Numeros\n2)Guardar Informacion" << endl;
-	cin << menu;
+	cin >> menu;
 	while(menu != 1 && menu != 2 && menu != 3){
 		cout << "MENU\n1)Leer Numeros\n2)Guardar Informacion\n3)Cargar Datos" << endl;
-		cin << menu;
+		cin >> menu;
 	}
 	return menu;
 }
