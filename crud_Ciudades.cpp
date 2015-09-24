@@ -17,11 +17,6 @@ istream& operator>>(istream& input, Ciudad& city){
 	 input >> city.idCiudad >> city.name;
 	 return input;
 }
-/*ostream& operator<<(ostream& output, const Indice& city){
-	output << city.id_ciu_index << "\t" << city.RRN_index << endl;
-	return output;  
-}*/
-
 
 crud_ciudades::crud_ciudades(){
 
@@ -119,7 +114,7 @@ void crud_ciudades::correr(){
 				int meter = indice.ciudadRRN(ind.RRN_index, ciudadVieja).RRN_index;
 				
 				int rrn = ind.RRN_index;
-				int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * rrn) );
+				int ecuacion = ( sizeof(Header) +( sizeof(Ciudad) * rrn) );
 				indice.add(ciudadNueva, meter);
 
 				file.seekp(0);
@@ -135,22 +130,13 @@ void crud_ciudades::correr(){
 			int opcionListar;
 			cout << "1)Sin Borrados\n2)Con Borrados" << endl << endl;
 			cin >> opcionListar;
-			//indice.create("indexCiudades.bin");		<-----------
 			switch(opcionListar){
 				case 1:{
 					Ciudad city;
 					int rrn;
 					for (int i = 0; i < sizeRegistros ; ++i){
 						rrn = indice.at(i, city).RRN_index;
-<<<<<<< HEAD
 						int ecuacion = ( sizeof(Header) + ( sizeof(Ciudad) * rrn) );	
-=======
-<<<<<<< HEAD
-						int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * rrn) );	
-=======
-						int ecuacion = ( sizeof(Header) + ( sizeof(Ciudad) * rrn) );	
->>>>>>> Arbol-B
->>>>>>> 903f28318ceddd1ac28baae7482b66b41953203a
 						file.seekg(0);
 						file.seekg(ecuacion);
 						file.read(reinterpret_cast<char*>(&city), sizeof(Ciudad));
@@ -179,11 +165,10 @@ void crud_ciudades::correr(){
 			ciudadNueva.idCiudad = ID;
 			strcpy(ciudadNueva.name, "NOM");
 			Indice ind = indice.get(ciudadNueva);
-			//availList =  ind.RRN_index;
 			bool borrar = indice.remove(ciudadNueva);
 			if(borrar){
 				int rrn = ind.RRN_index;
-				int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * rrn) );		
+				int ecuacion = ( sizeof(Header) + sizeof(Ciudad) * rrn) );		
 				file.seekp(0);
 				file.seekp(ecuacion);
 				Ciudad borrada;
@@ -242,7 +227,7 @@ void crud_ciudades::correr(){
 					file.seekg(0, file.beg);
 					file.read(reinterpret_cast<char*>(&head), sizeof(Header));
 					if(rrn != -99){
-						int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * rrn) );	
+						int ecuacion = ( sizeof(Header) + ( sizeof(Ciudad) * rrn) );	
 						file.seekg(0);
 						file.seekg(ecuacion);
 						file.read(reinterpret_cast<char*>(&city), sizeof(Ciudad));
