@@ -33,7 +33,7 @@ void crud_ciudades::correr(){
 	strncpy(nombre_archivo,"indexCiudades.bin",14);
 	fstream file("ciudades.bin", fstream::binary);
 	file.open("ciudades.bin");
-	//ofstream fileSalida("ciudades.bin", ofstream::binary);
+
 	Index indice(nombre_archivo);
 
 	Header head;
@@ -70,9 +70,7 @@ void crud_ciudades::correr(){
 					file.seekp (0, file.end);
 				else{
 					Ciudad city;
-					//int rrn = indice.ciudadRRN(availList, city).RRN_index;
-					//cout << "Avail = " << availList << "\tRRN = " << rrn << endl;
-					int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * availList) );	
+					int ecuacion = ( sizeof(Header) + ( sizeof(Ciudad) * availList) );	
 					file.seekg(0);
 					file.seekg(ecuacion);
 					file.read(reinterpret_cast<char*>(&city), sizeof(Ciudad));
@@ -115,9 +113,9 @@ void crud_ciudades::correr(){
 			ciudadVieja.idCiudad = ID;
 			strcpy(ciudadVieja.name, "NOM");
 
+			Indice ind = indice.get(ciudadVieja);
 			bool borrar = indice.remove(ciudadVieja);
 			if (borrar){
-				Indice ind = indice.get(ciudadVieja);
 				int meter = indice.ciudadRRN(ind.RRN_index, ciudadVieja).RRN_index;
 				
 				int rrn = ind.RRN_index;
@@ -144,8 +142,7 @@ void crud_ciudades::correr(){
 					int rrn;
 					for (int i = 0; i < sizeRegistros ; ++i){
 						rrn = indice.at(i, city).RRN_index;
-						int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * rrn) );	
-						//cout << "Ecuacion = " << ecuacion << "\tRRN = " << rrn << endl;
+						int ecuacion = ( sizeof(Header) + ( sizeof(Ciudad) * rrn) );	
 						file.seekg(0);
 						file.seekg(ecuacion);
 						file.read(reinterpret_cast<char*>(&city), sizeof(Ciudad));
@@ -213,7 +210,7 @@ void crud_ciudades::correr(){
 					file.seekg(0, file.beg);
 					file.read(reinterpret_cast<char*>(&head), sizeof(Header));
 					bool encontro = false;
-					while(file.read(reinterpret_cast<char*>(&city), sizeof(city))){
+					while(file.read(reinterpret_cast<char*>(&city), sizeof(Ciudad))){
 						if(idBuscar == city.idCiudad){
 							encontro = true;
 							break;

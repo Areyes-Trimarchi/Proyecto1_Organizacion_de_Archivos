@@ -58,8 +58,8 @@ int main(int argc, char const *argv[]){
 
 				vector<string> inicio;
 				vector<string> final;
-				vector<char*> numeros;
-				vector<char*> destino;
+				vector<string> numeros;
+				vector<string> destino;
 				string NOMinicio;
 				string NOMfinal;
 				string NOMnumeros;
@@ -104,50 +104,31 @@ int main(int argc, char const *argv[]){
 				}
 				
 				pos = 0;
+
 				ifstream fileNUMEROS (a3);
 				if (fileNUMEROS.is_open()){
-					while ( getline (fileNUMEROS,line) ){
-						//cout << line << '\n';
-						char num[9];
-						strncpy(num, line.c_str(), 9);
-						numeros.push_back(num);
-						//llamadas.at(pos).numero = stoi (line,nullptr,16);
-						//strncpy(llamadas.at(pos).numero, numeros.at(pos), 9);
-						//cout << "LLamadas = " << llamadas.at(pos).numero << endl;
+					while ( getline (fileNUMEROS,line) && pos < 50000 ){
+						//strncpy(num, line.c_str(), 9);
+						numeros.push_back(line);
+
 						pos++;
 				    }
 				    fileNUMEROS.close();
 				}
-				for (int i = 0; i < numeros.size(); ++i){
-					cout << "numero [" << i << "] = " << numeros.at(i) << endl;
-				}
+
 				int ran;
 				srand (time(0));
 				cout << " Size = " << numeros.size() << endl;
-				for (int i = 0; i < llamadas.size(); ++i){
-					
-					ran = rand() % numeros.size();
-					strncpy(llamadas.at(i).numero, numeros.at(ran), 9);
-					ran = rand() % numeros.size();
-					strncpy(llamadas.at(i).destino, numeros.at(ran), 9);
-				}
-				pos = 0;
-				
-				/*for (int i = 0; i < numeros.size(); ++i){
-					int ran = rand() % numeros.size();
-					destino.push_back(numeros.at(ran) );
-					strncpy(llamadas.at(pos).destino, destino.at(i), 9);
-					//cout << "LLamadas 2 = " << llamadas.at(pos).destino << endl;
-				}*/
-				
 				ofstream file("llamadas.bin", ofstream::binary);
 				for (int i = 0; i < llamadas.size(); ++i){
-					cout << "Numero = " << llamadas.at(i).numero << "\tInicio = " << llamadas.at(i).inicio << "\tFinal = " << llamadas.at(i).final << "\tDestino = " << llamadas.at(i).destino << endl;
-					file.write(reinterpret_cast<const char*> (&llamadas.at(i)), sizeof(llamada));
+					ran = rand() % numeros.size();
+					strncpy(llamadas.at(i).numero, numeros.at(ran).c_str(), 9);
+					ran = rand() % numeros.size();
+					strncpy(llamadas.at(i).destino, numeros.at(ran).c_str(), 9);
+
+					//file.write(reinterpret_cast<const char*> (&llamadas.at(i)), sizeof(llamada));
 				}
-				cout << "LLamada" << llamadas.at(0).numero << endl;
-				cout << "Exito en la operacion" << endl;
-				file.close();
+				pos = 0;
 			}
 			break;
 			default: cout << "Opcion invalida" << endl;

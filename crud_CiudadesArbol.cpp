@@ -215,6 +215,7 @@ void crud_ciudadesArbol::correr(){
 					availList =  llave.RRN;
 					head.availList = availList;
 					file.seekp (0, file.beg);
+					file.seekp (0);
 					file.write(reinterpret_cast<char*>(&head), sizeof(HeaderArbol));
 					cout << "Borro con exito." << endl;
 				}
