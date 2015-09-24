@@ -38,7 +38,7 @@ int main(int argc, char* argv[]){
 	fileA.close();
 
 	string texto;
-	ifstream ciudad_file("ciudades copy.txt");
+	ifstream ciudad_file("ciudades.txt");
 	ofstream file("ciudades.bin", ofstream::binary);
 
 	int sizeRegistro = 0;
@@ -47,9 +47,15 @@ int main(int argc, char* argv[]){
 	head.availList = -1;
 	head.sizeRegistro = 0;
 
+	ciudad_file.seekg(0, ciudad_file.end);
+	int length = ciudad_file.tellg();
+	ciudad_file.seekg(0, ciudad_file.beg);
+
+
 	file.write(reinterpret_cast<char*>(&head), sizeof(Header));
 	cout << "Antes = " << head.sizeRegistro << endl;
-	while (!ciudad_file.eof()){
+	int cont = 0;
+	while (cont != length){
 		getline(ciudad_file,texto);
 		Ciudad ciudad;
 		int coma=0;
@@ -78,6 +84,7 @@ int main(int argc, char* argv[]){
 		cout << ciudad;
 		file.write(reinterpret_cast<char*>(&ciudad), sizeof(Ciudad));
 		sizeRegistro++;
+		cont = ciudad_file.tellg();
 	}
 	sizeRegistro = sizeRegistro;
 	file.seekp(0);
@@ -110,3 +117,4 @@ int chartoidCiudad(char info[40]){
 	integ>>resp;
 	return resp;
 }
+

@@ -115,9 +115,9 @@ void crud_ciudades::correr(){
 			ciudadVieja.idCiudad = ID;
 			strcpy(ciudadVieja.name, "NOM");
 
+			Indice ind = indice.get(ciudadVieja);
 			bool borrar = indice.remove(ciudadVieja);
 			if (borrar){
-				Indice ind = indice.get(ciudadVieja);
 				int meter = indice.ciudadRRN(ind.RRN_index, ciudadVieja).RRN_index;
 				
 				int rrn = ind.RRN_index;
@@ -145,7 +145,6 @@ void crud_ciudades::correr(){
 					for (int i = 0; i < sizeRegistros ; ++i){
 						rrn = indice.at(i, city).RRN_index;
 						int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(Ciudad) * rrn) );	
-						//cout << "Ecuacion = " << ecuacion << "\tRRN = " << rrn << endl;
 						file.seekg(0);
 						file.seekg(ecuacion);
 						file.read(reinterpret_cast<char*>(&city), sizeof(Ciudad));

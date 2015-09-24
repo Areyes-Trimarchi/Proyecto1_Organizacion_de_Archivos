@@ -84,7 +84,7 @@ void crud_lineasxcliente::correr(){
 					file.seekg(0);
 					file.seekg(ecuacion);
 					file.read(reinterpret_cast<char*>(&linea), sizeof(LineaxCliente));
-					availList = atoi(linea.numero);
+					availList = atoi(linea.idCliente);
 					head.availList = availList;
 
 					file.seekp(0);
@@ -151,7 +151,6 @@ void crud_lineasxcliente::correr(){
 					for (int i = 0; i < sizeRegistros ; ++i){
 						rrn = indice.at(i, linea).RRN_index;
 						int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(LineaxCliente) * rrn) );
-						//cout << "Ecuacion = " << ecuacion << "\tRRN = " << rrn;
 						file.seekg(0);
 						file.seekg(ecuacion);
 						file.read(reinterpret_cast<char*>(&linea), sizeof(LineaxCliente));
@@ -161,10 +160,8 @@ void crud_lineasxcliente::correr(){
 				break;
 				case 2:{
 					LineaxCliente linea;
-					int cont = 0;
 					while(file.read(reinterpret_cast<char*>(&linea), sizeof(LineaxCliente))){
-						cout << cont << ": " << linea;
-						cont++;
+						cout << linea;
 					}
 				}
 				break;
@@ -187,12 +184,10 @@ void crud_lineasxcliente::correr(){
 			//availList =  ind.RRN_index;
 			bool borrar = indice.remove(lineaNueva);
 			if (borrar){
-				cout << "Entro = " << lineaNueva.numero << endl;
 				int rrn = ind.RRN_index;
 				int ecuacion = ( sizeof(Header) + /*( elementoBorrado(rrn) * sizeof(Ciudad) ) + */( sizeof(LineaxCliente) * rrn) );
 				file.seekp(0);
 				file.seekp(ecuacion);
-				cout << "Ecuacion = " << ecuacion << endl;
 				LineaxCliente lineaVieja;
 
 				strcpy(lineaVieja.numero, "-99");

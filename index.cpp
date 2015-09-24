@@ -6,12 +6,18 @@
 #include <vector>
 #include <stdio.h>
 #include <string>	
+#include <unistd.h>
 
 using namespace std;
 
 
 ostream& operator<<(ostream& output, const IndiceLineas& city){
-	output << "idCliente = " << city.numero << "\t" << "\tRRN = " << city.RRN_index << endl;
+	output << " idCliente = " << city.numero << "\t" << "\tRRN = " << city.RRN_index << endl;
+	return output;  
+}
+
+ostream& operator<<(ostream& output, const Indice& city){
+	output  << " idCliente = "<< city.id_ciu_index << "\tRRN = " << city.RRN_index << endl;
 	return output;  
 }
 /*ostream& operator<<(ostream& output, const LineaxCliente& city){
@@ -22,11 +28,12 @@ ostream& operator<<(ostream& output, const IndiceLineas& city){
 	Constructor
 	Tiene que verificar si existe indice, sino lo crea; si ya existia previamente, lo carga
 */
-Index::Index(char nombre[14]){
+Index::Index(const char *nombre){
 	strncpy(direccion,nombre,14);
 	ifstream file;
 	file.open(nombre);
-	cout<<"LLEGO "<<endl;
+	//bool cont = fexists(nombre);
+	//int res = access(nombre, F_OK);
 	if(!file.good()){
 		cout << "Creando" << endl;
 		create(nombre);
@@ -179,7 +186,7 @@ void Index::reindex(){
 /*
 	Metodo para crear el indice por si no ha sido creado
 */
-void Index::create(char nombre[14]){
+void Index::create(const char *nombre){
 	if(strncmp(nombre, "indexCiudades.bin", 14) == 0 )
 		createCiudades(nombre);
 	else if(strncmp(nombre, "indexClientes.bin", 14) == 0 ){
@@ -193,7 +200,7 @@ void Index::create(char nombre[14]){
 /*
 	Metodo para crear ciudades
 */
-void Index::createCiudades(string nombre){
+void Index::createCiudades(const char * nombre){
 	ifstream file;
 	file.open("ciudades.bin");
 	if(!file.is_open()){
@@ -208,15 +215,22 @@ void Index::createCiudades(string nombre){
 
 		int RRN;
 		vector<Indice>index;
+		int skip = 0;
 		
 		cout << "3 sizeRegistros = " << sizeRegistros << "\tAvail = " << availList  << "\tUltimo = " << head.sizeRegistro << endl;
-		for (int i = 0; i < sizeRegistros; ++i){
+		for (int i = 0; i < sizeRegistros; i++){
 			Ciudad city;
 			file.read(reinterpret_cast<char*>(&city), sizeof(Ciudad));
 
-			RRN = i;
+			if(skip == 0)
+				RRN = i;
+			else
+				RRN = i + skip;
 			orderIndexCiudad(index, city, RRN);
-
+			if(city.idCiudad == -99){
+				i--;
+				skip++;
+			}
 		}
 		ofstream salida("indexCiudades.bin", ofstream::binary);
 		for (int i = 0; i < index.size(); i++){
@@ -232,7 +246,7 @@ void Index::createCiudades(string nombre){
 /*
 	Metodo para crear Clientes
 */
-void Index::createClientes(char* nombre){
+void Index::createClientes(const char * nombre){
 	ifstream file;
 	file.open("clientes.bin");
 	if(!file.is_open()){
@@ -266,7 +280,7 @@ void Index::createClientes(char* nombre){
 /*
 	Metodo para crear lineas
 */
-void Index::createLineas(string nombre){
+void Index::createLineas(const char * nombre){
 	ifstream file;
 	file.open("lineaxclientes.bin");
 	if(!file.is_open()){
@@ -281,14 +295,22 @@ void Index::createLineas(string nombre){
 
 		int RRN;
 		vector<IndiceLineas> index;
+		int skip = 0;
 		
 		cout << "3 sizeRegistros = " << sizeRegistros << "\tAvail = " << availList  << "\tUltimo = " << head.sizeRegistro << endl;
 		for (int i = 0; i < sizeRegistros; ++i){
 			LineaxCliente lineas;
 			file.read(reinterpret_cast<char*>(&lineas), sizeof(LineaxCliente));
 
-			RRN = i;
+			if(skip == 0)
+				RRN = i;
+			else
+				RRN = i + skip;
 			orderIndexLineaxCliente(index, lineas, RRN);
+			if(strncmp (lineas.numero, "-99", 9) == 0){
+				i--;
+				skip++;
+			}
 
 		}
 		ofstream salida("indexLineasXCliente.bin", ofstream::binary);
@@ -312,7 +334,7 @@ bool Index::orderIndexCiudad(vector<Indice>& indexC, Ciudad city, int RRN){
 	vector<Indice>::iterator it;
   	it = indexC.begin();
 
-	if(tamano == 0)
+	if(tamano == 0 && city.idCiudad != -99)
 		indexC.push_back(indice);
 	else if(city.idCiudad != -99){
 		int primerIndice = 0, ultimoIndice = tamano - 1, centro;
@@ -399,7 +421,7 @@ bool Index::orderIndexLineaxCliente(vector<IndiceLineas>& indexC, LineaxCliente 
 
 	vector<IndiceLineas>::iterator it;
   	it = indexC.begin();
-	if(tamano == 0)
+	if(tamano == 0 && strncmp (line.numero, "-99", 9) != 0)
 		indexC.push_back(indice);
 	else if(strncmp (line.numero, "-99", 9) != 0){
 		int primerIndice = 0, ultimoIndice = tamano - 1, centro;
@@ -407,6 +429,7 @@ bool Index::orderIndexLineaxCliente(vector<IndiceLineas>& indexC, LineaxCliente 
 	    {
 	    	centro = (ultimoIndice + primerIndice)/2;
 		    if ( strncmp(indexC.at(centro).numero, line.numero, 9) == 0 ){
+		    	cout << line.numero << endl;
 				cerr<<"Ya existe ese id"<<endl;
 				return false;
 			}
@@ -523,8 +546,10 @@ void Index::cargarCiudades(){
 	} else{
 		Indice indi;
 		indexCiudades.clear();
+		int i = 0;
 		while(file.read(reinterpret_cast<char*>(&indi), sizeof(Indice))){
 			indexCiudades.push_back(indi);
+			i++;
 		}
 	}
 }
@@ -606,4 +631,9 @@ void Index::imprimirIndexLineas(){
 	for (int i = 0; i < indexLineas.size(); ++i){
 		cout << i << ": " << indexLineas.at(i);
 	}
+}
+
+bool Index::fexists(const char *filename) {
+	ifstream ifile(filename);
+  	return ifile;
 }

@@ -53,7 +53,7 @@ private:
 	vector<IndiceClien> indexClientes;
 	vector<IndiceLineas> indexLineas;
 public:
-	Index(char[14]);
+	Index(const char *);
 	~Index();
 	bool add(Ciudad, int);
 	bool add(Cliente, int);
@@ -68,10 +68,10 @@ public:
 	IndiceClien at(int, Cliente);
 	IndiceLineas at(int, LineaxCliente);
 	void reindex();
-	void create(char [14]);
-	void createCiudades(string);
-	void createClientes(char*);
-	void createLineas(string);
+	void create(const char *);
+	void createCiudades(const char *);
+	void createClientes(const char *);
+	void createLineas(const char *);
 	bool orderIndexCiudad(vector<Indice>&, Ciudad, int);
 	void orderIndexCliente(vector<IndiceClien>&, Cliente, int);
 	bool orderIndexLineaxCliente(vector<IndiceLineas>&, LineaxCliente, int);
@@ -89,4 +89,5 @@ public:
 	IndiceClien clienteRRN(int, Cliente);
 	IndiceLineas lineaRRN(int, LineaxCliente);
 	void imprimirIndexLineas();
+	bool fexists(const char *);
 };
