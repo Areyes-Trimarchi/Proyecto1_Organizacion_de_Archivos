@@ -27,6 +27,13 @@ struct HeaderArbol{
 	int sizeRegistro;
 };
 
+struct Llamada{
+	char numero[9];
+	string inicio;
+	string final;
+	char destino[9];
+};
+
 class BTree{
 private:
 	int tamano;	//Tamano del arbol
